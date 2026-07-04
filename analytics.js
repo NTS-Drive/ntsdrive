@@ -6,7 +6,7 @@
  * tracking across the whole site.
  */
 (function () {
-  var GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // TODO: replace with real Measurement ID
+  var GA_MEASUREMENT_ID = 'G-2C3G7CTX8Y';
 
   var s = document.createElement('script');
   s.async = true;
