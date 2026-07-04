@@ -114,6 +114,42 @@ Funnel to watch in GA4 once traffic starts: `select_content` (hub → Arcade) �
 `play_click` (Arcade → title) → `title_engaged` (title → actually played).
 Drop-off between these three is the first thing worth diagnosing.
 
+## Title 2: Formula Firewall (2026-07-04)
+
+A tower-defense title where the player deploys spreadsheet-formula towers
+(`VLOOKUP`, `IFERROR`, `SUMIF`) to stop corrupted-data enemies crossing a
+spreadsheet grid. Located at `arcade/formula-firewall/`.
+
+**Trademark fix applied before shipping:** the source file supplied for this
+title used the literal string "Microsoft Excel" in its `<title>` and window
+chrome, and its accent color (`#217346`) was Excel's actual brand green. Both
+were replaced before merging:
+- Window chrome now reads "Spreadsheet" (generic), never "Excel" or "Microsoft".
+- Accent color changed to the site's own NTS_Drive blue (`#2F5DA8`), not
+  Excel's brand green.
+- Fonts changed from Microsoft's `Segoe UI` / `Consolas` to the project's
+  existing `Pretendard` / `IBM Plex Mono`.
+- Function names (`VLOOKUP`, `IFERROR`, `SUMIF`) were kept — these are
+  generic spreadsheet-industry terms used identically across Excel, Google
+  Sheets, and LibreOffice, not a Microsoft-specific trademark.
+
+**Gameplay features implemented:**
+- 3 starting roles — Intern (Easy) / Manager (Normal) / Director (Difficult) —
+  each sets a different starting budget and enemy speed/strength multiplier.
+- 10 levels. From Level 6 onward, enemies that get near a tower actively
+  attack it (damage over time), on top of the usual "leak" damage for
+  reaching the end of the row. Both leak damage and enemy attack damage
+  scale up with level.
+- Autosave after every level cleared; reopening the page resumes the run
+  automatically (no difficulty prompt shown when a save exists).
+- `Reset` button (next to `Save`) wipes the current run only — Top 10
+  records are untouched.
+- Local Top 10 leaderboard (name, level, role, score, date). Qualifying
+  scores prompt a name-entry modal. Reaching the all-time #1 spot
+  auto-downloads a screenshot via html2canvas — no manual click needed.
+- In-game `Guide` button explains objective, controls, towers, difficulty,
+  the Level 6+ attack mechanic, and the scoring formula, entirely in English.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

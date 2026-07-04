@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formula Firewall | NTS_Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="../../analytics.js"></script>
+</head>
+<body id="capture-area">
+
+<div id="chrome">
+  <div class="app-bar">
+    <a class="back-link" href="../index.html">&larr; Back to NTS_Arcade</a>
+    <div class="app-title">Formula Firewall</div>
+    <button class="action-btn" id="guide-btn" onclick="openGuide()">Guide</button>
+  </div>
+
+  <div class="title-bar">
+    <span>Weekly_Financial_Report_2026.xlsx — Spreadsheet</span>
+    <div style="letter-spacing: 5px;">— &#10063; &times;</div>
+  </div>
+
+  <div class="ribbon-tabs">
+    <div class="ribbon-tab">File</div>
+    <div class="ribbon-tab active">Data Security Defense</div>
+    <div class="ribbon-tab">View</div>
+  </div>
+
+  <div class="ribbon">
+    <div class="tower-section">
+      <div class="tower-btn" onclick="selectTower('VLOOKUP')" id="btn-VLOOKUP">
+        <span class="tower-name">=VLOOKUP()</span>
+        <span class="tower-cost">Cost: 100 — Basic</span>
+      </div>
+      <div class="tower-btn" onclick="selectTower('IFERROR')" id="btn-IFERROR">
+        <span class="tower-name" style="color:#b9770e;">=IFERROR()</span>
+        <span class="tower-cost">Cost: 150 — Rapid fire</span>
+      </div>
+      <div class="tower-btn" onclick="selectTower('SUMIF')" id="btn-SUMIF">
+        <span class="tower-name" style="color:#a13a2c;">=SUMIF()</span>
+        <span class="tower-cost">Cost: 250 — Heavy hitter</span>
+      </div>
+    </div>
+    <div class="control-section">
+      <button class="action-btn" onclick="saveGame(true)">Save</button>
+      <button class="action-btn danger" onclick="resetGame()">Reset</button>
+    </div>
+    <div class="control-section">
+      <button class="action-btn" onclick="openLeaderboard()">Records</button>
+      <button class="action-btn" onclick="captureGame()">Capture</button>
+    </div>
+    <div>
+      <button class="wave-btn" id="start-btn" onclick="startWave()">Start Wave</button>
+    </div>
+  </div>
+
+  <div class="formula-bar">
+    <div class="address-box" id="active-cell">A1</div>
+    <div class="fx">fx</div>
+    <input type="text" id="formula-input" readonly value="=READY()">
+  </div>
+
+  <div class="status-panel">
+    <div class="stat-item">Budget: <span class="stat-val" id="money">800</span></div>
+    <div class="stat-item">Integrity: <span class="stat-val" id="health">100%</span></div>
+    <div class="stat-item">Level: <span class="stat-val" id="level">1 / 10</span></div>
+    <div class="stat-item">Difficulty: <span class="stat-val" id="diff-label">—</span></div>
+    <div class="stat-item">Best Level: <span class="stat-val" id="high-score">0</span></div>
+    <div id="msg">System ready.</div>
+  </div>
+</div>
+
+<div class="game-container" id="container">
+  <canvas id="gameCanvas"></canvas>
+</div>
+
+<!-- Difficulty select (only shown when there is no save) -->
+<div class="overlay" id="difficulty-overlay">
+  <div class="modal">
+    <h2>Select Your Role</h2>
+    <p style="margin-top:-6px; color:var(--ink-muted);">Your role sets your starting budget and how fast threats move.</p>
+    <button class="diff-btn" onclick="startGame('intern')">
+      Intern (Easy)
+      <small>Budget 1200 · Slower, weaker threats</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('manager')">
+      Manager (Normal)
+      <small>Budget 800 · Standard threats</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('director')">
+      Director (Difficult)
+      <small>Budget 500 · Faster, stronger threats</small>
+    </button>
+  </div>
+</div>
+
+<!-- Boss key / guidelines screen (toggle with Esc) -->
+<div class="overlay" id="boss-screen" style="display:none;">
+  <div class="modal wide">
+    <h2>Company-Wide Data Security Guidelines (2026)</h2>
+    <p><b>Last revised:</b> 2026-07-03 17:55</p>
+    <div style="margin-top: 16px; line-height: 2;">
+      <p>1. All macro-enabled documents must be approved by IT Security before execution.</p>
+      <p>2. When using external references (VLOOKUP), always verify the source file's integrity.</p>
+      <p>3. If data corruption is detected, immediately deploy an IFERROR handler to attempt recovery.</p>
+    </div>
+    <p style="margin-top:24px; color:#aaa; font-size:11.5px;">(Press Esc again to return to work)</p>
+  </div>
+</div>
+
+<!-- Name entry for leaderboard -->
+<div class="overlay" id="name-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="name-title">New Top 10 Record!</h2>
+    <p id="name-sub">Enter a name to save your record.</p>
+    <input type="text" id="name-input" class="name-input" maxlength="14" placeholder="Your name">
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="submitRecordName()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="overlay" id="leaderboard-overlay" style="display:none;">
+  <div class="modal wide">
+    <h2>Top 10 Records</h2>
+    <table class="leaderboard-table" id="leaderboard-table">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Level</th><th>Role</th><th>Score</th><th>Date</th></tr>
+      </thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="closeOverlay('leaderboard-overlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- End of game summary -->
+<div class="overlay" id="end-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="end-title">Run Complete</h2>
+    <p id="end-summary"></p>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="openLeaderboard()">View Records</button>
+      <button class="action-btn primary" onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guide -->
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal wide guide-body">
+    <h2>How to Play</h2>
+
+    <h3>Objective</h3>
+    <p>Corrupted data errors are marching across your spreadsheet toward the edge of the sheet. Deploy formula towers to stop them before your Integrity hits zero.</p>
+
+    <h3>Controls</h3>
+    <ul>
+      <li>Select a tower in the ribbon, then click an empty cell (not on the shaded path) to place it.</li>
+      <li>Click <code>Start Wave</code> to release that level's threats.</li>
+      <li>Defeated threats refund some Budget so you can afford more towers.</li>
+    </ul>
+
+    <h3>Towers</h3>
+    <ul>
+      <li><code>=VLOOKUP()</code> — cheap, balanced, good early pick.</li>
+      <li><code>=IFERROR()</code> — fires rapidly but hits softer, good against fast threats.</li>
+      <li><code>=SUMIF()</code> — expensive, long range, heavy single-target damage.</li>
+    </ul>
+
+    <h3>Roles &amp; Difficulty</h3>
+    <p>Intern / Manager / Director change your starting Budget and how fast &amp; strong threats are. Higher difficulty also scores more points.</p>
+
+    <h3>Levels</h3>
+    <p>There are 10 levels. From <b>Level 6 onward</b>, threats that get close to one of your towers will actively attack it, draining Integrity even before they reach the end of the row. Threat speed and attack damage both increase every level.</p>
+
+    <h3>Save, Resume &amp; Reset</h3>
+    <ul>
+      <li>Progress auto-saves after every level you clear.</li>
+      <li>Reopening this page resumes your run automatically — no need to pick a role again.</li>
+      <li><code>Reset</code> wipes your current run and lets you pick a new role. Your Top 10 records are kept.</li>
+    </ul>
+
+    <h3>Records &amp; Scoring</h3>
+    <p>Score = Level reached &times; 1000 + Integrity remaining &times; 5 + a difficulty bonus (Manager +50, Director +150). The Top 10 scores are stored on this device. If your score qualifies, you'll be asked for a name. Reaching <b>#1</b> automatically downloads a screenshot of your victory to your device.</p>
+
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeOverlay('guide-overlay')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
