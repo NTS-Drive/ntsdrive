@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deck Dash | Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="../../analytics.js"></script>
+</head>
+<body id="capture-area">
+
+<div id="chrome">
+  <div class="app-bar">
+    <a class="back-link" href="../index.html">&larr; Back to Arcade</a>
+    <div class="app-title">Deck Dash</div>
+    <button class="action-btn" onclick="openGuide()">Guide</button>
+  </div>
+
+  <div class="title-bar">
+    <span>Quarterly_Review_Deck.pptx — Slides</span>
+    <div style="letter-spacing: 5px;">— &#10063; &times;</div>
+  </div>
+
+  <div class="ribbon-tabs">
+    <div class="ribbon-tab">File</div>
+    <div class="ribbon-tab active">Slide Show Defense</div>
+    <div class="ribbon-tab">View</div>
+  </div>
+
+  <div class="ribbon">
+    <div class="control-section">
+      <button class="action-btn" onclick="saveGame(true)">Save</button>
+      <button class="action-btn danger" onclick="resetGame()">Reset</button>
+    </div>
+    <div class="control-section">
+      <button class="action-btn" onclick="openLeaderboard()">Records</button>
+      <button class="action-btn" onclick="captureGame()">Capture</button>
+    </div>
+  </div>
+
+  <div class="status-panel">
+    <div class="stat-item">Lives: <span class="stat-val" id="lives">3</span></div>
+    <div class="stat-item">Level: <span class="stat-val" id="level">1 / 10</span></div>
+    <div class="stat-item">Distance: <span class="stat-val" id="distance">0 m</span></div>
+    <div class="stat-item">Difficulty: <span class="stat-val" id="diff-label">—</span></div>
+    <div class="stat-item">Best Level: <span class="stat-val" id="high-score">0</span></div>
+    <div id="msg">System ready.</div>
+  </div>
+</div>
+
+<div class="game-container" id="container">
+  <canvas id="gameCanvas"></canvas>
+  <div class="hint-bar">Space / Tap = Jump &nbsp;·&nbsp; Down Arrow = Duck</div>
+</div>
+
+<!-- Difficulty select -->
+<div class="overlay" id="difficulty-overlay">
+  <div class="modal">
+    <h2>Select Your Role</h2>
+    <p style="margin-top:-6px; color:var(--ink-muted);">Your role sets your starting lives and how fast the deck scrolls.</p>
+    <button class="diff-btn" onclick="startGame('intern')">
+      Intern (Easy)
+      <small>5 lives · Slower scroll speed</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('manager')">
+      Manager (Normal)
+      <small>3 lives · Standard scroll speed</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('director')">
+      Director (Difficult)
+      <small>2 lives · Faster scroll speed</small>
+    </button>
+  </div>
+</div>
+
+<!-- Name entry -->
+<div class="overlay" id="name-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="name-title">New Top 10 Record!</h2>
+    <p id="name-sub">Enter a name to save your record.</p>
+    <input type="text" id="name-input" class="name-input" maxlength="14" placeholder="Your name">
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="submitRecordName()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="overlay" id="leaderboard-overlay" style="display:none;">
+  <div class="modal wide">
+    <h2>Top 10 Records</h2>
+    <table class="leaderboard-table" id="leaderboard-table">
+      <thead><tr><th>#</th><th>Name</th><th>Level</th><th>Role</th><th>Score</th><th>Date</th></tr></thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="closeOverlay('leaderboard-overlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- End of run -->
+<div class="overlay" id="end-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="end-title">Run Complete</h2>
+    <p id="end-summary"></p>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="openLeaderboard()">View Records</button>
+      <button class="action-btn primary" onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guide -->
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal wide guide-body">
+    <h2>How to Play</h2>
+    <h3>Objective</h3>
+    <p>Your slide deck has gone haywire mid-presentation. Run across the slide and dodge typos, pop-ups, and stray notifications before you run out of lives.</p>
+    <h3>Controls</h3>
+    <ul>
+      <li><code>Space</code> or tap the slide to jump over low obstacles.</li>
+      <li><code>Down Arrow</code> to duck under obstacles that fly overhead.</li>
+    </ul>
+    <h3>Roles &amp; Difficulty</h3>
+    <p>Intern / Manager / Director change your starting lives and how fast the deck scrolls. Harder roles also score more points.</p>
+    <h3>Levels</h3>
+    <p>There are 10 levels, each a stretch of distance to survive. From <b>Level 6 onward</b>, a faster "Notification Chaser" obstacle appears — it costs 2 lives instead of 1 if it catches you, and both scroll speed and chaser speed increase every level.</p>
+    <h3>Save, Resume &amp; Reset</h3>
+    <ul>
+      <li>Progress auto-saves after every level you clear.</li>
+      <li>Reopening this page resumes your run automatically.</li>
+      <li><code>Reset</code> wipes your current run and lets you pick a new role. Top 10 records are kept.</li>
+    </ul>
+    <h3>Records &amp; Scoring</h3>
+    <p>Score = distance covered + Level reached &times; 200 + a difficulty bonus (Manager +50, Director +150). Reaching <b>#1</b> automatically downloads a screenshot of your run.</p>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeOverlay('guide-overlay')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

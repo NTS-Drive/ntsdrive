@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equation Hunt | Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="../../analytics.js"></script>
+</head>
+<body>
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Back to Academy</a>
+  <div class="app-title">Equation Hunt</div>
+  <button class="action-btn key wide" onclick="openGuide()" style="height:auto; padding:6px 10px;">Guide</button>
+</div>
+
+<div class="title-bar">
+  <span>Weekly_Calculations_2026.xlsx — Spreadsheet</span>
+  <div style="letter-spacing: 5px;">— &#10063; &times;</div>
+</div>
+
+<div class="ribbon-tabs">
+  <div class="ribbon-tab">File</div>
+  <div class="ribbon-tab active">Number Puzzle</div>
+  <div class="ribbon-tab">View</div>
+</div>
+
+<div class="formula-bar">
+  <div class="address-box">fx</div>
+  <div class="fx">=TARGET</div>
+  <div id="targetDisplay">—</div>
+</div>
+
+<div class="status-panel">
+  <div class="stat-item">Level: <span class="stat-val" id="level">1 / 10</span></div>
+  <div class="stat-item">Guesses left: <span class="stat-val" id="guessesLeft">–</span></div>
+  <div class="stat-item">Best Level: <span class="stat-val" id="bestLevel">0</span></div>
+  <div id="msg">Guess the hidden calculation.</div>
+</div>
+
+<div class="stage">
+
+  <div class="intro-card" id="introScreen">
+    <h1>Equation Hunt</h1>
+    <p>A hidden calculation adds up to the target number.<br>
+    Guess it one cell at a time — green means correct spot, amber means it's in the equation but in the wrong spot, gray means it's not used at all.<br>
+    10 levels, longer equations and fewer guesses as you go.</p>
+    <button class="start-btn" onclick="startRun()">Start</button>
+    <div class="intro-meta">Digits 0–9 and + − × ÷ only. No parentheses.</div>
+  </div>
+
+  <div class="quiz-wrap" id="quizScreen">
+    <div class="grid-wrap" id="gridWrap"></div>
+
+    <div class="keypad" id="keypad">
+      <div class="keyrow" id="digitRow1"></div>
+      <div class="keyrow" id="digitRow2"></div>
+      <div class="keyrow" id="opRow"></div>
+      <div class="keyrow">
+        <button class="key wide" id="deleteBtn" onclick="pressDelete()">Delete</button>
+        <button class="key wide" id="enterBtn" onclick="pressEnter()">Enter</button>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="swatch correct"></span> Correct spot</span>
+      <span><span class="swatch present"></span> Wrong spot</span>
+      <span><span class="swatch absent"></span> Not used</span>
+    </div>
+  </div>
+
+  <div class="summary-wrap" id="summaryScreen">
+    <div class="summary-card">
+      <div class="new-best" id="newBestLine" style="display:none;">New best level!</div>
+      <h2 id="summaryTitle">Run Complete</h2>
+      <div class="reveal" id="revealLine"></div>
+      <div class="summary-grid">
+        <div class="summary-stat"><div class="val" id="statLevel">1</div><div class="lbl">LEVEL REACHED</div></div>
+        <div class="summary-stat"><div class="val" id="statScore">0</div><div class="lbl">SCORE</div></div>
+      </div>
+      <div class="summary-actions">
+        <button class="action-btn" onclick="window.location.href='../index.html'">Back to Academy</button>
+        <button class="action-btn primary" onclick="startRun()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="guide-overlay">
+  <div class="modal guide-body">
+    <h2>How to Play</h2>
+    <h3>Objective</h3>
+    <p>Each level hides a calculation (like <code>5*1-4</code>) that equals the target number shown at the top. Guess the exact calculation, character by character.</p>
+    <h3>Feedback</h3>
+    <p><span class="swatch correct" style="display:inline-block;"></span> Correct character in the correct spot &nbsp;
+       <span class="swatch present" style="display:inline-block;"></span> Correct character, wrong spot &nbsp;
+       <span class="swatch absent" style="display:inline-block;"></span> Not in the calculation at all.</p>
+    <h3>Rules</h3>
+    <p>Calculations alternate digit / operator / digit / operator... standard order of operations applies (&times; and &divide; before + and &minus;). No parentheses, no multi-digit numbers.</p>
+    <h3>Levels</h3>
+    <p>Levels 1–3 use 5-character calculations with 8 guesses. Levels 4–7 use 7 characters with 6 guesses. Levels 8–10 use 9 characters with 5 guesses. Solve a level to advance; running out of guesses ends your run at that level.</p>
+    <h3>Progress</h3>
+    <p>Your best level reached is saved on this device — no need to restart from Level 1 to beat your record next time you play.</p>
+    <div class="summary-actions">
+      <button class="action-btn primary" onclick="closeGuide()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

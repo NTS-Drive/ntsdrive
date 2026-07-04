@@ -1,25 +1,40 @@
 # NTS_Drive — Static Portal for the Office-Worker Track
 
-Backend-free static site covering all four roadmap stages behind one shared
+Backend-free static site covering three roadmap stages behind one shared
 "drive" UI shell: **Arcade → Academy → Store**.
 
 ## Structure
 
 ```
 office-game-hub/
-├── index.html            NTS_Drive root hub (4 top-level folders)
-├── categories.json          Root-level folder metadata (edit to add stages)
-├── styles.css              Shared file-explorer shell (root + all subpages)
-├── arcade/
-│   ├── index.html          NTS_Arcade (Stage 1, live)
-│   ├── titles.json           Arcade entries (edit to add titles)
-│   └── doc-stack-clicker/    First live entry: "Endless Approval Stack"
+├── index.html               NTS_Drive root hub (3 top-level folders)
+├── categories.json            Root-level folder metadata (edit to add stages)
+├── styles.css                Shared file-explorer shell (root + all subpages)
+├── analytics.js               Shared GA4 loader (one Measurement ID for the whole site)
+├── arcade/                   Stage 1, live
+│   ├── index.html
+│   ├── titles.json             Arcade entries (edit to add titles)
+│   ├── deck-dash/               Endless-runner title
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   └── script.js
+│   └── formula-firewall/        Tower-defense title
 │       ├── index.html
 │       ├── style.css
 │       └── script.js
-├── academy/index.html       Academy — learning content hub (Stage 2, live, empty for now)
-│   └── items.json             Learning items (English quizzes etc.) — empty until first upload
-└── store/index.html         Store placeholder (Stage 3, planned)
+├── academy/                  Stage 2, live
+│   ├── index.html
+│   ├── items.json               Academy entries (edit to add content)
+│   ├── picture-match/           Emoji vocabulary quiz
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   ├── script.js
+│   │   └── words.json
+│   └── equation-hunt/           Spreadsheet-style hidden-calculation puzzle
+│       ├── index.html
+│       ├── style.css
+│       └── script.js
+└── store/index.html         Stage 3, planned
 ```
 
 ## Design decisions (2026-07-04, v3)
@@ -156,30 +171,89 @@ were replaced before merging:
 - In-game `Guide` button explains objective, controls, towers, difficulty,
   the Level 6+ attack mechanic, and the scoring formula, entirely in English.
 
-## Academy content 1: Word Sprint (2026-07-04)
+## Content update (2026-07-05): Deck Dash replaces Endless Approval Stack
 
-A 10-question, 4-choice English vocabulary quiz. Located at
-`academy/word-sprint/`. First word pack: **Business English Essentials**
-(40 words) in `academy/word-sprint/words.json`.
+`Endless Approval Stack` was removed. Its slot is now **Deck Dash**, an
+endless-runner title at `arcade/deck-dash/`.
 
-**Design decisions:**
-- Distractor answers are drawn at random from *other* words' correct
-  definitions in the same pool — adding a new word only requires one
-  `{ "term": ..., "definition": ... }` entry, no hand-written wrong answers.
-- 10-second per-question timer keeps rounds short enough for a work break;
-  timing out counts as a miss and auto-advances.
-- Streak bonus: 3+ correct in a row adds +5 per question on top of the base
-  +10, to reward focus without punishing a single miss too harshly.
-- Only a personal best score is stored locally (`ws_best_score`) — no Top 10
-  leaderboard. Academy is a skill-building tool, not a competitive arcade
-  title, so the scoring model is intentionally simpler than Arcade titles.
-- Visual style is a clean flashcard/quiz UI in the site's own design tokens,
-  not an homage to any specific office software — Academy content doesn't
-  need the same "mimic a real app" premise as Arcade titles.
+- Same level structure as Formula Firewall: 3 starting roles (Intern /
+  Manager / Director) set lives and scroll speed; 10 levels, each a stretch
+  of distance to survive; from **Level 6 onward** a faster "Notification
+  Chaser" obstacle appears that costs 2 lives instead of 1.
+- Controls: Space/tap to jump over low obstacles, Down Arrow to duck under
+  high ones.
+- Same save/resume/reset, local Top 10 leaderboard with name entry, and
+  automatic screenshot capture on a new all-time #1, all reusing the pattern
+  established in Formula Firewall.
+- **Trademark note**: background is a generic "slide deck" homage (ribbon,
+  slide title bar) in an original teal accent (`#2E7D6B`) — not PowerPoint's
+  or Slack's actual brand colors, and neither brand name appears anywhere in
+  the UI. The runner character is an entirely original abstract shape (no
+  real favicon, mascot, or icon set was copied).
 
-**Adding a second word pack:** create `academy/word-pack-2/` with its own
-`index.html` + `words.json` (same schema), then add one entry to
-`academy/items.json`.
+## Academy content update (2026-07-05): Picture Match replaces Word Sprint
+
+Word Sprint (business-vocabulary multiple choice) tested as too generic and
+too hard. Replaced with **Picture Match** at `academy/picture-match/`:
+
+- An emoji is shown; the player picks the matching English word.
+- 80 words across 10 levels (`academy/picture-match/words.json`), grouped
+  into themes: everyday basics/objects, three rounds of countries, wild and
+  rare animals, and curious/quirky objects — all easy to represent visually
+  with an emoji, unlike the old abstract business terms.
+- Difficulty scales with level: more answer options (3 → 4 → 5) and a
+  shorter timer (12s down to 6s) as levels increase.
+- 3 lives for the whole run (not per level); reaching Level 10's last word
+  is a win. Streak bonus (+5 per question once 3+ in a row).
+- Only a personal best (highest level reached) is stored locally — no Top 10
+  leaderboard, deliberately kept lighter than Arcade titles since this is a
+  skill-building tool, not a competitive one.
+- Country flag emoji were used for the "Countries" themes — flags are
+  national symbols, not corporate trademarks, so this carries no brand risk.
+
+**Adding a third theme:** append entries with a new `level` (11+) to
+`words.json`, or add more words to an existing level — no code changes
+needed either way.
+
+## Academy content update (2026-07-05): removed the "English quizzes" framing
+
+`categories.json`'s Academy description no longer says "starting with English
+quizzes" — Academy now also hosts non-English content (starting with a math
+puzzle), so the copy was generalized to "Bite-sized learning content for
+office workers."
+
+## Academy content 2: Equation Hunt (2026-07-05)
+
+A Wordle-style hidden-calculation puzzle at `academy/equation-hunt/`, skinned
+as a spreadsheet cell grid + on-screen keypad.
+
+**Genre note (trademark-relevant):** this reuses the generic "guess a hidden
+string, get green/amber/gray position feedback" mechanic popularized by
+Wordle and cloned by dozens of apps (including math-focused ones). That
+mechanic itself isn't owned by any single company. What we did **not** copy:
+any specific app's name, exact color palette, daily-puzzle countdown copy,
+or in-app ads. The visual skin here is our own spreadsheet/cell-grid design
+using the site's existing accent color and fonts.
+
+**How it works:**
+- Every level hides a calculation (digits 0–9 and `+ − × ÷`, no parentheses,
+  no multi-digit numbers) that evaluates to a shown target number, using
+  standard order of operations.
+- A small custom expression evaluator (`evalExpression` in `script.js`)
+  handles precedence — no `eval()` is used anywhere.
+- The puzzle generator retries up to 300 times to find a random equation
+  whose result is a non-negative integer ≤ 200 (with a guaranteed-valid
+  fallback), so puzzles are generated fresh each run rather than pulled from
+  a fixed list.
+- Feedback uses the standard duplicate-character-safe algorithm (exact
+  matches locked in first, then leftover positions checked for present-but-
+  misplaced characters).
+- **Levels**: 1–3 use 5-character equations with 8 guesses; 4–7 use 7
+  characters with 6 guesses; 8–10 use 9 characters with 5 guesses. Solving a
+  level's puzzle advances you; running out of guesses ends the run at that
+  level.
+- Only a personal best (highest level reached) is stored locally
+  (`eh_best_level`) — same lighter-than-Arcade approach as Picture Match.
 
 ## Ad placement
 

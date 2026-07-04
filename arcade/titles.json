@@ -1,20 +1,20 @@
 [
   {
+    "id": "deck-dash",
+    "title": "Deck Dash",
+    "description": "Sprint across an endless slide deck, dodging typos, pop-ups, and last-minute chaos.",
+    "style": "Slide deck & chat notifications",
+    "status": "Live",
+    "entryPath": "deck-dash/index.html",
+    "addedAt": "2026-07-05"
+  },
+  {
     "id": "formula-firewall",
     "title": "Formula Firewall",
     "description": "Defend your spreadsheet from corrupted data errors marching across the grid.",
     "style": "Spreadsheet ribbon interface",
     "status": "Live",
     "entryPath": "formula-firewall/index.html",
-    "addedAt": "2026-07-04"
-  },
-  {
-    "id": "doc-stack-clicker",
-    "title": "Endless Approval Stack",
-    "description": "Approve documents piling up before your desk disappears under paperwork.",
-    "style": "Groupware approval tray",
-    "status": "Live",
-    "entryPath": "doc-stack-clicker/index.html",
     "addedAt": "2026-07-04"
   },
   {

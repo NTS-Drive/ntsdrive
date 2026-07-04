@@ -1,12 +1,21 @@
 [
   {
-    "id": "word-sprint",
-    "title": "Word Sprint",
-    "description": "Race the clock to match business English words with their meanings.",
+    "id": "picture-match",
+    "title": "Picture Match",
+    "description": "See the emoji, pick the English word. 10 levels of animals, countries, and everyday objects.",
     "type": "Quiz",
     "status": "Live",
-    "emoji": "📇",
-    "entryPath": "word-sprint/index.html"
+    "emoji": "🧩",
+    "entryPath": "picture-match/index.html"
+  },
+  {
+    "id": "equation-hunt",
+    "title": "Equation Hunt",
+    "description": "Guess the hidden calculation one cell at a time, spreadsheet-style. 10 levels of increasing length.",
+    "type": "Quiz",
+    "status": "Live",
+    "emoji": "🔢",
+    "entryPath": "equation-hunt/index.html"
   }
 ]
 

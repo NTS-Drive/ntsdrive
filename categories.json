@@ -11,7 +11,7 @@
   {
     "id": "academy",
     "name": "Academy",
-    "description": "Bite-sized learning content for office workers — starting with English quizzes.",
+    "description": "Bite-sized learning content for office workers.",
     "emoji": "🎓",
     "status": "Live",
     "path": "academy/index.html",
