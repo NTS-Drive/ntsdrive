@@ -1,7 +1,7 @@
 # NTS_Drive — Static Portal for the Office-Worker Track
 
 Backend-free static site covering all four roadmap stages behind one shared
-"drive" UI shell: **NTS_Arcade → NTS_SaaS → NTS_Seminar → NTS_Shop**.
+"drive" UI shell: **Arcade → Academy → Store**.
 
 ## Structure
 
@@ -17,9 +17,9 @@ office-game-hub/
 │       ├── index.html
 │       ├── style.css
 │       └── script.js
-├── saas/index.html         NTS_SaaS placeholder (Stage 2, planned)
-├── seminar/index.html      NTS_Seminar placeholder (Stage 3, planned)
-└── shop/index.html         NTS_Shop placeholder (Stage 4, planned)
+├── academy/index.html       Academy — learning content hub (Stage 2, live, empty for now)
+│   └── items.json             Learning items (English quizzes etc.) — empty until first upload
+└── store/index.html         Store placeholder (Stage 3, planned)
 ```
 
 ## Design decisions (2026-07-04, v3)
@@ -27,9 +27,15 @@ office-game-hub/
 - **Entry point reframed**: `index.html` is now the top-level "NTS_Drive" hub.
   It lists the four roadmap stages as folders, not the arcade titles directly.
   Users pick a stage folder, then land on that stage's own file-explorer view.
-- **Brand names**: NTS_Drive (platform) → NTS_Arcade / NTS_SaaS / NTS_Seminar /
-  NTS_Shop (stage folders). Breadcrumb updates per page, e.g.
-  `NTS_Drive › NTS_Arcade`.
+- **Brand names**: NTS_Drive (platform hub, name unchanged) → child folders now
+  drop the `NTS_` prefix: Arcade / Academy / Store. Breadcrumb updates per page, e.g.
+  `NTS_Drive › Arcade`.
+- **Roadmap change (2026-07-04)**: the original 4-stage plan (Arcade → SaaS →
+  Seminar → Shop) was cut to 3 stages. SaaS was dropped entirely. Seminar was
+  repurposed and renamed Academy — instead of talks/workshops, it will host
+  bite-sized learning content (starting with English quizzes for office
+  workers) and ships as **Live** from day one, even though it has no content
+  yet. Shop was renamed Store (naming change only, still Planned).
 - **Wording**: the words "game" and "homage" are not used anywhere in the UI.
   Arcade entries are called "titles"; the column that used to say "homage
   target" is now "Style" (a neutral description of the visual reference,
