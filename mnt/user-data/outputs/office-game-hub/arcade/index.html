@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTS_Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+<div class="explorer">
+
+  <div class="addressbar">
+    <div class="breadcrumb">
+      <a class="crumb" href="../index.html">🗂️ NTS_Drive</a>
+      <span class="sep">›</span>
+      <span class="crumb current">🕹️ NTS_Arcade</span>
+    </div>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="Search NTS_Arcade">
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool-btn" id="sortBtn" title="Toggle sort by added date">
+      <svg viewBox="0 0 20 20" width="15" height="15"><path d="M4 6h12M6 10h8M8 14h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+      Sort: <span id="sortLabel">Newest</span>
+    </button>
+    <button class="tool-btn" id="refreshBtn" title="Refresh">
+      <svg viewBox="0 0 20 20" width="15" height="15"><path d="M15 5a6 6 0 1 0 1.6 5.4M16 3v4h-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Refresh
+    </button>
+    <div class="toolbar-spacer"></div>
+    <div class="toolbar-note">Stage 1 of 4 — audience &amp; traffic</div>
+  </div>
+
+  <div class="explorer-body">
+
+    <aside class="sidebar">
+      <div class="side-section">
+        <div class="side-title">Quick access</div>
+        <button class="side-item active" data-filter="all">All titles</button>
+        <button class="side-item" data-filter="new">New</button>
+      </div>
+      <div class="side-section">
+        <div class="side-title">Status</div>
+        <button class="side-item" data-filter="Live"><span class="dot live"></span>Live</button>
+        <button class="side-item" data-filter="In Planning"><span class="dot planning"></span>In Planning</button>
+      </div>
+      <div class="side-section ad-side">
+        <div class="side-title">Ad space</div>
+        <div class="ad-slot-vert">160×300<br>Reserved for AdSense</div>
+      </div>
+    </aside>
+
+    <main class="listpane">
+      <div class="list-head cols-arcade">
+        <div class="col col-name">Title</div>
+        <div class="col col-type">Style</div>
+        <div class="col col-date">Added</div>
+        <div class="col col-status">Status</div>
+        <div class="col col-action">Play</div>
+      </div>
+      <div id="fileList" class="file-list cols-arcade"></div>
+      <div id="emptyState" class="empty-state" hidden>No matches found.</div>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <span id="statusCount">Loading...</span>
+    <span class="statusbar-note">Every title here is an original design, unaffiliated with any real software brand.</span>
+  </div>
+</div>
+
+<script>
+let ALL_ITEMS = [];
+let currentFilter = 'all';
+let sortDesc = true;
+const ICONS = ['🗒️', '📎', '🖇️', '📌', '🗂️', '📋'];
+
+function iconFor(id) {
+  let hash = 0;
+  for (const ch of id) hash = (hash * 31 + ch.charCodeAt(0)) % 997;
+  return ICONS[hash % ICONS.length];
+}
+
+function isNew(dateStr) {
+  const days = (Date.now() - new Date(dateStr).getTime()) / 86400000;
+  return days <= 14;
+}
+
+function render() {
+  const listEl = document.getElementById('fileList');
+  const emptyEl = document.getElementById('emptyState');
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  let items = ALL_ITEMS.slice();
+
+  if (currentFilter === 'new') items = items.filter(i => isNew(i.addedAt));
+  else if (currentFilter !== 'all') items = items.filter(i => i.status === currentFilter);
+
+  if (query) {
+    items = items.filter(i =>
+      i.title.toLowerCase().includes(query) ||
+      i.description.toLowerCase().includes(query) ||
+      i.style.toLowerCase().includes(query)
+    );
+  }
+
+  items.sort((a, b) => sortDesc
+    ? new Date(b.addedAt) - new Date(a.addedAt)
+    : new Date(a.addedAt) - new Date(b.addedAt));
+
+  listEl.innerHTML = '';
+  emptyEl.hidden = items.length > 0;
+
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'file-row cols-arcade';
+    const isLive = item.status === 'Live';
+    const btnHtml = item.entryPath
+      ? `<a class="play-btn" href="${item.entryPath}">Play</a>`
+      : `<span class="play-btn disabled">Soon</span>`;
+
+    row.innerHTML = `
+      <div class="col col-name">
+        <span class="file-icon">${iconFor(item.id)}</span>
+        <div>
+          <div class="file-title">${item.title}${isNew(item.addedAt) ? '<span class="new-badge">NEW</span>' : ''}</div>
+          <div class="file-desc">${item.description}</div>
+        </div>
+      </div>
+      <div class="col col-type">${item.style}</div>
+      <div class="col col-date">${item.addedAt}</div>
+      <div class="col col-status"><span class="dot ${isLive ? 'live' : 'planning'}"></span>${item.status}</div>
+      <div class="col col-action">${btnHtml}</div>
+    `;
+    listEl.appendChild(row);
+  });
+
+  const liveCount = ALL_ITEMS.filter(i => i.status === 'Live').length;
+  const planCount = ALL_ITEMS.filter(i => i.status === 'In Planning').length;
+  document.getElementById('statusCount').textContent =
+    `${ALL_ITEMS.length} total · ${liveCount} live · ${planCount} in planning · showing ${items.length}`;
+}
+
+async function init() {
+  try {
+    const res = await fetch('titles.json', { cache: 'no-store' });
+    ALL_ITEMS = await res.json();
+    render();
+  } catch (e) {
+    document.getElementById('statusCount').textContent = 'Could not load titles.json';
+    document.getElementById('emptyState').hidden = false;
+    document.getElementById('emptyState').textContent = 'If viewing locally, run a small server (e.g. npx serve).';
+  }
+}
+
+document.querySelectorAll('.side-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.side-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', render);
+
+document.getElementById('sortBtn').addEventListener('click', () => {
+  sortDesc = !sortDesc;
+  document.getElementById('sortLabel').textContent = sortDesc ? 'Newest' : 'Oldest';
+  render();
+});
+
+document.getElementById('refreshBtn').addEventListener('click', init);
+
+init();
+</script>
+</body>
+</html>

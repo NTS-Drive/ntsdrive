@@ -1,0 +1,111 @@
+# NTS_Drive — Static Portal for the Office-Worker Track
+
+Backend-free static site covering all four roadmap stages behind one shared
+"drive" UI shell: **NTS_Arcade → NTS_SaaS → NTS_Seminar → NTS_Shop**.
+
+## Structure
+
+```
+office-game-hub/
+├── index.html            NTS_Drive root hub (4 top-level folders)
+├── categories.json          Root-level folder metadata (edit to add stages)
+├── styles.css              Shared file-explorer shell (root + all subpages)
+├── arcade/
+│   ├── index.html          NTS_Arcade (Stage 1, live)
+│   ├── titles.json           Arcade entries (edit to add titles)
+│   └── doc-stack-clicker/    First live entry: "Endless Approval Stack"
+│       ├── index.html
+│       ├── style.css
+│       └── script.js
+├── saas/index.html         NTS_SaaS placeholder (Stage 2, planned)
+├── seminar/index.html      NTS_Seminar placeholder (Stage 3, planned)
+└── shop/index.html         NTS_Shop placeholder (Stage 4, planned)
+```
+
+## Design decisions (2026-07-04, v3)
+
+- **Entry point reframed**: `index.html` is now the top-level "NTS_Drive" hub.
+  It lists the four roadmap stages as folders, not the arcade titles directly.
+  Users pick a stage folder, then land on that stage's own file-explorer view.
+- **Brand names**: NTS_Drive (platform) → NTS_Arcade / NTS_SaaS / NTS_Seminar /
+  NTS_Shop (stage folders). Breadcrumb updates per page, e.g.
+  `NTS_Drive › NTS_Arcade`.
+- **Wording**: the words "game" and "homage" are not used anywhere in the UI.
+  Arcade entries are called "titles"; the column that used to say "homage
+  target" is now "Style" (a neutral description of the visual reference,
+  e.g. "Groupware approval tray").
+- **Language**: all UI copy and content is in English for a global audience.
+  Korean is only used internally in this README and the knowledge base.
+- **Imagery**: no bitmap/SVG icon assets. Every icon-sized visual is an emoji
+  (🕹️ 🧰 🎓 🛍️ 🗒️ 📎 etc.), which sidesteps both asset production cost and
+  any icon-lookalike trademark risk.
+- **Data-driven**: adding a new stage folder means one entry in
+  `categories.json`; adding a new arcade title means one entry in
+  `arcade/titles.json`. No page code needs to change either way.
+
+## Adding a new arcade title
+
+1. Create `arcade/<id>/` with its own `index.html` / `style.css` / `script.js`.
+2. Add one entry to `arcade/titles.json`:
+
+```json
+{
+  "id": "channel-triage",
+  "title": "Inbox Zero Sprint",
+  "description": "One-line description",
+  "style": "Team messaging channel list",
+  "status": "Live",
+  "entryPath": "channel-triage/index.html",
+  "addedAt": "2026-07-05"
+}
+```
+
+## Adding a new top-level stage (rare)
+
+Add one entry to `categories.json` with `emoji`, `status` (`Live` or
+`Planned`), `path`, and `itemsSource` (or `null` if the folder has no
+sub-listing yet).
+
+## Local preview
+
+Opening `index.html` directly in a browser blocks `fetch()` on `file://` due
+to CORS. Serve it locally instead:
+
+```bash
+npx serve .
+# or
+python3 -m http.server 8000
+```
+
+## Deployment (any of these, all free)
+
+### Vercel
+1. Push this folder to a GitHub repo.
+2. vercel.com → New Project → select repo → Framework Preset: "Other" → Deploy.
+
+### Netlify
+1. Connect the GitHub repo, or drag-and-drop this folder into Netlify Drop.
+2. Leave the build command empty; publish directory = project root.
+
+### GitHub Pages
+1. Repo Settings → Pages → Source = `main` branch, root directory.
+2. Live at `https://<account>.github.io/<repo>/`.
+
+All three run at $0 with no card on file and no server to manage.
+
+## Ad placement
+
+`.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
+for Google AdSense. Apply once there are 3–5 live arcade titles — more
+content improves approval odds.
+
+## Trademark checklist
+
+- No real software company's logo, icon set, or exact color system is
+  reproduced anywhere (root hub or arcade entries use an original palette
+  and emoji only).
+- Arcade titles reference generic UI *concepts* ("approval tray", "channel
+  list", "spreadsheet grid") rather than naming or visually copying a
+  specific product.
+- Apply the same standard to every new title and every new stage folder
+  before shipping it.

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "arcade",
+    "name": "NTS_Arcade",
+    "description": "Quick single-session diversions for a busy workday.",
+    "emoji": "🕹️",
+    "status": "Live",
+    "path": "arcade/index.html",
+    "itemsSource": "arcade/titles.json"
+  },
+  {
+    "id": "saas",
+    "name": "NTS_SaaS",
+    "description": "Lightweight productivity tools for the audience built in Stage 1.",
+    "emoji": "🧰",
+    "status": "Planned",
+    "path": "saas/index.html",
+    "itemsSource": null
+  },
+  {
+    "id": "seminar",
+    "name": "NTS_Seminar",
+    "description": "Career-growth talks and workshops for working professionals.",
+    "emoji": "🎓",
+    "status": "Planned",
+    "path": "seminar/index.html",
+    "itemsSource": null
+  },
+  {
+    "id": "shop",
+    "name": "NTS_Shop",
+    "description": "Practical and fandom merchandise for office life.",
+    "emoji": "🛍️",
+    "status": "Planned",
+    "path": "shop/index.html",
+    "itemsSource": null
+  }
+]

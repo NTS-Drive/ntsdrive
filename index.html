@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTS_Drive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="explorer">
+
+  <div class="addressbar">
+    <div class="breadcrumb">
+      <span class="crumb current">🗂️ NTS_Drive</span>
+    </div>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="Search NTS_Drive">
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool-btn" id="refreshBtn" title="Refresh">
+      <svg viewBox="0 0 20 20" width="15" height="15"><path d="M15 5a6 6 0 1 0 1.6 5.4M16 3v4h-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Refresh
+    </button>
+    <div class="toolbar-spacer"></div>
+    <div class="toolbar-note">Track: Arcade → SaaS → Seminar → Shop</div>
+  </div>
+
+  <div class="explorer-body">
+
+    <aside class="sidebar">
+      <div class="side-section">
+        <div class="side-title">Quick access</div>
+        <button class="side-item active" data-filter="all">All folders</button>
+      </div>
+      <div class="side-section ad-side">
+        <div class="side-title">Ad space</div>
+        <div class="ad-slot-vert">160×300<br>Reserved for AdSense</div>
+      </div>
+    </aside>
+
+    <main class="listpane">
+      <div class="list-head cols-root">
+        <div class="col col-name">Name</div>
+        <div class="col col-type">Type</div>
+        <div class="col col-status">Status</div>
+        <div class="col col-action">Open</div>
+      </div>
+      <div id="fileList" class="file-list cols-root"></div>
+      <div id="emptyState" class="empty-state" hidden>No matches found.</div>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <span id="statusCount">Loading...</span>
+    <span class="statusbar-note">Everything here is an original design, unaffiliated with any real software brand.</span>
+  </div>
+</div>
+
+<script>
+let CATEGORIES = [];
+
+async function itemCount(source) {
+  if (!source) return null;
+  try {
+    const res = await fetch(source, { cache: 'no-store' });
+    const data = await res.json();
+    return data.length;
+  } catch (e) {
+    return null;
+  }
+}
+
+function render(list) {
+  const listEl = document.getElementById('fileList');
+  const emptyEl = document.getElementById('emptyState');
+  listEl.innerHTML = '';
+  emptyEl.hidden = list.length > 0;
+
+  list.forEach(cat => {
+    const row = document.createElement('div');
+    row.className = 'file-row cols-root';
+    const isLive = cat.status === 'Live';
+    const btnHtml = cat.status === 'Live'
+      ? `<a class="play-btn" href="${cat.path}">Open</a>`
+      : `<span class="play-btn disabled">Locked</span>`;
+
+    row.innerHTML = `
+      <div class="col col-name">
+        <span class="file-icon">${cat.emoji}</span>
+        <div>
+          <div class="file-title">${cat.name}</div>
+          <div class="file-desc">${cat.description}</div>
+        </div>
+      </div>
+      <div class="col col-type">Folder</div>
+      <div class="col col-status"><span class="dot ${isLive ? 'live' : 'planning'}"></span>${cat.status}</div>
+      <div class="col col-action">${btnHtml}</div>
+    `;
+    listEl.appendChild(row);
+  });
+}
+
+async function init() {
+  try {
+    const res = await fetch('categories.json', { cache: 'no-store' });
+    CATEGORIES = await res.json();
+
+    const counts = await Promise.all(CATEGORIES.map(c => itemCount(c.itemsSource)));
+    CATEGORIES.forEach((c, i) => { c.count = counts[i]; });
+
+    render(CATEGORIES);
+    document.getElementById('statusCount').textContent = `${CATEGORIES.length} folders`;
+  } catch (e) {
+    document.getElementById('statusCount').textContent = 'Could not load categories.json';
+    document.getElementById('emptyState').hidden = false;
+    document.getElementById('emptyState').textContent = 'If viewing locally, run a small server (e.g. npx serve).';
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = CATEGORIES.filter(c =>
+    c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
+  );
+  render(filtered);
+});
+
+document.getElementById('refreshBtn').addEventListener('click', init);
+
+init();
+</script>
+</body>
+</html>
