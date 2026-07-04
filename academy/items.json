@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "word-sprint",
+    "title": "Word Sprint",
+    "description": "Race the clock to match business English words with their meanings.",
+    "type": "Quiz",
+    "status": "Live",
+    "emoji": "📇",
+    "entryPath": "word-sprint/index.html"
+  }
+]
+

@@ -156,6 +156,31 @@ were replaced before merging:
 - In-game `Guide` button explains objective, controls, towers, difficulty,
   the Level 6+ attack mechanic, and the scoring formula, entirely in English.
 
+## Academy content 1: Word Sprint (2026-07-04)
+
+A 10-question, 4-choice English vocabulary quiz. Located at
+`academy/word-sprint/`. First word pack: **Business English Essentials**
+(40 words) in `academy/word-sprint/words.json`.
+
+**Design decisions:**
+- Distractor answers are drawn at random from *other* words' correct
+  definitions in the same pool — adding a new word only requires one
+  `{ "term": ..., "definition": ... }` entry, no hand-written wrong answers.
+- 10-second per-question timer keeps rounds short enough for a work break;
+  timing out counts as a miss and auto-advances.
+- Streak bonus: 3+ correct in a row adds +5 per question on top of the base
+  +10, to reward focus without punishing a single miss too harshly.
+- Only a personal best score is stored locally (`ws_best_score`) — no Top 10
+  leaderboard. Academy is a skill-building tool, not a competitive arcade
+  title, so the scoring model is intentionally simpler than Arcade titles.
+- Visual style is a clean flashcard/quiz UI in the site's own design tokens,
+  not an homage to any specific office software — Academy content doesn't
+  need the same "mimic a real app" premise as Arcade titles.
+
+**Adding a second word pack:** create `academy/word-pack-2/` with its own
+`index.html` + `words.json` (same schema), then add one entry to
+`academy/items.json`.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

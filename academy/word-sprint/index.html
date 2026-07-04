@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Sprint | Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="../../analytics.js"></script>
+</head>
+<body>
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Back to Academy</a>
+  <div class="app-title">Word Sprint</div>
+  <div class="best-score">Best: <b id="bestScoreLabel">0</b></div>
+</div>
+
+<div class="stage">
+
+  <!-- Intro -->
+  <div class="intro-card" id="introScreen">
+    <h1>Word Sprint</h1>
+    <p>10 words, 4 choices each, 10 seconds per question.<br>
+    Beat your best score before your break ends.</p>
+    <button class="start-btn" onclick="startRound()">Start Round</button>
+    <div class="intro-meta" id="poolInfo">Loading word pack...</div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-wrap" id="quizScreen">
+    <div class="progress-row">
+      <span id="questionCount">Question 1 / 10</span>
+      <span id="scoreLive">Score: 0</span>
+    </div>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+
+    <div class="quiz-card">
+      <div class="quiz-term" id="termLabel">—</div>
+      <div class="quiz-sub">What does this word mean?</div>
+      <div class="options" id="optionsList"></div>
+      <div class="streak-badge" id="streakBadge" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-wrap" id="summaryScreen">
+    <div class="summary-card">
+      <div class="new-best" id="newBestLine" style="display:none;">New best score!</div>
+      <h2 id="summaryTitle">Round Complete</h2>
+      <div class="summary-grid">
+        <div class="summary-stat"><div class="val" id="statScore">0</div><div class="lbl">SCORE</div></div>
+        <div class="summary-stat"><div class="val" id="statAccuracy">0%</div><div class="lbl">ACCURACY</div></div>
+        <div class="summary-stat"><div class="val" id="statStreak">0</div><div class="lbl">BEST STREAK</div></div>
+      </div>
+      <div class="summary-actions">
+        <button class="action-btn" onclick="window.location.href='../index.html'">Back to Academy</button>
+        <button class="action-btn primary" onclick="startRound()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
