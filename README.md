@@ -483,6 +483,137 @@ Other changes:
   instead of prose, plus the Guide button's placement (top-right) matches
   the request as-is.
 
+## Title 4: Card Memory (2026-07-05)
+
+An emoji-to-word memory match game at `arcade/card-memory/` — Arcade's 4th
+title.
+
+- 5×4 grid, 20 cards (10 emoji + 10 matching English words) — flipping an
+  emoji and its word is a match, not emoji-to-emoji.
+- 5 stages, each with its own 10-pair theme: Animals (Easy) → Animals
+  (Normal) → Flags (Normal) → Flags (Difficult) → Random (Crazy Mode, which
+  draws a fresh random 10 out of a 20-item pool every run for replay value).
+- 3 roles (Intern/Manager/Director) only change starting lives (5/3/2) — a
+  wrong match costs one life.
+- Same streak-multiplier formula as Number Streak (1 + 0.1 × (streak − 1),
+  capped at 2.0×), plus a **+20 perfect-stage bonus** for clearing a stage
+  with zero wrong matches.
+- Each stage briefly shows all cards face-up (2s) before flipping them down,
+  standard memory-game convenience.
+- Same conventions as the rest of Arcade: autosave + resume (mid-stage),
+  local Top 10 leaderboard, automatic screenshot on a new all-time #1,
+  in-game Guide.
+- **Trademark note**: the chrome is a generic "image editor" homage (title
+  bar, decorative toolbar icons, a static "Layers" panel, color swatches) —
+  not Photoshop, Illustrator, or Paint by name, icon, or color. Accent color
+  is an unused-so-far violet (`#6b4fa0`), distinct from every other title's
+  palette.
+
+## Card Memory v2 (2026-07-05): larger random pools, preview limited to Stages 1–2, timed turns, hints
+
+- **Random pools for every stage**: Stages 1–4 now draw their 10 pairs from
+  a themed pool of 40 items each (Stage 5 stays at 20) instead of a fixed
+  10-item list, so the exact set of animals/flags differs most runs —
+  matches the same "pick 10 from a bigger pool" pattern Stage 5 already
+  used. Pool counts and zero-duplicate-within-pool were verified with a
+  Node script before shipping.
+- **Preview restricted to Stages 1–2**: Stages 3–5 skip the "see all cards
+  first" phase entirely and show a clear notice ("No preview from Stage 3
+  onward") the moment such a stage loads.
+- **Time-limited turns**: once a first card is flipped, a countdown starts
+  for that stage's limit (10s / 8s / 7s / 6s / 5s for Stages 1–5). Timing
+  out auto-flips the card back and counts as a miss, same as a wrong match.
+- **Two one-time hints per run** (not per stage): "Reveal All" (briefly
+  flips every unmatched card face-up) and "Flash Pair" (pulses a border
+  around one still-hidden pair without flipping it). Both are usable only
+  between turns, and each becomes permanently disabled after one use for
+  the whole run.
+
+## Card Memory v3 (2026-07-05): scaled preview per stage, longer reveal hint, responsive layout
+
+- **Preview now applies to every stage, not just 1–2**, with duration
+  shrinking each level: 5s / 4s / 3s / 2s / 0s for Stages 1–5. This
+  supersedes the earlier "no preview from Stage 3" rule — Stage 5's 0s
+  duration produces the same practical effect (no real preview) without a
+  special-case notice.
+- **Reveal-All hint duration increased** from 1.5s to 4s, giving a genuinely
+  useful second look rather than a blink-and-you-miss-it flash.
+- **Responsive layout pass**: the Layers panel, decorative toolbar icons,
+  and color swatches hide below 640px; the card grid, fonts, buttons, and
+  status bar all scale down at 640px and 400px breakpoints; word-type card
+  text uses `clamp()` so long words (e.g. "Netherlands") shrink to fit
+  automatically at any width instead of overflowing.
+
+## Card Memory v4 (2026-07-05): bigger text, bonus-life cards, matched-card font bug fix
+
+- **Bug fix**: matched cards were rendering emoji at the base 13px font
+  size instead of the intended larger size, because `.card.matched` never
+  had its own font-size rule (`.card.face-up`'s 28px only applied while a
+  card was still in the transient "face-up" state, not once it flipped to
+  "matched"). Since matched cards stay visible for the rest of the stage,
+  this made most of the board look tiny. Fixed by giving emoji cards a
+  much larger size (46px) that applies to both `face-up` and `matched`
+  states; word cards now use a bigger `clamp(11px, 3.4vw, 18px)` too.
+- **Bonus cards**: each stage secretly flags 1–3 of its 20 cards as bonus.
+  Completing a match that includes one restores +1 life (capped at the
+  role's starting max) with a pulse animation on the Lives stat and a
+  green celebration banner; matching one while already at full lives still
+  shows the banner (no double-dip), so the surprise is consistent either
+  way. A small star badge appears on a bonus card once it's been revealed.
+
+## Title 5: Paycheck Python (2026-07-05) — Arcade lineup finalized
+
+Arcade's fifth and final title for the "5-title" milestone, at
+`arcade/paycheck-python/`. A classic grid-based Snake variant with a
+work-avoidance narrative: you're an office worker (the snake) eating money
+to grow strong while dodging your job.
+
+**Mechanics:**
+- Grid-based movement (18×14 cells), arrow keys/WASD or an on-screen D-pad.
+  Colliding with a wall, your own tail, or an obstacle costs one life;
+  losing a life respawns a short snake at a safe empty spot in the same
+  level (progress toward that level's coin target is kept).
+- **3 roles** (Intern/Manager/Director) — lives only (5/3/2), same
+  convention as every other Arcade title.
+- **3 levels**, each with its own obstacle set and target:
+  - **Level 1**: no obstacles, eat 5 coins to advance. 1 bonus coin (💎)
+    grants +1 life (capped at the role's max).
+  - **Level 2**: 4 static office-equipment obstacles appear. Eat 10 coins
+    to advance. 2 bonus coins: one +1 life, one worth 1.5× points.
+  - **Level 3**: Level 2's 4 obstacles plus 4 larger "company building"
+    obstacles (rendered ~1.5× bigger — visual only; the collision hitbox is
+    still a single grid cell, a deliberate simplification to avoid
+    multi-cell hitbox geometry). No bonus coins. Instead, an unbroken
+    streak of eaten coins adds a compounding score bonus: the Nth coin in a
+    streak is worth an extra N% (so a 10-coin streak's next coin pays
+    +10%). Hitting a wall or your own tail resets the streak to zero —
+    **hitting an obstacle does not reset it**, per explicit design intent.
+    Eating **100 coins** in Level 3 triggers a "Payroll Master" ending.
+- **Bug avoided before shipping**: bonus coins are spawned exactly once per
+  level entry, not on every respawn — an earlier draft would have let
+  players farm infinite lives by repeatedly dying and respawning within
+  Level 1 to keep re-triggering a fresh bonus-life coin. Fixed by
+  separating "reset the snake" from "regenerate items" into two independent
+  flags on `setupLevel()`.
+- Scores use 1 decimal place (matches Number Streak/Card Memory) so the
+  Level 3 combo bonus is visible from the very first streak coin instead of
+  rounding away to nothing.
+- Same conventions as the rest of Arcade: autosave + resume, local Top 10
+  leaderboard, automatic screenshot on a new all-time #1, in-game Guide.
+- **Trademark note**: the chrome is an Outlook-style mail client homage
+  (title bar, ribbon tabs, a decorative app-switcher rail, a decorative
+  folder pane) in an original navy (`#2c3e6b`) — not Outlook's real branding
+  or icon set. "Snake" as a game genre is decades-old and not owned by any
+  single company; the title itself is "Paycheck Python," not "Snake."
+
+## Arcade lineup finalized (2026-07-05)
+
+Per the master plan, Arcade's roster is now locked at 5 live titles + 1
+planned: **Deck Dash, Formula Firewall, Number Streak, Card Memory, Paycheck
+Python** (all Live) and **Cat Care** (In Planning). Spot the Difference and
+Word Search were dropped from `arcade/titles.json` (neither had been built
+— no code was lost).
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

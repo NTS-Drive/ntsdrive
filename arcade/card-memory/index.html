@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Memory | Arcade</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="../../analytics.js"></script>
+</head>
+<body id="capture-area">
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Back to Arcade</a>
+  <div class="app-title">Card Memory</div>
+  <button class="action-btn" onclick="openGuide()">Guide</button>
+</div>
+
+<div class="title-bar">
+  <span>Untitled_Design.psd — Image Editor</span>
+  <div style="letter-spacing: 5px;">— &#10063; &times;</div>
+</div>
+
+<div class="ribbon-tabs">
+  <div class="ribbon-tab">File</div>
+  <div class="ribbon-tab active">Card Memory</div>
+  <div class="ribbon-tab">View</div>
+</div>
+
+<div class="ribbon">
+  <div class="tool-icons" title="Decorative — just for flavor">
+    <div class="tool-icon">✎</div>
+    <div class="tool-icon">⬚</div>
+    <div class="tool-icon">◔</div>
+    <div class="tool-icon">⌫</div>
+  </div>
+  <div class="control-buttons">
+    <button class="action-btn" onclick="saveGame(true)">Save</button>
+    <button class="action-btn danger" onclick="resetGame()">Reset</button>
+    <button class="action-btn" onclick="openLeaderboard()">Records</button>
+    <button class="action-btn" onclick="captureGame()">Capture</button>
+  </div>
+  <div class="control-buttons">
+    <button class="action-btn hint-btn" id="hintRevealBtn" onclick="useHintReveal()">💡 Hint: Reveal All</button>
+    <button class="action-btn hint-btn" id="hintFlashBtn" onclick="useHintFlash()">💡 Hint: Flash Pair</button>
+  </div>
+  <div class="swatches">
+    <div class="swatch" style="background:#6b4fa0;"></div>
+    <div class="swatch" style="background:#c9793b;"></div>
+    <div class="swatch" style="background:#3b8062;"></div>
+    <div class="swatch" style="background:#c0533f;"></div>
+  </div>
+</div>
+
+<div class="status-panel">
+  <div class="stat-item">Stage: <span class="stat-val" id="stage">1 / 5</span></div>
+  <div class="stat-item">Lives: <span class="stat-val" id="lives">3</span></div>
+  <div class="stat-item">Score: <span class="stat-val" id="score">0.0</span></div>
+  <div class="stat-item">Streak: <span class="stat-val" id="streak">0</span></div>
+  <div class="stat-item">Best Streak: <span class="stat-val" id="best-streak">0</span></div>
+  <div class="stat-item">Time Limit: <span class="stat-val" id="time-limit">10s</span></div>
+</div>
+
+<div class="layout">
+  <aside class="layers-panel">
+    <div class="lp-title">Layers</div>
+    <div class="layer-row"><span class="layer-swatch" style="background:#6b4fa0;"></span> UI</div>
+    <div class="layer-row active"><span class="layer-swatch" style="background:#c9793b;"></span> Card Grid</div>
+    <div class="layer-row"><span class="layer-swatch" style="background:#3b8062;"></span> Background</div>
+  </aside>
+
+  <main class="stage-main">
+    <div class="stage-banner" id="stageBanner">Stage 1 — Animals (Easy)</div>
+    <div class="preview-note" id="previewNote" style="display:none;">Memorize the board...</div>
+    <div class="turn-timer-wrap" id="turnTimerWrap" style="display:none;">
+      <div class="turn-timer-fill" id="turnTimerFill"></div>
+    </div>
+    <div class="card-grid" id="cardGrid"></div>
+  </main>
+</div>
+
+<!-- Difficulty select -->
+<div class="overlay" id="difficulty-overlay">
+  <div class="modal">
+    <h2>Select Your Role</h2>
+    <p style="margin-top:-6px; color:var(--ink-muted);">Your role only changes how many lives you start with.</p>
+    <button class="diff-btn" onclick="startGame('intern')">
+      Intern (Easy)
+      <small>5 lives</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('manager')">
+      Manager (Normal)
+      <small>3 lives</small>
+    </button>
+    <button class="diff-btn" onclick="startGame('director')">
+      Director (Difficult)
+      <small>2 lives</small>
+    </button>
+  </div>
+</div>
+
+<!-- Name entry -->
+<div class="overlay" id="name-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="name-title">New Top 10 Record!</h2>
+    <p id="name-sub">Enter a name to save your record.</p>
+    <input type="text" id="name-input" class="name-input" maxlength="14" placeholder="Your name">
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="submitRecordName()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="overlay" id="leaderboard-overlay" style="display:none;">
+  <div class="modal wide">
+    <h2>Top 10 Records</h2>
+    <table class="leaderboard-table" id="leaderboard-table">
+      <thead><tr><th>#</th><th>Name</th><th>Stage</th><th>Role</th><th>Best Streak</th><th>Score</th><th>Date</th></tr></thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="closeOverlay('leaderboard-overlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- End of run -->
+<div class="overlay" id="end-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="end-title">Run Complete</h2>
+    <p id="end-summary"></p>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="openLeaderboard()">View Records</button>
+      <button class="action-btn primary" onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guide -->
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal wide guide-body">
+    <h2>How to Play</h2>
+    <h3>Objective</h3>
+    <p>20 cards, 10 pairs. Half the cards show an emoji, the other half show its English word — flip two cards to match an emoji with its word.</p>
+    <h3>Roles</h3>
+    <p>Intern / Manager / Director only change your starting lives (5 / 3 / 2). A wrong match costs one life; run out and the run ends.</p>
+    <h3>Stages</h3>
+    <table class="leaderboard-table" style="margin-bottom:10px;">
+      <thead><tr><th>Stage</th><th>Theme</th><th>Preview</th><th>Time limit</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Animals (Easy)</td><td>5s</td><td>10s</td></tr>
+        <tr><td>2</td><td>Animals (Normal)</td><td>4s</td><td>8s</td></tr>
+        <tr><td>3</td><td>Flags (Normal)</td><td>3s</td><td>7s</td></tr>
+        <tr><td>4</td><td>Flags (Difficult)</td><td>2s</td><td>6s</td></tr>
+        <tr><td>5</td><td>Random (Crazy Mode)</td><td>0s (none)</td><td>5s</td></tr>
+      </tbody>
+    </table>
+    <p>Each stage draws its 10 pairs at random from a themed pool of ~40 items (20 for Crazy Mode), so you'll see a different set nearly every run — memorizing exact positions from a past run won't help much.</p>
+    <h3>Preview</h3>
+    <p>Every stage briefly shows all cards face-up before flipping them down — but the window gets shorter each stage (see table above), down to no preview at all by Stage 5.</p>
+    <h3>Time limit</h3>
+    <p>Once you flip a first card, a timer starts for that stage's limit (10s down to 5s by Stage 5). If you don't flip a second card before it runs out, the first card flips back automatically and it counts as a miss — same as a wrong match.</p>
+    <h3>Bonus cards</h3>
+    <p>Each stage secretly marks 1–3 cards as bonus cards. Matching a pair that includes one restores <b>+1 life</b> (up to your role's starting max) with a celebration banner — matching one while already at full lives just gives you the heads-up, no extra life to gain.</p>
+    <h3>Hints</h3>
+    <p>You get exactly <b>one use each</b> of two hints per run (not per stage):</p>
+    <ul>
+      <li><b>Reveal All</b> — shows every unmatched card face-up again for 4 seconds.</li>
+      <li><b>Flash Pair</b> — highlights one still-hidden pair's border without flipping it.</li>
+    </ul>
+    <p>Both are only usable between turns (not while a first card is already flipped and the timer is running).</p>
+    <h3>Scoring</h3>
+    <p>Each correct match is worth 10 points. Two or more correct matches in a row multiply that match's points: 1 + 0.1 &times; (streak &minus; 1), capped at <b>2.0&times;</b> — a wrong match resets the streak. Clearing a stage with zero wrong matches earns a <b>+20 perfect-clear bonus</b>.</p>
+    <h3>Save, Resume &amp; Reset</h3>
+    <ul>
+      <li>Progress auto-saves after every match attempt.</li>
+      <li>Reopening this page resumes your run automatically, mid-stage.</li>
+      <li><code>Reset</code> wipes your current run and lets you pick a new role. Top 10 records are kept.</li>
+    </ul>
+    <h3>Records</h3>
+    <p>The Top 10 is ranked by score. Reaching the all-time <b>#1</b> automatically downloads a screenshot of your run.</p>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeOverlay('guide-overlay')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="bonus-banner" id="bonusBanner"></div>
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script src="../../feedback-widget.js" defer></script>
+</body>
+</html>

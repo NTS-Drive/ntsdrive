@@ -18,24 +18,6 @@
     "addedAt": "2026-07-04"
   },
   {
-    "id": "cat-care",
-    "title": "Cat Care",
-    "description": "Feed, play with, and grow a desk pet between meetings.",
-    "style": "Desktop pet / virtual pet",
-    "status": "In Planning",
-    "entryPath": null,
-    "addedAt": "2026-07-05"
-  },
-  {
-    "id": "spot-the-difference",
-    "title": "Spot the Difference",
-    "description": "Find what changed between two nearly-identical office scenes.",
-    "style": "Photo comparison puzzle",
-    "status": "In Planning",
-    "entryPath": null,
-    "addedAt": "2026-07-05"
-  },
-  {
     "id": "number-streak",
     "title": "Number Streak",
     "description": "Guess higher, lower, or draw across 10 escalating levels. Chain correct guesses for a growing score multiplier.",
@@ -47,17 +29,26 @@
   {
     "id": "card-memory",
     "title": "Card Memory",
-    "description": "Classic memory-match: flip two cards at a time and clear the board.",
-    "style": "Memory match cards",
-    "status": "In Planning",
-    "entryPath": null,
+    "description": "Match each emoji to its English word across 5 escalating stages — animals, flags, then total chaos.",
+    "style": "Image-editor UI, emoji memory match",
+    "status": "Live",
+    "entryPath": "card-memory/index.html",
     "addedAt": "2026-07-05"
   },
   {
-    "id": "word-search",
-    "title": "Word Search",
-    "description": "Find hidden office-life words in a letter grid before time runs out.",
-    "style": "Word search grid",
+    "id": "paycheck-python",
+    "title": "Paycheck Python",
+    "description": "Eat money to grow strong and dodge your workload — walls, your own tail, and office obstacles all end the run.",
+    "style": "Outlook mail chrome, classic grid-snake",
+    "status": "Live",
+    "entryPath": "paycheck-python/index.html",
+    "addedAt": "2026-07-05"
+  },
+  {
+    "id": "cat-care",
+    "title": "Cat Care",
+    "description": "Feed, play with, and grow a desk pet between meetings.",
+    "style": "Desktop pet / virtual pet",
     "status": "In Planning",
     "entryPath": null,
     "addedAt": "2026-07-05"
