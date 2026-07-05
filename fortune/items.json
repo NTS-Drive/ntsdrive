@@ -1,0 +1,29 @@
+[
+  {
+    "id": "daily-fortune",
+    "title": "Daily Fortune",
+    "description": "A short, randomized daily fortune reading for a work-break moment.",
+    "type": "Fortune",
+    "status": "In Planning",
+    "emoji": "🌤️",
+    "entryPath": null
+  },
+  {
+    "id": "tarot-pick",
+    "title": "Tarot Pick",
+    "description": "Pull one card and get a quick, fun interpretation.",
+    "type": "Tarot",
+    "status": "In Planning",
+    "emoji": "🃏",
+    "entryPath": null
+  },
+  {
+    "id": "lucky-numbers",
+    "title": "Lucky Numbers",
+    "description": "A for-fun random number generator. Not affiliated with any official lottery, and makes no odds-related claims.",
+    "type": "Random Generator",
+    "status": "In Planning",
+    "emoji": "🍀",
+    "entryPath": null
+  }
+]

@@ -9,12 +9,30 @@
     "itemsSource": "arcade/titles.json"
   },
   {
+    "id": "fortune",
+    "name": "Fortune",
+    "description": "Daily fortune, tarot pulls, and a just-for-fun lucky number generator.",
+    "emoji": "🔮",
+    "status": "Live",
+    "path": "fortune/index.html",
+    "itemsSource": "fortune/items.json"
+  },
+  {
     "id": "academy",
     "name": "Academy",
     "description": "Bite-sized learning content for office workers.",
     "emoji": "🎓",
     "status": "Live",
     "path": "academy/index.html",
+    "itemsSource": "academy/items.json"
+  },
+  {
+    "id": "community",
+    "name": "Community",
+    "description": "A board to post and read — for working professionals.",
+    "emoji": "💬",
+    "status": "Planned",
+    "path": "community/index.html",
     "itemsSource": null
   },
   {

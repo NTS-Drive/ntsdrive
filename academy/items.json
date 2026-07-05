@@ -1,21 +1,12 @@
 [
   {
-    "id": "picture-match",
-    "title": "Picture Match",
-    "description": "See the emoji, pick the English word. 10 levels of animals, countries, and everyday objects.",
-    "type": "Quiz",
+    "id": "spreadsheet-master",
+    "title": "스프레드시트 마스터",
+    "description": "실무에서 바로 쓰는 스프레드시트 활용법을 쉽게 배웁니다.",
+    "type": "Guide",
     "status": "Live",
-    "emoji": "🧩",
-    "entryPath": "picture-match/index.html"
-  },
-  {
-    "id": "equation-hunt",
-    "title": "Equation Hunt",
-    "description": "Guess the hidden calculation one cell at a time, spreadsheet-style. 10 levels of increasing length.",
-    "type": "Quiz",
-    "status": "Live",
-    "emoji": "🔢",
-    "entryPath": "equation-hunt/index.html"
+    "emoji": "📊",
+    "entryPath": "spreadsheet-master/index.html"
   }
 ]
 

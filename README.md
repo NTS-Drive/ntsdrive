@@ -1,40 +1,34 @@
 # NTS_Drive — Static Portal for the Office-Worker Track
 
-Backend-free static site covering three roadmap stages behind one shared
-"drive" UI shell: **Arcade → Academy → Store**.
+Backend-free static site with five top-level sections behind one shared
+"drive" UI shell: **Arcade, Fortune, Academy** (open/live) and **Community,
+Store** (locked/planned). This is no longer a strict sequential rollout —
+Arcade, Fortune, and Academy are built out in parallel.
 
 ## Structure
 
 ```
 office-game-hub/
-├── index.html               NTS_Drive root hub (3 top-level folders)
-├── categories.json            Root-level folder metadata (edit to add stages)
+├── index.html               NTS_Drive root hub (5 top-level folders)
+├── categories.json            Root-level folder metadata
 ├── styles.css                Shared file-explorer shell (root + all subpages)
-├── analytics.js               Shared GA4 loader (one Measurement ID for the whole site)
-├── arcade/                   Stage 1, live
+├── analytics.js               Shared GA4 loader
+├── favicon.svg                 Site favicon (folder + office-worker mark)
+├── feedback-widget.js          Fixed bottom-right feedback email link (myer@kakao.com)
+├── arcade/                   Live — English content
 │   ├── index.html
-│   ├── titles.json             Arcade entries (edit to add titles)
-│   ├── deck-dash/               Endless-runner title
-│   │   ├── index.html
-│   │   ├── style.css
-│   │   └── script.js
-│   └── formula-firewall/        Tower-defense title
-│       ├── index.html
-│       ├── style.css
-│       └── script.js
-├── academy/                  Stage 2, live
+│   ├── titles.json
+│   ├── deck-dash/
+│   └── formula-firewall/
+├── fortune/                  Live (folder open, content not yet built)
 │   ├── index.html
-│   ├── items.json               Academy entries (edit to add content)
-│   ├── picture-match/           Emoji vocabulary quiz
-│   │   ├── index.html
-│   │   ├── style.css
-│   │   ├── script.js
-│   │   └── words.json
-│   └── equation-hunt/           Spreadsheet-style hidden-calculation puzzle
-│       ├── index.html
-│       ├── style.css
-│       └── script.js
-└── store/index.html         Stage 3, planned
+│   └── items.json              Daily Fortune / Tarot Pick / Lucky Numbers — all "In Planning"
+├── academy/                  Live — Korean content only
+│   ├── index.html
+│   ├── items.json
+│   └── spreadsheet-master/      Blog-style guide series (Korean, stub for now)
+├── community/index.html      Planned — needs a backend, see note below
+└── store/index.html          Planned
 ```
 
 ## Design decisions (2026-07-04, v3)
@@ -191,30 +185,6 @@ endless-runner title at `arcade/deck-dash/`.
   the UI. The runner character is an entirely original abstract shape (no
   real favicon, mascot, or icon set was copied).
 
-## Academy content update (2026-07-05): Picture Match replaces Word Sprint
-
-Word Sprint (business-vocabulary multiple choice) tested as too generic and
-too hard. Replaced with **Picture Match** at `academy/picture-match/`:
-
-- An emoji is shown; the player picks the matching English word.
-- 80 words across 10 levels (`academy/picture-match/words.json`), grouped
-  into themes: everyday basics/objects, three rounds of countries, wild and
-  rare animals, and curious/quirky objects — all easy to represent visually
-  with an emoji, unlike the old abstract business terms.
-- Difficulty scales with level: more answer options (3 → 4 → 5) and a
-  shorter timer (12s down to 6s) as levels increase.
-- 3 lives for the whole run (not per level); reaching Level 10's last word
-  is a win. Streak bonus (+5 per question once 3+ in a row).
-- Only a personal best (highest level reached) is stored locally — no Top 10
-  leaderboard, deliberately kept lighter than Arcade titles since this is a
-  skill-building tool, not a competitive one.
-- Country flag emoji were used for the "Countries" themes — flags are
-  national symbols, not corporate trademarks, so this carries no brand risk.
-
-**Adding a third theme:** append entries with a new `level` (11+) to
-`words.json`, or add more words to an existing level — no code changes
-needed either way.
-
 ## Academy content update (2026-07-05): removed the "English quizzes" framing
 
 `categories.json`'s Academy description no longer says "starting with English
@@ -222,38 +192,84 @@ quizzes" — Academy now also hosts non-English content (starting with a math
 puzzle), so the copy was generalized to "Bite-sized learning content for
 office workers."
 
-## Academy content 2: Equation Hunt (2026-07-05)
+## Site expansion (2026-07-05): Fortune + Community added, Arcade lineup expanded
 
-A Wordle-style hidden-calculation puzzle at `academy/equation-hunt/`, skinned
-as a spreadsheet cell grid + on-screen keypad.
+Following a new master plan, the top-level structure grew from 3 to 5
+sections. **This is a parallel-build model now, not a sequential one** — all
+"Stage X of Y" copy was removed from the UI since Arcade/Fortune/Academy are
+open simultaneously rather than unlocking in order.
 
-**Genre note (trademark-relevant):** this reuses the generic "guess a hidden
-string, get green/amber/gray position feedback" mechanic popularized by
-Wordle and cloned by dozens of apps (including math-focused ones). That
-mechanic itself isn't owned by any single company. What we did **not** copy:
-any specific app's name, exact color palette, daily-puzzle countdown copy,
-or in-app ads. The visual skin here is our own spreadsheet/cell-grid design
-using the site's existing accent color and fonts.
+- **Fortune** (new): daily fortune, tarot pull, and a for-fun random number
+  generator. Folder is Live; all three items are "In Planning" (not built
+  yet).
+- **Community** (new): a post-and-read board. **This cannot be built as a
+  static site** — it needs a backend/database. Candidates: Firebase/Supabase
+  free tier, Cloudflare Workers + KV, or an embedded widget (giscus). This
+  decision must be made before Community moves past "Planned."
+- **Arcade lineup expanded**: added Cat Care, Spot the Difference, Card
+  Memory, and Word Search as "In Planning." A fifth idea (originally a
+  baccarat-style card game) was redesigned before shipping — see
+  Resolutions below.
+- **Site-wide additions**: `favicon.svg` (folder + office-worker mark, our
+  own original design) and `feedback-widget.js` (a fixed bottom-right
+  `mailto:myer@kakao.com` link) were added to every page.
 
-**How it works:**
-- Every level hides a calculation (digits 0–9 and `+ − × ÷`, no parentheses,
-  no multi-digit numbers) that evaluates to a shown target number, using
-  standard order of operations.
-- A small custom expression evaluator (`evalExpression` in `script.js`)
-  handles precedence — no `eval()` is used anywhere.
-- The puzzle generator retries up to 300 times to find a random equation
-  whose result is a non-negative integer ≤ 200 (with a guaranteed-valid
-  fallback), so puzzles are generated fresh each run rather than pulled from
-  a fixed list.
-- Feedback uses the standard duplicate-character-safe algorithm (exact
-  matches locked in first, then leftover positions checked for present-but-
-  misplaced characters).
-- **Levels**: 1–3 use 5-character equations with 8 guesses; 4–7 use 7
-  characters with 6 guesses; 8–10 use 9 characters with 5 guesses. Solving a
-  level's puzzle advances you; running out of guesses ends the run at that
-  level.
-- Only a personal best (highest level reached) is stored locally
-  (`eh_best_level`) — same lighter-than-Arcade approach as Picture Match.
+## ⚠ Open items needing a decision before further work
+
+1. **Academy direction conflict**: an earlier plan said Academy should be
+   blog-only (no quizzes/games), but `picture-match` and `equation-hunt`
+   were already built as quiz games under Academy. Not yet resolved:
+   move them to Arcade, delete them, or keep a mixed blog+game Academy.
+2. **Academy language policy**: Academy content is now Korean-only (a
+   deliberate exception to the site's English-first rule used everywhere
+   else). **This needs to be added to the Claude Project's custom
+   instructions** (not just this README) so it's respected automatically in
+   future sessions. Suggested addition: *"Academy 섹션의 콘텐츠는 한국어로
+   작성한다 (사이트의 다른 섹션은 영어 유지)."*
+3. **Card probability game legal risk**: a baccarat-style card game risks
+   classification as regulated gambling-simulation content under Korea's
+   Game Industry Promotion Act, and separately risks violating Google
+   AdSense's gambling-content policy (which could jeopardize monetization
+   for the whole site, not just this one title). Recommend renaming away
+   from "baccarat" and removing any real-casino-game resemblance, or
+   dropping the title from the lineup.
+4. **"Lucky Numbers" naming**: deliberately not called "로또" and not using
+   a 6/45 format, to avoid trading on the official Korean lottery operator's
+   (동행복권) branding/format.
+
+## Resolutions (2026-07-05, later same day)
+
+Answers to the open items above:
+
+1. **Academy direction resolved**: Picture Match and Equation Hunt were
+   deleted entirely (not moved to Arcade). Academy is now blog-only, Korean
+   content, starting with `academy/spreadsheet-master/` (still a content
+   stub — no articles written yet).
+2. **Card game redesigned, no longer on hold**: replaced the
+   baccarat-style concept with **Number Streak** — guess whether the next
+   number is higher or lower than the last one, build a streak. No cards,
+   suits, or betting language, so the Game Industry Promotion Act /
+   AdSense-gambling-policy risk no longer applies. Status is back to
+   "In Planning" in `arcade/titles.json`.
+3. **"Open" categories confirmed to already work as parallel, not
+   sequential**: `categories.json` marking Arcade/Fortune/Academy as `Live`
+   is purely a display flag — there is no code-level gate tying one
+   section's completion to another unlocking. All three are simultaneously
+   reachable by any visitor right now. Since no marketing/link-sharing has
+   happened yet, it's safe to leave them `Live` while content is still being
+   filled in — nothing changes for real users until the URL is actually
+   shared.
+4. **Terminology unified to "Soon"**: the root hub's not-yet-live category
+   button used to say "Locked"; it now says "Soon", matching the wording
+   already used for individual not-ready items inside Arcade/Fortune/Academy
+   (those always said "Soon", never "Locked" — only the root hub needed the
+   fix).
+
+**Still needs action outside this codebase**: add the Academy
+Korean-language policy to the Claude Project's custom instructions (see
+suggested wording in the "Open items" section above) — README documents the
+decision, but only the Project's own instructions make Claude honor it
+automatically in future sessions.
 
 ## Ad placement
 

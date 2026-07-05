@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NTS_Drive</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Fortune</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<script src="analytics.js"></script>
+<link rel="stylesheet" href="../styles.css">
+<script src="../analytics.js"></script>
+<script src="../feedback-widget.js" defer></script>
 </head>
 <body>
 
@@ -17,10 +18,12 @@
 
   <div class="addressbar">
     <div class="breadcrumb">
-      <span class="crumb current">🗂️ NTS_Drive</span>
+      <a class="crumb" href="../index.html">🗂️ NTS_Drive</a>
+      <span class="sep">›</span>
+      <span class="crumb current">🔮 Fortune</span>
     </div>
     <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Search NTS_Drive">
+      <input id="searchInput" type="text" placeholder="Search Fortune">
     </div>
   </div>
 
@@ -33,11 +36,10 @@
   </div>
 
   <div class="explorer-body">
-
     <aside class="sidebar">
       <div class="side-section">
         <div class="side-title">Quick access</div>
-        <button class="side-item active" data-filter="all">All folders</button>
+        <button class="side-item active" data-filter="all">All items</button>
       </div>
       <div class="side-section ad-side">
         <div class="side-title">Ad space</div>
@@ -53,28 +55,18 @@
         <div class="col col-action">Open</div>
       </div>
       <div id="fileList" class="file-list cols-root"></div>
-      <div id="emptyState" class="empty-state" hidden>No matches found.</div>
+      <div id="emptyState" class="empty-state" hidden>No content yet.</div>
     </main>
   </div>
 
   <div class="statusbar">
-    <span id="statusCount">Loading...</span>
+    <span id="statusCount">0 items</span>
+    <span class="statusbar-note">For entertainment purposes only — not professional advice, and not affiliated with any official lottery operator.</span>
   </div>
 </div>
 
 <script>
-let CATEGORIES = [];
-
-async function itemCount(source) {
-  if (!source) return null;
-  try {
-    const res = await fetch(source, { cache: 'no-store' });
-    const data = await res.json();
-    return data.length;
-  } catch (e) {
-    return null;
-  }
-}
+let ITEMS = [];
 
 function render(list) {
   const listEl = document.getElementById('fileList');
@@ -82,72 +74,48 @@ function render(list) {
   listEl.innerHTML = '';
   emptyEl.hidden = list.length > 0;
 
-  list.forEach(cat => {
+  list.forEach(item => {
     const row = document.createElement('div');
     row.className = 'file-row cols-root';
-    const isLive = cat.status === 'Live';
-    const btnHtml = cat.status === 'Live'
-      ? `<a class="play-btn" href="${cat.path}">Open</a>`
+    const btnHtml = item.entryPath
+      ? `<a class="play-btn" href="${item.entryPath}">Open</a>`
       : `<span class="play-btn disabled">Soon</span>`;
-
     row.innerHTML = `
       <div class="col col-name">
-        <span class="file-icon">${cat.emoji}</span>
+        <span class="file-icon">${item.emoji || '🔮'}</span>
         <div>
-          <div class="file-title">${cat.name}</div>
-          <div class="file-desc">${cat.description}</div>
+          <div class="file-title">${item.title}</div>
+          <div class="file-desc">${item.description || ''}</div>
         </div>
       </div>
-      <div class="col col-type">Folder</div>
-      <div class="col col-status"><span class="dot ${isLive ? 'live' : 'planning'}"></span>${cat.status}</div>
+      <div class="col col-type">${item.type || ''}</div>
+      <div class="col col-status"><span class="dot ${item.status === 'Live' ? 'live' : 'planning'}"></span>${item.status}</div>
       <div class="col col-action">${btnHtml}</div>
     `;
     listEl.appendChild(row);
-
-    const link = row.querySelector('a.play-btn');
-    if (link) {
-      link.addEventListener('click', () => {
-        if (window.ntsTrack) {
-          window.ntsTrack('select_content', {
-            content_type: 'category',
-            item_id: cat.id,
-            item_name: cat.name
-          });
-        }
-      });
-    }
   });
 }
 
 async function init() {
   try {
-    const res = await fetch('categories.json', { cache: 'no-store' });
-    CATEGORIES = await res.json();
-
-    const counts = await Promise.all(CATEGORIES.map(c => itemCount(c.itemsSource)));
-    CATEGORIES.forEach((c, i) => { c.count = counts[i]; });
-
-    render(CATEGORIES);
-    document.getElementById('statusCount').textContent = `${CATEGORIES.length} folders`;
+    const res = await fetch('items.json', { cache: 'no-store' });
+    ITEMS = await res.json();
+    render(ITEMS);
+    document.getElementById('statusCount').textContent = `${ITEMS.length} items`;
   } catch (e) {
-    document.getElementById('statusCount').textContent = 'Could not load categories.json';
-    document.getElementById('emptyState').hidden = false;
-    document.getElementById('emptyState').textContent = 'If viewing locally, run a small server (e.g. npx serve).';
+    document.getElementById('statusCount').textContent = 'Could not load items.json';
   }
 }
 
 document.getElementById('searchInput').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
-  const filtered = CATEGORIES.filter(c =>
-    c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
-  );
-  render(filtered);
+  render(ITEMS.filter(i => i.title.toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q)));
 });
 
 document.getElementById('refreshBtn').addEventListener('click', init);
 
 init();
 </script>
-<script src="feedback-widget.js" defer></script>
+
 </body>
 </html>
