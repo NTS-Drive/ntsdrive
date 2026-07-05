@@ -9,15 +9,33 @@ const GRAVITY = 0.9;
 const JUMP_VELOCITY = -15;
 const GROUND_MARGIN = 70;
 const PLAYER_X = 90;
-const PLAYER_W = 32;
-const PLAYER_H_STAND = 36;
-const PLAYER_H_DUCK = 20;
+const PLAYER_W = 30;
+const PLAYER_H_STAND = 38;
+const PLAYER_H_DUCK = 22;
 const INVULN_MS = 1200;
 
 const DIFFICULTIES = {
   intern:   { label: 'Intern (Easy)',        lives: 5, speedMult: 0.8, scoreBonus: 0 },
   manager:  { label: 'Manager (Normal)',     lives: 3, speedMult: 1.0, scoreBonus: 50 },
   director: { label: 'Director (Difficult)', lives: 2, speedMult: 1.3, scoreBonus: 150 }
+};
+
+/* Three acts: Word (1-3) -> Excel (4-7) -> PPT (8-10) */
+const ACT_THEME = {
+  word:  { label: 'Word',  bg: '#f5f6f8', obstacle: '#345f9e' },
+  excel: { label: 'Excel', bg: '#f2f8f5', obstacle: '#3b8062' },
+  ppt:   { label: 'PPT',   bg: '#fbf4ee', obstacle: '#c9793b' }
+};
+function getAct(level) {
+  if (level <= 3) return 'word';
+  if (level <= 7) return 'excel';
+  return 'ppt';
+}
+
+const WORD_BANK = {
+  1: ['OK', 'CC', 'FYI', 'ASAP', 'TBD'],
+  2: ['URGENT', 'REVISE', 'APPROVE', 'CIRCLE BACK'],
+  3: ['DEADLINE', 'ATTACHMENT', 'RESCHEDULE', 'STAKEHOLDER']
 };
 
 /* ===== State ===== */
@@ -33,6 +51,7 @@ let gameEnded = false;
 let invulnUntil = 0;
 let pendingRecord = null;
 let highLevelEver = parseInt(localStorage.getItem(HIGH_LEVEL_KEY) || '0', 10);
+let lastAct = null;
 
 const player = { y: 0, vy: 0, isJumping: false, isDucking: false };
 
@@ -75,6 +94,7 @@ function init() {
   gameEnded = false;
   obstacles = [];
   lastSpawn = performance.now();
+  lastAct = getAct(currentLevel);
   requestAnimationFrame(gameLoop);
 }
 
@@ -119,45 +139,67 @@ function currentSpeed() {
 
 function spawnObstacle() {
   const groundY = groundTop();
+  const act = getAct(currentLevel);
   const canChase = currentLevel > 5 && Math.random() < 0.22;
 
   if (canChase) {
-    obstacles.push({
-      type: 'chaser', x: canvas.width + 20, y: groundY - 24, w: 24, h: 24,
-      speedMult: 1.5
-    });
+    obstacles.push({ type: 'chaser', x: canvas.width + 20, y: groundY - 24, w: 24, h: 24, speedMult: 1.5 });
     return;
   }
 
-  const isHigh = Math.random() < 0.35;
-  if (isHigh) {
-    obstacles.push({
-      type: 'high', x: canvas.width + 20, y: groundY - 70, w: 34, h: 18,
-      speedMult: 1
-    });
-  } else {
-    const variants = [
-      { w: 16, h: 26 }, // typo squiggle block
-      { w: 26, h: 22 }, // comment bubble
-      { w: 22, h: 30 }  // popup
-    ];
-    const v = variants[Math.floor(Math.random() * variants.length)];
-    obstacles.push({ type: 'low', x: canvas.width + 20, y: groundY - v.h, w: v.w, h: v.h, speedMult: 1 });
+  if (act === 'word') {
+    const words = WORD_BANK[currentLevel] || WORD_BANK[1];
+    const word = words[Math.floor(Math.random() * words.length)];
+    const w = 22 + word.length * 9;
+    obstacles.push({ type: 'word', text: word, x: canvas.width + 20, y: groundY - 26, w, h: 26, speedMult: 1 });
+    return;
   }
+
+  if (act === 'excel') {
+    if (currentLevel <= 5) {
+      const digits = currentLevel === 4 ? 2 : 4;
+      const num = String(Math.floor(Math.random() * Math.pow(10, digits)));
+      const w = 20 + num.length * 12;
+      obstacles.push({ type: 'number', text: num, x: canvas.width + 20, y: groundY - 26, w, h: 26, speedMult: 1 });
+    } else {
+      const chartType = Math.random() < 0.5 ? 'bar' : 'pie';
+      obstacles.push({ type: chartType, x: canvas.width + 20, y: groundY - 70, w: 34, h: 42, speedMult: 1 });
+    }
+    return;
+  }
+
+  // ppt: shapes — pool grows as levels progress so "star" appears by Lv10
+  const shapes = ['circle', 'triangle', 'arrow', 'star'];
+  const pool = shapes.slice(0, Math.min(shapes.length, currentLevel - 6));
+  const shape = pool[Math.floor(Math.random() * pool.length)];
+  const isHigh = Math.random() < 0.35;
+  const size = 28;
+  obstacles.push({
+    type: shape, x: canvas.width + 20,
+    y: isHigh ? groundY - 66 : groundY - size,
+    w: size, h: size, speedMult: 1
+  });
 }
 
 /* ===== Main loop ===== */
 function gameLoop(ts) {
   if (gameEnded) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const act = getAct(currentLevel);
+  const theme = ACT_THEME[act];
+
+  if (act !== lastAct) {
+    document.getElementById('msg').textContent = `New act: ${theme.label} mode.`;
+    lastAct = act;
+    document.getElementById('act-label').textContent = theme.label;
+  }
 
   const groundY = groundTop();
   const speed = currentSpeed();
 
   // Background
-  ctx.fillStyle = '#fafafa';
+  ctx.fillStyle = theme.bg;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = '#eee';
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
   for (let x = -((totalDistance) % 60); x < canvas.width; x += 60) {
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, groundY); ctx.stroke();
   }
@@ -189,7 +231,7 @@ function gameLoop(ts) {
   for (let i = obstacles.length - 1; i >= 0; i--) {
     const o = obstacles[i];
     o.x -= speed * o.speedMult;
-    drawObstacle(o);
+    drawObstacle(o, theme);
 
     if (o.x + o.w < -20) { obstacles.splice(i, 1); continue; }
 
@@ -230,56 +272,164 @@ function gameLoop(ts) {
   requestAnimationFrame(gameLoop);
 }
 
+/* ===== Drawing: office-worker character ===== */
 function drawPlayer(pY, pH) {
   const invuln = performance.now() < invulnUntil;
   if (invuln && Math.floor(performance.now() / 100) % 2 === 0) return; // blink when invulnerable
 
-  ctx.fillStyle = '#2E7D6B';
+  const x = PLAYER_X;
+  const isDuck = pH < PLAYER_H_STAND;
+  const headR = isDuck ? 6 : 7;
+  const bodyTop = pY + headR * 2 - 2;
+  const bodyH = pH - (headR * 2 - 2);
+  const bodyW = PLAYER_W;
+
+  // legs (drawn first, behind body)
+  if (!player.isJumping) {
+    const phase = Math.floor(totalDistance / 8) % 2;
+    ctx.fillStyle = '#2b2f36'; // dark trousers
+    if (phase === 0) {
+      ctx.fillRect(x + 3, pY + pH, 7, 7);
+      ctx.fillRect(x + bodyW - 10, pY + pH, 7, 4);
+    } else {
+      ctx.fillRect(x + 3, pY + pH, 7, 4);
+      ctx.fillRect(x + bodyW - 10, pY + pH, 7, 7);
+    }
+  }
+
+  // body / blazer
+  ctx.fillStyle = '#2c4a86';
+  roundRect(x, bodyTop, bodyW, bodyH, 5);
+  ctx.fill();
+
+  // shirt collar (small white triangle at neck)
+  ctx.fillStyle = '#ffffff';
   ctx.beginPath();
-  const r = 6;
-  ctx.moveTo(PLAYER_X + r, pY);
-  ctx.arcTo(PLAYER_X + PLAYER_W, pY, PLAYER_X + PLAYER_W, pY + pH, r);
-  ctx.arcTo(PLAYER_X + PLAYER_W, pY + pH, PLAYER_X, pY + pH, r);
-  ctx.arcTo(PLAYER_X, pY + pH, PLAYER_X, pY, r);
-  ctx.arcTo(PLAYER_X, pY, PLAYER_X + PLAYER_W, pY, r);
+  ctx.moveTo(x + bodyW / 2 - 5, bodyTop);
+  ctx.lineTo(x + bodyW / 2 + 5, bodyTop);
+  ctx.lineTo(x + bodyW / 2, bodyTop + 7);
   ctx.closePath();
   ctx.fill();
 
-  // eyes
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(PLAYER_X + PLAYER_W * 0.35, pY + pH * 0.35, 3, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(PLAYER_X + PLAYER_W * 0.68, pY + pH * 0.35, 3, 0, Math.PI * 2); ctx.fill();
+  // necktie
+  ctx.fillStyle = '#a13a2c';
+  ctx.beginPath();
+  ctx.moveTo(x + bodyW / 2 - 2.5, bodyTop + 2);
+  ctx.lineTo(x + bodyW / 2 + 2.5, bodyTop + 2);
+  ctx.lineTo(x + bodyW / 2 + 1.5, bodyTop + bodyH * 0.6);
+  ctx.lineTo(x + bodyW / 2, bodyTop + bodyH * 0.72);
+  ctx.lineTo(x + bodyW / 2 - 1.5, bodyTop + bodyH * 0.6);
+  ctx.closePath();
+  ctx.fill();
 
-  // legs (simple run animation)
-  if (!player.isJumping) {
-    const phase = Math.floor(totalDistance / 8) % 2;
-    ctx.fillStyle = '#235f54';
-    if (phase === 0) {
-      ctx.fillRect(PLAYER_X + 4, pY + pH, 6, 6);
-      ctx.fillRect(PLAYER_X + PLAYER_W - 10, pY + pH, 6, 4);
-    } else {
-      ctx.fillRect(PLAYER_X + 4, pY + pH, 6, 4);
-      ctx.fillRect(PLAYER_X + PLAYER_W - 10, pY + pH, 6, 6);
-    }
+  // ID badge (only when standing tall enough to show it)
+  if (!isDuck) {
+    ctx.fillStyle = '#f5f5f4';
+    ctx.fillRect(x + bodyW - 11, bodyTop + 6, 7, 9);
+    ctx.fillStyle = '#2F5DA8';
+    ctx.fillRect(x + bodyW - 11, bodyTop + 6, 7, 3);
   }
+
+  // head
+  const headCx = x + bodyW / 2;
+  const headCy = pY + headR;
+  ctx.fillStyle = '#e8c39e';
+  ctx.beginPath(); ctx.arc(headCx, headCy, headR, 0, Math.PI * 2); ctx.fill();
+
+  // hair
+  ctx.fillStyle = '#3a2e26';
+  ctx.beginPath();
+  ctx.arc(headCx, headCy - headR * 0.15, headR * 1.02, Math.PI, Math.PI * 2);
+  ctx.fill();
+
+  // eyes
+  ctx.fillStyle = '#1b1e21';
+  ctx.beginPath(); ctx.arc(headCx - headR * 0.35, headCy + 1, 1.1, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(headCx + headR * 0.35, headCy + 1, 1.1, 0, Math.PI * 2); ctx.fill();
 }
 
-function drawObstacle(o) {
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/* ===== Drawing: obstacles per act ===== */
+function drawObstacle(o, theme) {
   if (o.type === 'chaser') {
     ctx.fillStyle = '#c0392b';
     ctx.beginPath(); ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = 'rgba(192,57,43,0.5)';
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2 + 5, 0, Math.PI * 2); ctx.stroke();
-  } else if (o.type === 'high') {
-    ctx.fillStyle = '#b9770e';
-    ctx.fillRect(o.x, o.y, o.w, o.h);
+    return;
+  }
+
+  if (o.type === 'word' || o.type === 'number') {
+    ctx.fillStyle = theme.obstacle;
+    roundRect(o.x, o.y, o.w, o.h, 4);
+    ctx.fill();
     ctx.fillStyle = '#fff';
-    ctx.font = "bold 10px 'IBM Plex Mono', monospace";
-    ctx.fillText('!', o.x + o.w / 2 - 2, o.y + o.h / 2 + 4);
-  } else {
-    ctx.fillStyle = '#2c4a86';
-    ctx.fillRect(o.x, o.y, o.w, o.h);
+    ctx.font = "bold 12px 'IBM Plex Mono', monospace";
+    ctx.textAlign = 'center';
+    ctx.fillText(o.text, o.x + o.w / 2, o.y + o.h / 2 + 4);
+    ctx.textAlign = 'left';
+    return;
+  }
+
+  if (o.type === 'bar') {
+    ctx.fillStyle = theme.obstacle;
+    const bw = o.w / 4;
+    [0.4, 0.7, 1, 0.55].forEach((h, i) => {
+      ctx.fillRect(o.x + i * bw, o.y + o.h * (1 - h), bw - 2, o.h * h);
+    });
+    return;
+  }
+
+  if (o.type === 'pie') {
+    ctx.fillStyle = theme.obstacle;
+    ctx.beginPath();
+    ctx.moveTo(o.x + o.w / 2, o.y + o.h / 2);
+    ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, -Math.PI / 2, Math.PI * 0.7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = theme.obstacle;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, 0, Math.PI * 2); ctx.stroke();
+    return;
+  }
+
+  ctx.fillStyle = theme.obstacle;
+  const cx = o.x + o.w / 2, cy = o.y + o.h / 2, r = o.w / 2;
+  if (o.type === 'circle') {
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+  } else if (o.type === 'triangle') {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r); ctx.lineTo(cx + r, cy + r); ctx.lineTo(cx - r, cy + r);
+    ctx.closePath(); ctx.fill();
+  } else if (o.type === 'arrow') {
+    ctx.beginPath();
+    ctx.moveTo(cx - r, cy - r * 0.3); ctx.lineTo(cx + r * 0.2, cy - r * 0.3);
+    ctx.lineTo(cx + r * 0.2, cy - r); ctx.lineTo(cx + r, cy);
+    ctx.lineTo(cx + r * 0.2, cy + r); ctx.lineTo(cx + r * 0.2, cy + r * 0.3);
+    ctx.lineTo(cx - r, cy + r * 0.3); ctx.closePath(); ctx.fill();
+  } else if (o.type === 'star') {
+    const spikes = 5, outerR = r, innerR = r * 0.45;
+    let rot = -Math.PI / 2;
+    const step = Math.PI / spikes;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerR);
+    for (let i = 0; i < spikes; i++) {
+      ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+      rot += step;
+      ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+      rot += step;
+    }
+    ctx.closePath(); ctx.fill();
   }
 }
 
@@ -288,6 +438,7 @@ function updateUI() {
   document.getElementById('lives').textContent = Math.max(0, lives);
   document.getElementById('level').textContent = `${currentLevel} / ${maxLevel}`;
   document.getElementById('diff-label').textContent = DIFFICULTIES[currentDifficulty].label.split(' (')[0];
+  document.getElementById('act-label').textContent = ACT_THEME[getAct(currentLevel)].label;
 
   if (currentLevel > highLevelEver) {
     highLevelEver = currentLevel;
@@ -407,7 +558,7 @@ function showEndSummary(won, level, score, rank) {
   document.getElementById('end-title').innerText = won ? 'Victory!' : 'Deck Crashed';
   const rankLine = rank ? ` Ranked #${rank} on the leaderboard.` : '';
   document.getElementById('end-summary').innerText =
-    `${won ? 'You made it through all 10 levels.' : `You ran out of lives at Level ${level}.`} Score: ${score}.${rankLine}`;
+    `${won ? 'You survived Word, Excel, and PPT chaos all the way through.' : `You ran out of lives at Level ${level}.`} Score: ${score}.${rankLine}`;
   document.getElementById('end-overlay').style.display = 'flex';
 }
 
