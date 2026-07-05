@@ -38,10 +38,10 @@
   {
     "id": "number-streak",
     "title": "Number Streak",
-    "description": "Guess whether the next number is higher or lower and keep your streak alive. No cards, no suits, no betting — just odds.",
-    "style": "Higher-or-lower number probability",
-    "status": "In Planning",
-    "entryPath": null,
+    "description": "Guess higher, lower, or draw across 10 escalating levels. Chain correct guesses for a growing score multiplier.",
+    "style": "Higher/lower/draw number probability",
+    "status": "Live",
+    "entryPath": "number-streak/index.html",
     "addedAt": "2026-07-05"
   },
   {

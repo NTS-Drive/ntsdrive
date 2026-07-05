@@ -271,6 +271,218 @@ suggested wording in the "Open items" section above) — README documents the
 decision, but only the Project's own instructions make Claude honor it
 automatically in future sessions.
 
+## Deck Dash redesign v2 (2026-07-05): 3-act structure + office-worker character
+
+Per the master plan, Deck Dash was rebuilt around three acts instead of a
+single flat 10-level runner:
+
+| Act | Levels | Obstacles |
+|---|---|---|
+| Word | 1–3 | Word blocks — short ("OK") to long ("STAKEHOLDER") |
+| Excel | 4–7 | Numbers (2 → 4 digits), then bar/pie chart shapes |
+| PPT | 8–10 | Geometric shapes — circle → triangle → arrow → star |
+
+Difficulty roles (Intern/Manager/Director), the Level 6+ "Notification
+Chaser" (2-life hit instead of 1), save/resume/reset, the local Top 10
+leaderboard, and automatic screenshot capture on a new #1 are all unchanged
+from v1 — only the level content and character changed. Background tint
+shifts per act (blue-gray → green → warm amber) as a visual cue that a new
+act has started, using an original palette, not any app's brand colors.
+
+**Character redesign**: replaced the abstract blob with an office-worker
+figure — navy blazer, white collar, a small necktie, and an ID badge with a
+colored stripe, topped with a simple round head and hair. Entirely original
+vector shapes drawn in code (no image assets, no real mascot or favicon
+referenced).
+
+## Deck Dash v3 (2026-07-05): double jump, fixed obstacle width, richer backgrounds
+
+Three fixes based on playtesting feedback:
+
+- **Bug fix — unjumpable long words**: word obstacle width used to scale
+  with word length (`22 + word.length * 9`), so "STAKEHOLDER" produced a
+  121px-wide hitbox versus ~30px for shape obstacles — effectively
+  unavoidable. Fixed by giving word/number obstacles a **fixed hitbox width**
+  (`WORD_OBSTACLE_W = 62`, `NUMBER_OBSTACLE_W = 48`) and auto-shrinking the
+  font (`fitFontSize()`) so longer text still displays fully inside the same
+  box. Every obstacle is now equally jumpable regardless of text length.
+- **Double jump added**: `player.maxJumps = 2`; pressing jump again while
+  airborne (and not past the jump limit) triggers a second jump — a small
+  motion-line flourish renders on the second jump for feedback. Reference
+  for the jump-count pattern: a double-jump runner mechanic the user
+  provided (a third-party branded game file) — only the generic
+  jumpCount/maxJumps mechanic was reused; none of that file's branding,
+  name, or visual design was carried over.
+- **Richer, more varied backgrounds**: replaced the flat single-color fill
+  (which felt too similar to Formula Firewall's plain white/grid look) with
+  a **per-act vertical gradient** plus a **slow parallax decoration layer**
+  (non-colliding, purely visual, moves at 0.35× obstacle speed): faint
+  document lines for Word, faint cell outlines for Excel, soft floating
+  color blobs for PPT (a generic "wallpaper/slide-theme" look — not a
+  reproduction of any specific OS or app's actual wallpaper image).
+
+## Deck Dash v4 (2026-07-05): narrative, food pickups, 3-lane obstacles, dynamic chrome color
+
+- **Narrative added**: the difficulty-select screen now shows a dusk skyline
+  illustration (office building silhouettes, a setting sun, a clock reading
+  6:00) with the tagline "It's 6PM — everyone's rushing the exit." This gives
+  the run a reason: you're racing home at quitting time. Purely an inline
+  SVG built from scratch — no real building, city skyline, or clock brand is
+  referenced.
+- **Food pickups**: snacks (🍙🍎☕🍪🍱) float by occasionally. Collecting one
+  adds +30 to a running `bonusScore` (now included in the final score
+  formula) and restores 1 life if the player isn't already at their role's
+  starting max — giving a risk/reward reason to detour toward a pickup.
+- **Three obstacle lanes** instead of a flat ground/overhead split:
+  - `ground` — clear with a single jump.
+  - `head` — must duck; a jump's arc still passes through this band, so
+    jumping is unreliable here.
+  - `sky` — positioned above a single jump's apex (~147px) but within a
+    double jump's reach (~190px+), so the only reliable way to survive it is
+    to *not* double jump (stay grounded or duck instead).
+  Lane odds shift with level (more `sky` appears as levels progress) so the
+  variety ramps up rather than staying flat.
+- **Word vs. number now visually distinct**: word obstacles render as a
+  white "paper" card with a folded corner (a document metaphor); number
+  obstacles render as a two-cell spreadsheet strip with a center divider
+  (a cell metaphor). Both keep the act's accent color for their border/text,
+  but the *shape* itself now signals what kind of obstacle it is instead of
+  relying on color alone.
+- **Toolbar color now follows the act**: `applyActChrome()` rewrites the
+  `--chrome` / `--chrome-dark` CSS custom properties on act change, so the
+  title bar and ribbon shift color (blue-gray → green → amber) instead of
+  staying a fixed color for the whole run. A 0.5s CSS transition softens the
+  change.
+
+## Deck Dash v5 (2026-07-05): sized up ~1.35x across the board
+
+Character, obstacles, and food pickups were all scaled up roughly 1.35x for
+visibility (e.g., `PLAYER_W` 30→40, `PLAYER_H_STAND` 38→51, word obstacle
+width 62→84). Jump physics (`GRAVITY`, `JUMP_VELOCITY`) were left unchanged,
+but the **head and sky lane offsets were recalculated to match the taller
+player** (`laneBox` head offset 90→122, sky offset 190→257) so the existing
+"duck avoids head-lane, don't double-jump into sky-lane" logic still holds
+correctly at the new scale — this wasn't just a uniform CSS zoom, the
+underlying hitbox math was re-derived.
+
+## Deck Dash v6 (2026-07-05): endless mode, live score, Master achievement, duck-hitbox bug fix
+
+- **Bug fix — head-lane obstacles were unavoidable-safe (not a good thing)**:
+  after the v5 size-up, the "head" lane obstacles were positioned too high
+  (`groundY - 122`) relative to the taller player's standing height (51px),
+  so a standing/running player's hitbox never reached them — ducking had
+  become pointless because *not* ducking already avoided every head-lane
+  obstacle. `laneBox()` is now **bottom-anchored**: the head lane's lower
+  edge is fixed at `groundY - 35` (above duck-top at `groundY - 30`, below
+  standing-top at `groundY - 51`), so a standing player is reliably hit and
+  only ducking avoids it, regardless of the obstacle's own height. The sky
+  lane got the same bottom-anchored treatment (`groundY - 185`), re-verified
+  against the actual single-jump apex (~160px) so it stays single-jump-safe
+  and only a double jump risks it.
+- **Endless mode from Level 10**: leveling stops once Level 10 is cleared;
+  from then on `currentLevel` stays at 10 (act/theme frozen on PPT) and only
+  distance keeps counting. Obstacle spawn gaps are divided by 1.5 (≥1.5×
+  more obstacles) and food pickups stop spawning entirely — pure survival
+  distance-running.
+- **999,999m cap + Master achievement**: reaching this distance ends the run
+  immediately with a distinct "You've Become a Master!" screen (English, to
+  stay consistent with Arcade's English-only policy) instead of the normal
+  win/loss messaging.
+- **Live score display**: a `Score` stat now sits next to `Distance` in the
+  status panel, recomputed every frame — previously score was only ever
+  shown at the end of a run.
+- **Leaderboard ranks by score only** (this was already the sort key; no
+  logic change) but now also shows each record's final **Distance** as
+  context, plus a 🎉 badge next to any entry that reached Master status.
+
+## Title 3: Number Streak (2026-07-05)
+
+A minimal higher-or-lower guessing game at `arcade/number-streak/` — the
+safe, redesigned version of the original baccarat-style concept flagged for
+legal review. Chosen as the third Arcade title because it was the fastest
+of the five "In Planning" candidates to build well: no canvas, no physics,
+a single number as the entire game state.
+
+- Guess whether the next random number (1–100) is higher or lower than the
+  current one. Correct guesses build a streak; a miss resets the streak and
+  costs a life.
+- Same conventions as Formula Firewall / Deck Dash: 3 roles (Intern /
+  Manager / Director, only lives differ), autosave + resume, local Top 10
+  leaderboard with name entry, automatic screenshot on a new all-time #1.
+- Deliberately has no cards, suits, or betting language — see the Trademark
+  checklist for why.
+
+## Number Streak v2 (2026-07-05): full redesign — rounds, levels, draw option, no lives
+
+Rebuilt from scratch based on playtesting feedback:
+
+- **Removed the Intern/Manager/Director difficulty picker.** It only used to
+  vary lives; since lives are gone in this redesign, the role selector had
+  no remaining purpose, so the game now starts immediately.
+- **Two number boxes**: left shows the current (known) number; right starts
+  empty with "Will the next number be higher, lower, or draw?" and reveals
+  the drawn number after a guess.
+- **Three guess buttons**: Lower / Draw / Higher — "draw" (the next number
+  equals the current one) is now a real, guessable outcome, which matters
+  more at small ranges (Level 1's 0–5 range makes draws fairly common;
+  Level 10's 0–1000 makes them rare).
+- **10 rounds per level, shown as a 10-column table** (header 1–10, results
+  row shows O for a hit / X for a miss) that resets at the start of each
+  new level.
+- **Streak multiplier**: 2+ correct in a row multiplies that round's 10
+  base points by `1 + 0.1 × (streak − 1)`, capped at **2.0×**, displayed to
+  1 decimal place. A miss resets the streak to zero; a new streak starts
+  counting from scratch (matches the "round 1+2 hit → 1.1×, round 3 miss,
+  round 4+5 hit → new 1.1×" example from feedback).
+- **No lives** — instead, each level has a score target
+  (`40 + level × 10`) that must be earned within that level's 10 rounds to
+  advance; falling short ends the run immediately.
+- **Number range grows by level**: 0–5, 0–10, 0–20, 0–50, 0–100, 0–150,
+  0–200, 0–300, 0–500, 0–1000 (Levels 1–10). The last five ranges were our
+  own extrapolation of the "0–5, 0–10, 0–20, 0–50, 0–100, etc." pattern
+  given in feedback — tune `LEVEL_RANGES` in `script.js` if these should be
+  different.
+- **Toolbar layout fixed**: Save/Reset/Records/Capture were previously
+  split across two visually disconnected columns; now a single row.
+
+- **Draw bonus multiplier**: correctly calling a draw pays extra on top of
+  any streak multiplier — ×3 at Levels 1–3, ×5 at Levels 4–7, ×10 at Levels
+  8–10 (`drawBonusMult()` in `script.js`). This directly compensates for
+  draws becoming statistically rarer as the number range widens each level.
+
+## Number Streak v3 (2026-07-05): critical display bug fix + UX polish
+
+**Root-cause bug found**: the "Current" number box was only ever written to
+the DOM once, at game start (`render()`). Every subsequent round updated
+the internal `currentNumber` variable correctly (so scoring logic was never
+actually wrong), but the on-screen box stayed frozen on the very first
+round's number forever. Players comparing what they saw on screen against
+what the game had actually just compared against were seeing two different
+numbers — which read as "a wrong guess got marked correct." Fixed by moving
+the DOM update into the post-reveal `setTimeout`, timed to fire exactly when
+the result toast disappears (see below) — matching the requested "Current
+updates after the toast clears" behavior and eliminating the mismatch.
+
+Other changes:
+- **Toast duration**: raised from 2.6s to 3.8s (`REVEAL_MS`), and the
+  round-advance delay was changed to match exactly, so the visible result,
+  the toast, and the "Current" number update are all synchronized instead
+  of the round silently advancing 1.7s before the toast even finished.
+- **Removed boundary-based button disabling**: Lower/Higher used to disable
+  whenever the current number was already at 0 or the level's max — logical,
+  but it read as "buttons randomly stop working." Buttons now only disable
+  during the reveal window or after the run ends; guessing an impossible
+  direction (e.g. "Lower" when current is 0) is simply always a miss, no
+  different from any other wrong guess.
+- **Range and target now prominently displayed**: a bold banner above the
+  two number boxes shows the level's active range (previously buried in the
+  status bar), and an enlarged, boxed banner below the round table shows the
+  level's score target vs. points earned so far (previously small muted
+  text).
+- **Guide expanded** with a full Level → Range → Target → Draw-bonus table
+  instead of prose, plus the Guide button's placement (top-right) matches
+  the request as-is.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

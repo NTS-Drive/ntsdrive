@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Streak | Arcade</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="../../analytics.js"></script>
+</head>
+<body id="capture-area">
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Back to Arcade</a>
+  <div class="app-title">Number Streak</div>
+  <button class="action-btn" onclick="openGuide()">Guide</button>
+</div>
+
+<div class="title-bar">
+  <span>Break_Room_Counter — Live Feed</span>
+  <div style="letter-spacing: 5px;">— &#10063; &times;</div>
+</div>
+
+<div class="ribbon-tabs">
+  <div class="ribbon-tab">File</div>
+  <div class="ribbon-tab active">Number Streak</div>
+  <div class="ribbon-tab">View</div>
+</div>
+
+<div class="ribbon">
+  <button class="action-btn" onclick="saveGame(true)">Save</button>
+  <button class="action-btn danger" onclick="resetGame()">Reset</button>
+  <button class="action-btn" onclick="openLeaderboard()">Records</button>
+  <button class="action-btn" onclick="captureGame()">Capture</button>
+</div>
+
+<div class="status-panel">
+  <div class="stat-item">Level: <span class="stat-val" id="level">1 / 10</span></div>
+  <div class="stat-item">Round: <span class="stat-val" id="round">1 / 10</span></div>
+  <div class="stat-item">Score: <span class="stat-val" id="score">0.0</span></div>
+  <div class="stat-item">Streak: <span class="stat-val" id="streak">0</span></div>
+  <div class="stat-item">Best Streak: <span class="stat-val" id="best-streak">0</span></div>
+  <div id="msg">Higher, lower, or draw?</div>
+</div>
+
+<div class="stage">
+  <div class="range-banner" id="rangeBanner">Level 1 — numbers range from 0 to 5</div>
+
+  <div class="number-pair">
+    <div class="number-box">
+      <div class="label">Current</div>
+      <div class="value" id="currentNumber">--</div>
+    </div>
+    <div class="number-box pending" id="nextBox">
+      <div class="value" id="nextValue">Will the next number be higher, lower, or draw?</div>
+    </div>
+  </div>
+
+  <div class="guess-row">
+    <button class="guess-btn lower" id="lowerBtn" onclick="guess('lower')">&#9660; Lower</button>
+    <button class="guess-btn draw" id="drawBtn" onclick="guess('draw')">&#9679; Draw</button>
+    <button class="guess-btn higher" id="higherBtn" onclick="guess('higher')">&#9650; Higher</button>
+  </div>
+
+  <table class="round-table">
+    <thead><tr id="roundHeader"></tr></thead>
+    <tbody><tr id="roundResults"></tr></tbody>
+  </table>
+  <div class="target-banner" id="targetBanner"></div>
+</div>
+
+<!-- Name entry -->
+<div class="overlay" id="name-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="name-title">New Top 10 Record!</h2>
+    <p id="name-sub">Enter a name to save your record.</p>
+    <input type="text" id="name-input" class="name-input" maxlength="14" placeholder="Your name">
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="submitRecordName()">Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="overlay" id="leaderboard-overlay" style="display:none;">
+  <div class="modal wide">
+    <h2>Top 10 Records</h2>
+    <table class="leaderboard-table" id="leaderboard-table">
+      <thead><tr><th>#</th><th>Name</th><th>Level</th><th>Best Streak</th><th>Score</th><th>Date</th></tr></thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="closeOverlay('leaderboard-overlay')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- End of run -->
+<div class="overlay" id="end-overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="end-title">Run Complete</h2>
+    <p id="end-summary"></p>
+    <div class="modal-actions">
+      <button class="action-btn" onclick="openLeaderboard()">View Records</button>
+      <button class="action-btn primary" onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guide -->
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal wide guide-body">
+    <h2>How to Play</h2>
+    <h3>Objective</h3>
+    <p>The left box shows the current number. Guess whether the next random number will be <b>Lower</b>, the same (<b>Draw</b>), or <b>Higher</b>.</p>
+    <h3>Rounds &amp; Levels</h3>
+    <p>Each level is exactly 10 rounds (see the table below the buttons — it fills in with O for a hit or X for a miss as you go). Clear a level's score target within those 10 rounds to advance; fall short and the run ends.</p>
+    <h3>Number ranges &amp; targets by level</h3>
+    <table class="leaderboard-table" style="margin-bottom:10px;">
+      <thead><tr><th>Level</th><th>Range</th><th>Target</th><th>Draw bonus</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>0–5</td><td>50 pts</td><td rowspan="3">&times;3</td></tr>
+        <tr><td>2</td><td>0–10</td><td>60 pts</td></tr>
+        <tr><td>3</td><td>0–20</td><td>70 pts</td></tr>
+        <tr><td>4</td><td>0–50</td><td>80 pts</td><td rowspan="4">&times;5</td></tr>
+        <tr><td>5</td><td>0–100</td><td>90 pts</td></tr>
+        <tr><td>6</td><td>0–150</td><td>100 pts</td></tr>
+        <tr><td>7</td><td>0–200</td><td>110 pts</td></tr>
+        <tr><td>8</td><td>0–300</td><td>120 pts</td><td rowspan="3">&times;10</td></tr>
+        <tr><td>9</td><td>0–500</td><td>130 pts</td></tr>
+        <tr><td>10</td><td>0–1000</td><td>140 pts</td></tr>
+      </tbody>
+    </table>
+    <p>Draws get much rarer at wide ranges, so the draw bonus scales up to compensate — weigh that into your guess.</p>
+    <h3>Streak bonus</h3>
+    <p>Two correct guesses in a row or more multiplies that round's points: multiplier = 1 + 0.1 &times; (streak &minus; 1), capped at <b>2.0&times;</b>. A single hit (streak of 1) earns the normal 10 points; a miss resets your streak to zero. Scores are shown to 1 decimal place.</p>
+    <h3>Draw bonus</h3>
+    <p>Correctly calling a <b>Draw</b> multiplies that round's points on top of any streak bonus, using the table above.</p>
+    <h3>Save, Resume &amp; Reset</h3>
+    <ul>
+      <li>Progress auto-saves after every round.</li>
+      <li>Reopening this page resumes your run automatically.</li>
+      <li><code>Reset</code> wipes your current run and starts over from Level 1. Top 10 records are kept.</li>
+    </ul>
+    <h3>Records</h3>
+    <p>The Top 10 is ranked by score. Reaching the all-time <b>#1</b> automatically downloads a screenshot of your run.</p>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeOverlay('guide-overlay')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script src="../../feedback-widget.js" defer></script>
+</body>
+</html>
