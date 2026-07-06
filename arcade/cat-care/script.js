@@ -24,6 +24,93 @@ const EVENT_META = {
 
 const MISS_START_MESSAGE = '오늘은 오전에 많이 바쁘셨나봐요. 내일 같은 시간에 다시 기다리고 있을게요 🐱';
 
+/* 집사 기분 10종 — 클릭 시 고양이가 랜덤으로 말풍선 답변 (항상 사람을 위로하는 톤 유지) */
+const MOODS = [
+  { key: 'happy', emoji: '😊', label: '기뻐요' },
+  { key: 'sad', emoji: '😔', label: '슬퍼요' },
+  { key: 'angry', emoji: '😤', label: '화나요' },
+  { key: 'tired', emoji: '😩', label: '피곤해요' },
+  { key: 'anxious', emoji: '😰', label: '불안해요' },
+  { key: 'bored', emoji: '🥱', label: '심심해요' },
+  { key: 'calm', emoji: '😌', label: '평온해요' },
+  { key: 'moved', emoji: '🥹', label: '뭉클해요' },
+  { key: 'exhausted', emoji: '😵', label: '지쳤어요' },
+  { key: 'excited', emoji: '🤩', label: '설레요' }
+];
+
+const MOOD_REPLIES = {
+  happy: [
+    '우와, {이름}도 덩달아 신났어요! 야옹~',
+    '좋은 일이 있었나 봐요! 저도 꼬리를 흔들게요.',
+    '그 기분 그대로 오래 갔으면 좋겠어요!',
+    '히히, 저도 같이 기뻐요!',
+    '오늘 표정이 제일 좋아 보여요!'
+  ],
+  sad: [
+    '괜찮아요, 제가 옆에 있어드릴게요.',
+    '힘든 날엔 그냥 저를 한번 쓰다듬어주세요.',
+    '오늘은 마음이 좀 무거우신가 봐요. 저라도 곁에 있을게요.',
+    '울고 싶으면 울어도 돼요, 저는 아무한테도 말 안 해요.',
+    '다 지나갈 거예요. 저도 응원할게요.'
+  ],
+  angry: [
+    '많이 답답하셨나 봐요. 심호흡 한 번 어때요?',
+    '저를 한번 쓰다듬으면 화가 조금 풀릴지도 몰라요.',
+    '그럴 수도 있죠. 오늘은 그냥 넘어가요.',
+    '화날 땐 화나는 거예요. 참지 않아도 돼요.',
+    '저는 언제나 주인님 편이에요.'
+  ],
+  tired: [
+    '오늘 정말 애쓰셨어요. 잠깐 눈 좀 붙이는 거 어때요?',
+    '고생하셨어요, 조금만 더 버텨봐요.',
+    '저도 하품 나와요... 같이 쉬어요.',
+    '무리하지 마세요, 저는 언제든 기다릴 수 있어요.',
+    '오늘 하루도 참 길었죠.'
+  ],
+  anxious: [
+    '괜찮아요, 천천히 숨 쉬어봐요.',
+    '제가 옆에 있으니까 조금은 안심해도 돼요.',
+    '다 잘 될 거예요, 너무 걱정하지 마세요.',
+    '불안할 땐 잠깐 멈춰도 괜찮아요.',
+    '제 골골송 들려드릴까요? 조금은 편해질 거예요.'
+  ],
+  bored: [
+    '저랑 잠깐 놀아요! 심심함은 제 전문이에요.',
+    '지루한 하루엔 저를 한번 보러 오세요.',
+    '저도 방금까지 심심했어요, 우리 통했네요.',
+    '잠깐 딴생각 좀 해도 괜찮아요.',
+    '심심할 땐 창밖 한번 보는 것도 좋아요.'
+  ],
+  calm: [
+    '그 평온함, 저한테도 좀 나눠주세요.',
+    '좋은 상태네요, 오래 유지되길 바라요.',
+    '저도 지금 딱 이 기분이에요.',
+    '이런 순간이 참 소중하죠.',
+    '평화로운 하루, 잘 어울려요.'
+  ],
+  moved: [
+    '무슨 일인지는 몰라도, 그 마음 알 것 같아요.',
+    '그런 날도 있는 거예요, 마음 편히 가지세요.',
+    '저도 괜히 마음이 따뜻해지네요.',
+    '가끔은 그렇게 뭉클해도 괜찮아요.',
+    '오늘 그 감정, 소중히 간직하세요.'
+  ],
+  exhausted: [
+    '정말 많이 지치셨나 봐요. 오늘은 여기까지만 해요.',
+    '지칠 땐 잠깐 멈추는 것도 용기예요.',
+    '저도 오늘 하루 종일 주인님 기다리느라 힘들었어요, 우리 같이 쉬어요.',
+    '무리하지 않으셔도 돼요, 이미 충분히 잘하셨어요.',
+    '오늘은 일찍 쉬는 게 어때요?'
+  ],
+  excited: [
+    '무슨 좋은 일 있나요? 저도 궁금해요!',
+    '그 설렘, 오래오래 가져가세요!',
+    '덩달아 저도 두근두근해요!',
+    '좋은 예감이 드는 하루네요!',
+    '그 기분 그대로 하루를 보내보세요!'
+  ]
+};
+
 const PHRASES = {
   low: {
     opening: [
@@ -197,6 +284,43 @@ function buildResultMessage(tier, name) {
 /* ===== Rendering ===== */
 const frame = document.getElementById('canvasFrame');
 const footerNote = document.getElementById('footerNote');
+const moodPanel = document.getElementById('moodPanel');
+const moodGrid = document.getElementById('moodGrid');
+const moodBubble = document.getElementById('moodBubble');
+let moodGridBuilt = false;
+let currentCatName = '';
+
+function buildMoodGridOnce() {
+  if (moodGridBuilt) return;
+  moodGrid.innerHTML = MOODS.map(m => `
+    <button class="mood-btn" onclick="handleMoodClick('${m.key}')">
+      <span class="mood-emoji">${m.emoji}</span>
+      <span class="mood-label">${m.label}</span>
+    </button>
+  `).join('');
+  moodGridBuilt = true;
+}
+
+function setMoodPanelVisible(visible, catName) {
+  if (visible) {
+    currentCatName = catName || currentCatName;
+    buildMoodGridOnce();
+    moodPanel.style.display = 'block';
+  } else {
+    moodPanel.style.display = 'none';
+    moodBubble.style.display = 'none';
+  }
+}
+
+function handleMoodClick(moodKey) {
+  const pool = MOOD_REPLIES[moodKey];
+  if (!pool) return;
+  const reply = pick(pool).replace(/\{이름\}/g, currentCatName || '고양이');
+  moodBubble.textContent = reply;
+  moodBubble.style.display = 'none';
+  void moodBubble.offsetWidth; // restart animation on repeated clicks
+  moodBubble.style.display = 'block';
+}
 
 function render() {
   const now = new Date();
@@ -204,12 +328,14 @@ function render() {
 
   if (isWeekend(now)) {
     renderWeekend();
+    setMoodPanelVisible(false);
     return;
   }
 
   const game = loadTodayGame();
 
   if (game) {
+    setMoodPanelVisible(true, game.catName);
     if (game.completed) {
       renderResult(game);
     } else {
@@ -224,6 +350,7 @@ function render() {
     return;
   }
 
+  setMoodPanelVisible(false);
   const mins = nowMinutes(now);
   if (mins >= START_WINDOW_MIN && mins <= START_WINDOW_MAX) {
     renderStart();

@@ -28,7 +28,7 @@
     <div class="tool-icon">🖌️</div>
     <div class="tool-icon">✏️</div>
     <div class="tool-icon">🎨</div>
-    <div class="tool-icon">🩹</div>
+    <div class="tool-icon">🖍️</div>
   </div>
   <div class="swatches">
     <div class="swatch" style="background:#d97a93;"></div>
@@ -42,6 +42,13 @@
   <div class="canvas-frame" id="canvasFrame">
     <!-- JS가 상태에 따라 내용을 채웁니다 -->
   </div>
+
+  <div class="mood-panel" id="moodPanel" style="display:none;">
+    <div class="mood-bubble" id="moodBubble" style="display:none;"></div>
+    <div class="mood-panel-title">지금 기분이 어떠세요?</div>
+    <div class="mood-grid" id="moodGrid"></div>
+  </div>
+
   <div class="footer-note" id="footerNote"></div>
 </div>
 
@@ -53,6 +60,7 @@
     <p><b>하루 동안 무슨 일이 있나요?</b><br>하루 중 랜덤한 시간에 밥/화장실/놀이가 필요해질 거예요. 발생 후 30분 안에 챙겨주면 성공으로 기록돼요. 탭을 열어둘 필요는 없고, 들어오실 때마다 그동안 있었던 일을 보여드려요.</p>
     <p><b>언제 끝나나요?</b><br>오후 6시가 되면 하루가 마무리되고, 오늘 얼마나 잘 챙겼는지에 따라 마음을 담은 메시지가 준비돼 있어요.</p>
     <p><b>주말에도 되나요?</b><br>고양이도 주말엔 쉬어요. 평일에만 만날 수 있어요.</p>
+    <p><b>대화도 할 수 있나요?</b><br>네! 지금 기분을 10가지 버튼 중에 골라 누르면, 고양이가 말풍선으로 답해줘요. 언제든 원하는 만큼 눌러볼 수 있어요.</p>
     <div class="modal-actions">
       <button class="action-btn primary" onclick="closeGuide()">확인</button>
     </div>

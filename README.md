@@ -713,6 +713,12 @@ emotional check-in ritual instead of a competitive game.
   copying any specific drawing app — deliberately avoided calling it "그림판"
   on-screen since that's Microsoft Paint's actual Korean product name.
 
+## Cat Care v2 (2026-07-06)
+
+- **Arcade 목록 제목/설명 영어로 환원**: 게임 내부 콘텐츠만 한국어 예외를 유지하고, `titles.json`의 title/description은 사이트 전체 컨벤션(영어)에 맞춤.
+- **툴바 아이콘 정리**: 붓(🖌️)/연필(✏️)/팔레트(🎨) 테마에 안 맞던 반창고(🩹) 아이콘을 크레용(🖍️)으로 교체.
+- **고양이 대화 기능 추가**: "지금 기분이 어떠세요?" 10개 감정 버튼(기쁨/슬픔/화남/피곤함/불안/심심함/평온/뭉클함/지침/설렘) → 클릭 시 고양이가 말풍선으로 랜덤 응답(감정당 5개, 총 50개). 예정된 케어 이벤트와 무관하게 하루 중 언제든 몇 번이든 사용 가능. 기존 원칙(항상 사람을 위로/응원하는 톤, 자책 유발 문구 없음)을 이 50개 문구에도 동일하게 적용.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

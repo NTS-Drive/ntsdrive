@@ -149,6 +149,66 @@ html, body {
 
 .footer-note { text-align: center; font-size: 11.5px; color: var(--ink-muted); margin-top: 18px; }
 
+.mood-panel {
+  margin-top: 18px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+}
+.mood-panel-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 13.5px;
+  color: var(--chrome-dark); text-align: center; margin-bottom: 12px;
+}
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.mood-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 4px;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-family: var(--font-body);
+}
+.mood-btn:hover { background: #fdeeea; border-color: var(--chrome); }
+.mood-btn .mood-emoji { font-size: 20px; }
+.mood-btn .mood-label { font-size: 10px; color: var(--ink-muted); }
+
+.mood-bubble {
+  background: #fff;
+  border: 1.5px solid var(--chrome);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  text-align: center;
+  position: relative;
+  animation: bubbleIn 0.25s ease;
+}
+.mood-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 50%; transform: translateX(-50%);
+  border-width: 8px 7px 0 7px;
+  border-style: solid;
+  border-color: var(--chrome) transparent transparent transparent;
+}
+@keyframes bubbleIn {
+  0% { opacity: 0; transform: translateY(6px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 420px) {
+  .mood-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .mood-btn .mood-emoji { font-size: 17px; }
+  .mood-btn .mood-label { font-size: 8.5px; }
+}
+
 /* Overlays */
 .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(74,59,63,0.45); z-index: 2000; display: flex; align-items: center; justify-content: center; }
 .modal { background: #fff; width: 420px; max-width: 90vw; padding: 26px; border-radius: 16px; text-align: left; border-top: 5px solid var(--chrome); max-height: 84vh; overflow-y: auto; }
