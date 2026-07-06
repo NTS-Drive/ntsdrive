@@ -614,6 +614,105 @@ Python** (all Live) and **Cat Care** (In Planning). Spot the Difference and
 Word Search were dropped from `arcade/titles.json` (neither had been built
 — no code was lost).
 
+## Paycheck Python v2 (2026-07-05): countdowns, wider grid, clearer obstacles, ramping speed
+
+- **5-second countdown after picking a role**, 3-second countdown after
+  every respawn — the board is visible during the countdown so you can plan
+  before the snake moves.
+- **Grid width doubled** (18 → 36 columns, rows unchanged at 14) for more
+  horizontal play space.
+- **Direction pad redesigned**: a single horizontal row of four buttons,
+  each showing its icon plus an English label (Up/Down/Left/Right) instead
+  of the previous cross-shaped icon-only pad.
+- **Obstacles are now plain colored blocks, not emoji** — office-equipment
+  obstacles were being confused with the money emoji you're supposed to
+  eat. Obstacles use the same color as the title bar/toolbar (`#2c3e6b`,
+  darker for Level 3's bigger "building" obstacles) so coins (always emoji)
+  and hazards (always solid color) are unambiguous at a glance.
+- **A commute-themed intro illustration** was added to the role-select
+  screen (dawn sky, office buildings, a clock at 9:00 AM, "Payday's coming —
+  clock in.") — the same treatment Deck Dash uses for its 6PM commute-home
+  scene, mirrored for a commute-to-work moment instead.
+- **Speed now ramps continuously with score** (every 50 points shaves a
+  little off the tick interval, floored at 60ms), on top of each level
+  already being a bit faster than the last.
+- **Respawn keeps your current length** instead of resetting to a short
+  starter snake. This required a real fix, not just a config change: the
+  original respawn placement only tried to lay the snake out in a single
+  straight row, which is impossible once the snake is longer than the grid
+  is wide (very possible in Level 3, which can grow past 36). Fixed with a
+  fallback that lays a long snake out in a back-and-forth (boustrophedon)
+  path across multiple rows when it won't fit in one — verified with a
+  Node script confirming every segment stays grid-adjacent for lengths up
+  to 100.
+- Respawn placement also now searches outward from the horizontal center
+  instead of preferring the rightmost fit — the previous version could
+  drop the snake right next to the wall it was about to be pointed at,
+  causing an instant second collision.
+
+## Paycheck Python v3 (2026-07-05): respawn-facing-obstacle bug fix, speed formula, Speed HUD
+
+- **Bug fix — repeated instant death on respawn**: the respawn placement
+  only checked that the snake's *body* cells were clear, never the cell(s)
+  directly ahead of the head in its (fixed) travel direction. Since the
+  search was deterministic and obstacles don't move within a level, dying
+  once near an obstacle could put the very next respawn in the exact same
+  spot facing the same obstacle — reads as "keeps dying immediately" even
+  though the 3-second countdown technically allowed a manual dodge.
+  `placeSnakeSafely()` now rejects any candidate spot whose next 1–2 cells
+  ahead are an obstacle (checked for both the single-row and the
+  long-snake zigzag placement paths), verified with a Node script against
+  a deliberately placed obstacle.
+- **Speed formula changed to match the requested rule exactly**: every 50
+  points now adds a flat **+10% speed relative to the level's base rate**
+  (`tickMs = levelBase / (1 + 0.10 × floor(score / 50))`), replacing the
+  previous flat millisecond reduction (which felt inconsistent across
+  levels since each level's base speed differs).
+- **Speed now shown live** next to Score in the status panel (e.g. "+20%").
+
+## Title 6: 오늘의 고양이 (Cat Care) — 2026-07-06, Korean-only Arcade exception
+
+Arcade's 6th title, at `arcade/cat-care/`. **Entirely in Korean** — an
+explicit, one-off exception to the site-wide "Arcade stays English" rule,
+per direct instruction. Structurally very different from every other
+Arcade title: no lives, no score, no leaderboard — it's a one-day
+emotional check-in ritual instead of a competitive game.
+
+- **Real-world time gate**: can only be started when the visitor's actual
+  clock reads 08:40–09:20. Outside that window (or on weekends), a warm
+  "come back tomorrow" message shows instead — no game state, no bypass.
+- **Weekdays only** — Saturday/Sunday show a rest message, no start option.
+- **Name entry**: free text (max 8 chars) or a 🎲 "suggest a name" button
+  pulling from a 26-name pool. **A name used in the last 7 days can't be
+  reused** (tracked in `localStorage`, pruned automatically).
+- **Async check-in structure (not always-open-tab)**: on start, the whole
+  day's 6–8 care events (food/litter/play) are scheduled up front and
+  saved. The visitor can close the tab and come back anytime before 18:00;
+  each visit recalculates what happened since the last check (a `setInterval`
+  re-render every 15s and a `visibilitychange` listener handle it while the
+  tab *is* open, but nothing server-side or push-based is required).
+- **30-minute grace window** per event — respond within 30 minutes of it
+  "occurring" or it's recorded as missed.
+- **Hard-won bug, caught in testing before shipping**: the first scheduling
+  algorithm (per-segment jitter) was supposed to guarantee a 40-minute
+  minimum gap between events, but a 2000-trial Node simulation showed it
+  could produce gaps as low as ~11 minutes. Replaced with a stick-breaking
+  algorithm (distribute leftover slack across the gaps, then add the fixed
+  40-min minimum on top of each) — a follow-up 3000-trial simulation
+  confirmed the minimum gap holds at exactly 40 minutes in every case.
+- **Ends at 18:00 sharp** regardless of start time. Final message is
+  assembled from an opening + body + closing pool (10 each × 3 tiers = 1,000
+  combinations), tier chosen by care success rate (<40% / 40–79% / ≥80%,
+  boundaries verified against several rates in Node). All three tiers are
+  written so the *person*, not the cat, is always the one being comforted
+  or celebrated — no phrasing that could make someone feel guilty for a
+  low score.
+- **Visual direction**: a soft dusty-rose palette (`#d97a93`), distinct
+  from every other title's accent color, homaging a generic paint/canvas
+  toolbar (brush/pencil/palette icons, color swatches) without naming or
+  copying any specific drawing app — deliberately avoided calling it "그림판"
+  on-screen since that's Microsoft Paint's actual Korean product name.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

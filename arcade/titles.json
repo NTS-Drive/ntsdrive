@@ -46,11 +46,11 @@
   },
   {
     "id": "cat-care",
-    "title": "Cat Care",
-    "description": "Feed, play with, and grow a desk pet between meetings.",
-    "style": "Desktop pet / virtual pet",
-    "status": "In Planning",
-    "entryPath": null,
-    "addedAt": "2026-07-05"
+    "title": "오늘의 고양이",
+    "description": "평일 8:40~9:20 사이에 시작하는 하루짜리 고양이 케어 — 근무시간 동안 틈틈이 챙겨주고, 오후 6시에 마음을 담은 메시지를 받아보세요.",
+    "style": "일러스트 캔버스 UI, 실시간 비동기 육성",
+    "status": "Live",
+    "entryPath": "cat-care/index.html",
+    "addedAt": "2026-07-06"
   }
 ]
