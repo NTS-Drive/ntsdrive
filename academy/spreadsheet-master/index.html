@@ -1,44 +1,451 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스프레드시트 마스터 | Academy</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="../../styles.css">
-<script src="../../analytics.js"></script>
-<script src="../../feedback-widget.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스프레드시트 마스터 가이드 (초급부터 전사 자동화까지)</title>
+    <style>
+        :root {
+            --bg-color: #f4f6fa;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --accent-bg: #eff6ff;
+            --code-bg: #0f172a;
+            --code-text: #38bdf8;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --story-bg: #f8fafc;
+            --story-border: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 50px 20px;
+        }
+
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+        }
+
+        header p {
+            color: #bfdbfe;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        /* 컨트롤 패널 */
+        .controls {
+            position: sticky;
+            top: 0;
+            background-color: rgba(244, 246, 250, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .app-bar {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+        }
+        .back-link {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            background-color: #ffffff;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--accent-bg);
+        }
+
+        .btn.active {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* 레벨 섹션 전체 */
+        .level-section {
+            margin-bottom: 60px;
+            scroll-margin-top: 160px;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .level-header {
+            font-size: 1.8rem;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 4px solid var(--primary);
+            font-weight: 800;
+        }
+
+        /* 소설 단락 스타일 */
+        .story-box {
+            background-color: var(--story-bg);
+            border-left: 5px solid var(--story-border);
+            padding: 20px 25px;
+            border-radius: 4px;
+            margin-bottom: 35px;
+            font-size: 1.05rem;
+            color: #334155;
+            text-align: justify;
+            line-height: 1.8;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+        
+        .story-box strong {
+            color: #0f172a;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* 카드 그리드 및 개별 카드 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .item-card {
+            background-color: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+
+        .item-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .item-card[data-level="lv4"] .badge, .item-card[data-level="lv5"] .badge {
+            background-color: #fef3c7;
+            color: #d97706;
+            border-color: #fde68a;
+        }
+
+        .item-usage {
+            margin-bottom: 15px;
+            color: #334155;
+            font-size: 1.05rem;
+        }
+
+        .formula-box {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            border-left: 4px solid var(--primary);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .formula-box span {
+            color: var(--code-text);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .item-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            padding-left: 4px;
+        }
+
+        .item-desc strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .no-result {
+            display: none;
+            text-align: center;
+            padding: 60px;
+            background: #ffffff;
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* 반응형 속성 */
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            header { padding: 25px 15px; }
+            header h1 { font-size: 1.8rem; }
+            .level-section { padding: 20px; }
+            .nav-buttons {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                overflow-x: visible;
+            }
+            .nav-buttons .btn { white-space: normal; font-size: 0.85rem; padding: 10px 6px; text-align: center; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="explorer">
-  <div class="addressbar">
-    <div class="breadcrumb">
-      <a class="crumb" href="../../index.html">🗂️ NTS_Drive</a>
-      <span class="sep">›</span>
-      <a class="crumb" href="../index.html">🎓 Academy</a>
-      <span class="sep">›</span>
-      <span class="crumb current">📊 스프레드시트 마스터</span>
-    </div>
-  </div>
-
-  <div class="placeholder-body">
-    <div class="placeholder-emoji">📊</div>
-    <div class="placeholder-title">스프레드시트 마스터</div>
-    <div class="placeholder-desc">
-      실무에서 바로 쓰는 스프레드시트 활용법을 쉽고 짧게 정리하는 시리즈입니다.
-      첫 게시글을 준비 중입니다 — 곧 만나보실 수 있어요.
-    </div>
-    <a class="play-btn" href="../index.html" style="margin-top:16px;">Academy로 돌아가기</a>
-  </div>
-
-  <div class="statusbar">
-    <span>게시글 0편 · 준비 중</span>
-  </div>
+<div class="app-bar">
+    <a class="back-link" href="../index.html">&larr; 아카데미로 돌아가기</a>
 </div>
+
+<div class="container">
+    <header>
+        <h1>📊 스프레드시트 마스터 가이드</h1>
+        <p>각 레벨별 실무 시나리오 완벽 수록</p>
+    </header>
+
+    <!-- 컨트롤 및 라이브 검색 인터페이스 -->
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-box" placeholder="함수 이름, 업무용 키워드, 소설 속 단어 등을 자유롭게 입력하세요 (예: XLOOKUP, 취합, 정산, 자동화)...">
+        <div class="nav-buttons">
+            <button class="btn active" onclick="filterLevel('all')">전체 대백과 보기</button>
+            <button class="btn" onclick="filterLevel('lv1')">LV.1 데이터 정리</button>
+            <button class="btn" onclick="filterLevel('lv2')">LV.2 데이터 매칭</button>
+            <button class="btn" onclick="filterLevel('lv3')">LV.3 데이터 분석</button>
+            <button class="btn" onclick="filterLevel('lv4')">LV.4 동적 배열</button>
+            <button class="btn" onclick="filterLevel('lv5')">LV.5 마스터 자동화</button>
+        </div>
+    </div>
+
+    <div id="noResult" class="no-result">💡 입력하신 키워드와 일치하는 함수, 기능, 또는 실무 시나리오가 대백과 안에 존재하지 않습니다. 다른 검색어를 입력해 보세요.</div>
+
+    <!-- 동적 루프로 구현될 본문 섹션 -->
+    <div id="sectionsContainer"></div>
+</div>
+
+<script>
+    // 파이썬에서 주입받은 데이터 세트 구조화
+    const data = {"lv1":{"title":"🐣 Level 1: 데이터 정리의 시작 (초급)","story":"금요일 오후 4시, 신입사원 김 대리는 가맹점주들이 제각각 보내온 매출 엑셀 파일을 취합하다가 절망에 빠졌다. 어떤 매장은 매출액 뒤에 '원'을 붙여놓았고, 어떤 곳은 아예 먹통인 채 빈칸으로 남겨두었으며, 심지어 파일 하나에 매장명과 팀 이름이 “김철수_강남점_A팀”처럼 한 덩어리로 뭉쳐 있어 도무지 합계를 낼 수가 없었다. 퇴근 시간은 다가오는데 계산기 앱을 켜고 일일이 손으로 더해야 하나 눈앞이 캄캄해지던 순간, 옆자리 선배가 다가와 몇 가지 단축키를 일러주었다. 뭉쳐 있던 텍스트가 순식간에 몇 개의 열로 쪼개지고 보기 싫던 에러 창들이 마법처럼 0으로 바뀌더니, 마침내 단 1초 만에 전국 매장의 깔끔한 평균 매출 총량 행이 화면 하단에 완성되었다. 김 대리는 비로소 안도의 한숨을 내쉬며 주말을 맞이할 준비를 마쳤다.","items":[{"title":"1. SUM","type":"함수","usage":"지정한 범위 내 모든 숫자의 합계를 구합니다.","formula":"=SUM(C2:C20)","desc":"1) 가장 기본적이면서 강력한 연산 함수로, 다수의 셀 값을 1초 만에 합산합니다. 2) 팀별 소모품 구매 내역을 합산해 분기 예산 집행률을 계산할 때도 그대로 활용됩니다. 3) 여러 지점의 일일 방문자 수를 하나의 총계로 묶어 본사 보고서에 반영합니다.","keywords":"sum 합계 더하기 매출금액"},{"title":"2. AVERAGE","type":"함수","usage":"지정한 범위 내 숫자들의 산술 평균을 계산합니다.","formula":"=AVERAGE(C2:C20)","desc":"1) 가맹점별 평균 실적이나 일평균 방문자 수 등 기준값을 산출할 때 필수적입니다. 2) 팀원별 프로젝트 평균 소요 시간을 계산해 일정 산정 기준으로 삼습니다. 3) 고객 만족도 설문 점수의 평균을 내어 서비스 품질 지표로 보고합니다.","keywords":"average 평균 평점 중간값"},{"title":"3. COUNTA","type":"함수","usage":"비어있지 않은 셀(텍스트, 숫자 포함)의 개수를 셉니다.","formula":"=COUNTA(B2:B100)","desc":"1) 이번 달 실적을 제출한 가맹점의 총 개수나 등록된 상품 수를 확인할 때 쓰입니다. 2) 설문 응답이 몇 건 들어왔는지 실시간으로 확인할 때 사용합니다. 3) 재고 대장에서 실제 등록된 품목 수를 빠르게 검증합니다.","keywords":"counta 개수 카운트 텍스트개수"},{"title":"4. COUNT","type":"함수","usage":"지정된 범위에서 '숫자'가 들어있는 셀의 개수만 셉니다.","formula":"=COUNT(C2:C100)","desc":"1) 텍스트 비고란을 제외하고 실제 '금액'이나 '수량' 데이터가 입력된 행의 수를 검증합니다. 2) 설문 문항 중 숫자로 응답한 항목의 개수만 따로 검증합니다. 3) 정산 대상 행 중 실제 금액이 기입된 건수만 골라 셉니다.","keywords":"count 숫자개수 카운트"},{"title":"5. IFERROR","type":"함수","usage":"수식에서 에러(#N/A, #DIV/0! 등)가 발생할 때 깔끔한 대체값을 출력합니다.","formula":"=IFERROR(C2/D2, 0)","desc":"1) 에러 문자열 대신 0이나 빈칸을 출력하여 전체 보고서의 시각적 완성도를 지켜줍니다. 2) 나눗셈 수식에서 분모가 0일 때 발생하는 에러를 깔끔하게 가려줍니다. 3) VLOOKUP 결과가 없을 때 '확인 필요' 같은 안내 문구로 대체합니다.","keywords":"iferror 오류 에러 예외처리 숨기기"},{"title":"6. 정렬 (Sort)","type":"기능","usage":"데이터를 가나다순, 혹은 크기순으로 나열합니다.","formula":"실행: 데이터 ➔ 시트 정렬 또는 범위 정렬","desc":"1) 매출이 높은 순서대로 매장을 나열하거나, 날짜순으로 이력을 정렬할 때 사용합니다. 2) 신입사원 명단을 입사일 순으로 정렬해 연수 일정표를 만듭니다. 3) 재고 목록을 수량이 적은 순으로 정렬해 발주 우선순위를 정합니다.","keywords":"sort 정렬 오름차순 내림차순"},{"title":"7. 필터 (Filter)","type":"기능","usage":"특정 조건에 맞는 데이터 행만 화면에 남기고 숨깁니다.","formula":"단축키: Ctrl + Shift + L (Excel) / 필터 아이콘 클릭","desc":"1) 수백 개 매장 중 '서울' 지역만 필터링하거나 '특정 브랜드'만 골라볼 때 유용합니다. 2) 여러 부서가 섞인 근태 기록에서 '내 부서'만 걸러 확인합니다. 3) 고객 문의 목록에서 '미처리' 상태만 남겨 오늘 할 일을 추립니다.","keywords":"filter 필터 거르기 검색"},{"title":"8. 텍스트 나누기","type":"기능","usage":"한 셀에 결합된 문자열을 특정 구분 기호 기준으로 여러 열로 분리합니다.","formula":"실행: 데이터 ➔ 텍스트 나누기 (구분 기호: _,쉼표,공백 등)","desc":"1) '홍길동_서울_A팀' 구조의 원본 데이터를 이름/지역/팀별 컬럼으로 쪼갤 수 있습니다. 2) '제품코드-옵션-수량'처럼 합쳐진 주문 데이터를 항목별로 분리합니다. 3) 이메일 주소를 아이디와 도메인으로 나눠 별도 열로 관리합니다.","keywords":"text to columns 텍스트 나누기 분리 분할"},{"title":"9. UPPER / LOWER","type":"함수","usage":"텍스트를 모두 대문자 또는 소문자로 변환합니다.","formula":"=UPPER(\"gs25\") ➔ GS25","desc":"1) 영문 브랜드명이나 코드 대소문자가 뒤섞여 데이터가 매칭되지 않을 때 통일시키는 역할을 합니다. 2) 쿠폰 코드가 대소문자 섞여 입력될 때 통일해 중복 확인 오류를 막습니다. 3) 이메일 주소를 모두 소문자로 통일해 고객 데이터베이스 매칭 정확도를 높입니다.","keywords":"upper lower 대문자 소문자 변환"},{"title":"10. TRIM","type":"함수","usage":"텍스트의 앞뒤에 있는 불필요한 공백을 완전히 제거합니다.","formula":"=TRIM(A2)","desc":"1) 점주들이 잘못 입력한 보이지 않는 앞뒤 띄어쓰기 때문에 VLOOKUP이 안 터지는 문제를 해결합니다. 2) 설문 응답의 주관식 답변에 남은 불필요한 공백을 정리해 통계 처리를 쉽게 합니다. 3) 여러 사람이 나눠 입력한 명단에서 이름 앞뒤 공백 오류를 일괄 제거합니다.","keywords":"trim 공백 제거 띄어쓰기 정리"},{"title":"11. MAX / MIN","type":"함수","usage":"지정한 범위 내에서 최댓값과 최솟값을 찾습니다.","formula":"최대: =MAX(C2:C20) / 최소: =MIN(C2:C20)","desc":"1) 당월 최고 매출 매장과 최저 매출 매장의 실적을 단숨에 모니터링합니다. 2) 이번 분기 가장 오래 걸린 프로젝트와 가장 빨리 끝난 프로젝트를 한눈에 찾습니다. 3) 일별 기온이나 방문자 수의 최고·최저 기록을 자동으로 추적합니다.","keywords":"max min 최고 최저 최댓값 최솟값"},{"title":"12. CONCATENATE / &","type":"함수/연산자","usage":"여러 셀의 텍스트를 하나로 이어 붙입니다.","formula":"=A2 & \" \" & B2 또는 =CONCATENATE(A2, B2)","desc":"1) '강남점'과 '홍길동'을 합쳐 '강남점 홍길동'이라는 유니크한 관리용 텍스트를 생성합니다. 2) 부서명과 사번을 합쳐 사내 고유 계정 아이디를 자동 생성합니다. 3) 연도와 월 데이터를 합쳐 '2026-07' 형태의 보고서 제목을 만듭니다.","keywords":"concatenate & 텍스트 합치기 연결"},{"title":"13. LEN","type":"함수","usage":"텍스트 문자열의 글자 수를 반환합니다.","formula":"=LEN(A2)","desc":"1) 사번, 사업자등록번호(10자리), 주민번호 등 고정 일련번호의 자릿수 오류를 검증할 때 유용합니다. 2) 비밀번호나 인증코드 자리수가 규정에 맞는지 자동으로 검증합니다. 3) 상품 바코드 자릿수가 올바른지 대량 데이터에서 한 번에 확인합니다.","keywords":"len 글자수 자릿수 확인"},{"title":"14. TODAY","type":"함수","usage":"현재 컴퓨터 기준 오늘 날짜를 실시간으로 표시합니다.","formula":"=TODAY()","desc":"1) 파일을 열 때마다 오늘 날짜로 자동 갱신되므로 D-Day 계산이나 일일 정산 보고서에 필수입니다. 2) 계약 만료일까지 남은 일수를 오늘 날짜 기준으로 자동 계산합니다. 3) 회의록 파일명에 오늘 날짜를 자동으로 넣어 매번 수동 입력을 없앱니다.","keywords":"today 오늘 날짜 실시간"},{"title":"15. 틀 고정 (Freeze Panes)","type":"기능","usage":"스크롤을 아래나 오른쪽으로 내려도 행/열 머리글이 고정되어 보이게 합니다.","formula":"실행: 보기 ➔ 틀 고정 (행/열 고정)","desc":"1) 수천 행 밑으로 내려가도 지금 보고 있는 숫자가 '매출'인지 '인센티브'인지 헷갈리지 않게 해줍니다. 2) 긴 설문 응답 데이터를 내려봐도 응답자 이름 열이 항상 보이게 고정합니다. 3) 월별 실적 표에서 항목명이 담긴 첫 열을 고정해 가로 스크롤에도 안 헷갈리게 합니다.","keywords":"freeze panes 틀고정 행고정 열고정"},{"title":"16. 셀 병합 및 가운데 맞춤","type":"기능","usage":"여러 개의 셀을 하나로 합치고 텍스트를 중앙에 정렬합니다.","formula":"실행: 홈 ➔ 병합하고 가운데 맞춤 버튼","desc":"1) 보고서의 대제목, 혹은 동일한 분류 그룹을 보기 좋게 묶어 레이아웃을 정돈합니다. 2) 여러 달에 걸친 분기 제목을 하나의 셀로 병합해 표 상단을 정리합니다. 3) 설문지 양식에서 안내 문구를 여러 칸에 걸쳐 자연스럽게 배치합니다.","keywords":"merge 셀병합 합치기 가운데정렬"},{"title":"17. 서식 복사","type":"기능","usage":"특정 셀의 글꼴, 배경색, 테두리 등 스타일만 그대로 복사해 다른 셀에 입힙니다.","formula":"단축키: 붓 모양 아이콘 클릭 후 적용할 셀 드래그","desc":"1) 수식이나 데이터 알맹이는 건드리지 않고 표 디자인 통일감을 줄 때 유용합니다. 2) 새로 추가한 행에 기존 표의 디자인을 그대로 입혀 일관성을 유지합니다. 3) 여러 시트에 흩어진 표의 스타일을 원본 하나로 통일합니다.","keywords":"format painter 서식복사 디자인복사"},{"title":"18. 찾기 및 바꾸기 (Find & Replace)","type":"기능","usage":"시트 전체에서 특정 단어를 찾아 다른 단어로 일괄 교체합니다.","formula":"단축키: Ctrl + F (찾기) / Ctrl + H (바꾸기)","desc":"1) 오타가 난 매장명 '지에스25'를 원래 명칭인 'GS25'로 한 번에 수정할 때 요긴합니다. 2) 구 사명에서 새 사명으로 사내 전 문서 표기를 일괄 교체합니다. 3) 설문 응답에 섞인 비속어나 오탈자를 한 번에 정리합니다.","keywords":"find replace 찾기 바꾸기 일괄수정"},{"title":"19. LEFT / RIGHT","type":"함수","usage":"텍스트의 왼쪽 또는 오른쪽부터 지정한 글자 수만큼 추출합니다.","formula":"=LEFT(A2, 4) (앞 4글자) / =RIGHT(A2, 3) (뒤 3글자)","desc":"1) 사번 코드의 앞자리(부서코드)나 날짜 데이터의 뒷자리만 분리해 낼 때 요긴합니다. 2) 전화번호 뒷자리 4자리만 추출해 마스킹 처리용 데이터를 만듭니다. 3) 제품 코드 앞자리로 카테고리를 구분해 별도 열에 표시합니다.","keywords":"left right 왼쪽 오른쪽 문자추출"},{"title":"20. MID","type":"함수","usage":"텍스트의 시작 위치를 지정하여 중간에 있는 문자들을 추출합니다.","formula":"=MID(A2, 5, 2) (5번째 글자부터 2글자)","desc":"1) 주민등록번호나 사업자번호 중간에 숨은 관리 코드를 쏙 빼낼 때 사용합니다. 2) 차량 번호판 중간 숫자만 추출해 지역 코드를 분류합니다. 3) 긴 주문번호 중간의 매장 코드만 뽑아내 매장별 집계에 사용합니다.","keywords":"mid 중간 문자추출 중간글자"},{"title":"21. 기본 테두리 및 배경색 지정","type":"기능","usage":"데이터 영역에 선을 긋고 타이틀 영역에 음영을 주어 표를 완성합니다.","formula":"실행: 홈 ➔ 테두리 설정 / 채우기 색상 선택","desc":"1) 구분선이 없어 가독성이 떨어지는 생짜 텍스트 덩어리를 정식 보고서 양식으로 바꿉니다. 2) 팀 주간 보고서에 구분선을 넣어 항목별로 읽기 쉽게 만듭니다. 3) 중요 항목에 배경색을 넣어 결재 시 놓치지 않게 강조합니다.","keywords":"border background 테두리 배경색 그리드"},{"title":"22. 값으로 붙여넣기","type":"기능","usage":"수식이 걸려 있는 셀을 복사할 때, 수식 결과인 '진짜 숫자값'만 추출해 붙여넣습니다.","formula":"단축키: Ctrl + Alt + V ➔ 값 선택 (또는 마우스 우클릭 ➔ 값으로 붙여넣기)","desc":"1) 수식이 깨지지 않게 결과 데이터만 타 부서에 이메일로 전달할 때 절대 필수인 기능입니다. 2) 다른 팀에 파일을 전달하기 전 수식을 결과값으로 고정해 오류를 방지합니다. 3) 매달 갱신되는 수식 결과를 그 달의 기록으로 별도 시트에 백업합니다.","keywords":"paste values 값붙여넣기 수식제거 값만복사"},{"title":"23. 자동 채우기 핸들","type":"기능","usage":"셀 우측 하단 모서리를 드래그하여 수식이나 연속된 데이터를 아래로 복사합니다.","formula":"실행: 셀 오른쪽 아래 '+' 모양을 아래로 드래그 또는 더블클릭","desc":"1) 첫 행에 써 둔 SUM이나 IF 수식을 수백 행 밑까지 노가다 없이 일괄 복사해 줍니다. 2) 1월부터 12월까지 월 이름을 드래그 한 번으로 자동 채웁니다. 3) 사번이나 순번처럼 규칙적인 값을 수백 행까지 빠르게 채웁니다.","keywords":"auto fill 자동채우기 드래그 복사"},{"title":"24. 숨기기 / 숨기기 취소","type":"기능","usage":"불필요한 행이나 열을 화면에서 일시적으로 가리거나 다시 나타냅니다.","formula":"실행: 행/열 머리글 우클릭 ➔ 숨기기","desc":"1) 중간 정산용 참고 열 등 최종 보고서 인쇄 및 화면 공유 시 감추고 싶은 열을 정리합니다. 2) 내부 계산용 보조 열을 숨겨 외부 공유 파일을 깔끔하게 정리합니다. 3) 인쇄 시 불필요한 열을 숨겨 보고서 페이지 수를 줄입니다.","keywords":"hide unhide 숨기기 열숨기기 행숨기기"},{"title":"25. NOW","type":"함수","usage":"현재 날짜와 '정확한 시간'까지 함께 표시합니다.","formula":"=NOW()","desc":"1) 실시간 데이터가 계속 변하는 정산 시트에서 '몇 시 몇 분 기준 출력본'인지 타임스탬프를 남깁니다. 2) 출근/퇴근 기록 시트에 자동으로 현재 시각을 남깁니다. 3) 실시간 재고 확인 시트에 마지막 갱신 시각을 표시합니다.","keywords":"now 현재시간 타임스탬프 일시"},{"title":"26. PROPER","type":"함수","usage":"텍스트의 각 단어 첫 글자만 대문자로, 나머지는 소문자로 자동 변환합니다.","formula":"=PROPER(\"hong gil-dong\") ➔ Hong Gil-Dong","desc":"1) 가맹점주가 영문 이름이나 브랜드명을 대소문자 제각각으로 입력해도 정식 표기법으로 자동 통일시켜 줍니다. 2) 엑셀로 받은 거래처 담당자 명단의 표기를 통일해 명함 발송용 리스트를 만듭니다. 3) 영문 프로젝트명을 정식 표기로 통일해 사내 문서 일관성을 지킵니다.","keywords":"proper 첫글자대문자 이름표준화 대소문자통일"},{"title":"27. COUNTBLANK","type":"함수","usage":"지정한 범위에서 비어있는 셀의 개수만 셉니다.","formula":"=COUNTBLANK(B2:B100)","desc":"1) 이번 달 실적을 아직 제출하지 않은 가맹점이 몇 곳인지 미제출 현황을 한 번에 파악할 때 유용합니다. 2) 설문지에서 응답을 건너뛴 문항이 몇 개인지 자동으로 확인합니다. 3) 직원 정보 시트에서 아직 입력되지 않은 필수 항목 수를 점검합니다.","keywords":"countblank 빈칸개수 미제출 누락확인"}]},"lv2":{"title":"🏃 Level 2: 데이터 매칭과 조건부 계산 (중급)","story":"박 과장은 요즘 온종일 모니터 두 개를 번갈아 보느라 눈이 터질 것만 같았다. 한쪽 화면에는 수백 개 가맹점의 코드와 일일 실적 정보가 떠 있었고, 다른 쪽 화면에는 점주들의 이름과 계약 조건이 담긴 거대한 '마스터 테이블'이 열려 있었다. 이 두 시트의 파편화된 정보를 하나로 합쳐서 매출이 5천만 원을 넘긴 우수 매장 리스트를 추려내야 하는데, 눈이 침침해져 자꾸만 윗행과 아랫행을 혼동하는 실수를 범했다. 결국 마음을 다잡고 키보드에 손을 올린 그는 두 테이블의 공통 연결고리인 '가맹점 코드'를 조준하여 매칭 수식을 심기 시작했다. 엔터키를 누르자 마스터 시트에 있던 담당자 이름과 주소들이 일일 실적 시트 옆방으로 알아서 척척 찾아가 자리를 잡았고, 매출 기준을 돌파한 셀들이 약속이라도 한 듯 일제히 화사한 녹색 하이라이트로 반짝이며 박 과장의 눈을 시원하게 밝혀주었다.","items":[{"title":"1. XLOOKUP","type":"함수","usage":"가장 진화한 데이터 매칭 함수로, 기준 열의 방향에 제한 없이 값을 찾아옵니다.","formula":"=XLOOKUP(A2, 마스터!A:A, 마스터!C:C, \"미등록\")","desc":"VLOOKUP의 에러 한계를 완벽히 지워버린 최신 필수 함수입니다. 왼쪽에 있는 값도 가져옵니다.","keywords":"xlookup 엑스룩업 매칭 찾기 브이룩업대체"},{"title":"2. VLOOKUP","type":"함수","usage":"기준 열에서 우측 방향으로 지정한 번째 열의 데이터를 조회해 옵니다.","formula":"=VLOOKUP(A2, 마스터!A:D, 3, FALSE)","desc":"실무에서 가장 널리 쓰이는 매칭 함수로, 고유 코드를 기반으로 다른 시트의 정보를 연동합니다.","keywords":"vlookup 브이룩업 데이터매칭 찾기"},{"title":"3. IF","type":"함수","usage":"주어진 조건이 참일 때와 거짓일 때 각각 다른 값을 반환합니다.","formula":"=IF(C2>=50000000, \"우수\", \"일반\")","desc":"매출 기준 달성 여부, 재고 부족 여부 등 비즈니스 규칙에 따른 자동 분류기 역할을 합니다.","keywords":"if 만약에 조건문 분기 분류"},{"title":"4. SUMIF","type":"함수","usage":"특정 단일 조건을 만족하는 행들의 합계만 계산합니다.","formula":"=SUMIF(B2:B50, \"서울\", C2:C50)","desc":"전체 리스트에서 특정 지역(예: 서울)이나 특정 상품군의 매출액만 쏙 골라 더해줍니다.","keywords":"sumif 조건합계 특정지역합"},{"title":"5. COUNTIF","type":"함수","usage":"특정 단일 조건을 충족하는 셀의 개수만 카운트합니다.","formula":"=COUNTIF(D2:D50, \"직영점\")","desc":"수많은 매장 리스트 중 '직영점' 형태의 매장이 총 몇 개인지 파악할 때 쓰입니다.","keywords":"countif 조건개수 매장수 카운트"},{"title":"6. 조건부 서식","type":"기능","usage":"셀의 값이 특정 조건에 부합하면 자동으로 셀 배경이나 글자 색상을 바꿉니다.","formula":"실행: 홈 ➔ 조건부 서식 ➔ 셀 강조 규칙","desc":"매출 미달 매장은 빨간색, 초과 달성 매장은 녹색으로 하이라이트 해 가독성을 극대화합니다.","keywords":"conditional formatting 조건부서식 하이라이트 강조"},{"title":"7. 중복된 항목 제거","type":"기능","usage":"선택한 범위에서 중복 입력된 행을 지우고 유일한 값(고유값)만 남깁니다.","formula":"실행: 데이터 ➔ 중복된 항목 제거","desc":"여러 날짜의 로우 데이터 뭉치에서 고유한 '가맹점 코드 마스터 목록'을 추출할 때 필수입니다.","keywords":"remove duplicates 중복제거 고유값정리"},{"title":"8. 데이터 유효성 검사 (목록)","type":"기능","usage":"셀에 사용자가 임의로 타이핑하지 못하게 드롭다운 목록 선택을 강제합니다.","formula":"실행: 데이터 ➔ 데이터 유효성 검사 ➔ 제한 대상: 목록","desc":"'서울시', '서울특별시'처럼 제각각 입력되어 데이터 통계가 꼬이는 휴먼 에러를 원천 봉쇄합니다.","keywords":"data validation 데이터유효성검사 드롭다운 목록"},{"title":"9. HLOOKUP","type":"함수","usage":"VLOOKUP과 반대로 가로(행) 방향으로 나열된 기준 테이블에서 데이터를 찾아옵니다.","formula":"=HLOOKUP(A2, 요율표!A1:E2, 2, FALSE)","desc":"등급별 할인율이나 기간별 수수료율이 가로 일렬로 배치된 마스터표를 참조할 때 사용합니다.","keywords":"hlookup 에이치룩업 가로찾기"},{"title":"10. AND / OR","type":"함수","usage":"IF 함수와 결합하여 여러 개의 조건을 만족하는지 판별합니다 (그리고 / 또는).","formula":"=IF(AND(C2>=50000000, D2>=90), \"최우수\", \"일반\")","desc":"매출 기준도 충족하고, 점주 평가 점수도 우수한 '다중 조건 통과자'를 찾아낼 때 씁니다.","keywords":"and or 논리연산 여러조건"},{"title":"11. ROUND / ROUNDUP / ROUNDDOWN","type":"함수","usage":"숫자를 지정한 자릿수 기준으로 반올림 / 올림 / 내림 처리합니다.","formula":"반올림: =ROUND(A2, 0) / 내림: =ROUNDDOWN(A2, -3)","desc":"소수점 아래 금액이나 원단위 절사 등 정산 보고서의 화폐 단위를 깔끔하게 통일합니다.","keywords":"round roundup rounddown 반올림 올림 내림 절사"},{"title":"12. AVERAGEIF","type":"함수","usage":"특정 조건을 만족하는 셀들의 평균값만 구합니다.","formula":"=AVERAGEIF(B2:B50, \"부산\", C2:C50)","desc":"전체 평균이 아닌, '부산 지역 가맹점'들만의 평균 매출을 뽑아 벤치마킹할 때 활용합니다.","keywords":"averageif 조건평균 지역평균"},{"title":"13. REPLACE / SUBSTITUTE","type":"함수","usage":"텍스트 안의 특정 문자를 다른 문자로 지정하거나 찾아 바꿉니다.","formula":"=SUBSTITUTE(A2, \"(주)\", \"\")","desc":"회사명 뒤에 붙은 '(주)'라는 불필요한 공백/문자열을 일괄 제거하여 텍스트를 깨끗이 정제합니다.","keywords":"replace substitute 문자열변경 바꾸기"},{"title":"14. EOMONTH","type":"함수","usage":"지정한 날짜를 기준으로 몇 개월 전후의 '해당 월의 마지막 날짜'를 구합니다.","formula":"=EOMONTH(TODAY(), 0)","desc":"당월 말일 정산일, 만기일 등을 계산할 때 요긴합니다. (2월 28일/29일 유동적 대응)","keywords":"eomonth 말일 계산 월말 정산일"},{"title":"15. NETWORKDAYS","type":"함수","usage":"주말과 지정 공휴일을 제외한 두 날짜 사이의 '실제 영업일 수'를 계산합니다.","formula":"=NETWORKDAYS(A2, B2, 공휴일지정범위)","desc":"가맹점 계약부터 오픈까지 소요된 '영업일 기준 프로젝트 기간'을 산출할 때 필수적입니다.","keywords":"networkdays 영업일 근무일 평일수"},{"title":"16. EDATE","type":"함수","usage":"지정한 날짜로부터 정확히 몇 개월 전 또는 후의 날짜를 반환합니다.","formula":"=EDATE(A2, 12) (1년 후)","desc":"프랜차이즈 가맹 계약일로부터 1년 뒤 '갱신 예고일' 등을 계산할 때 누락 없이 처리해 줍니다.","keywords":"edate 개월후 날짜계산 계약갱신"},{"title":"17. TEXTJOIN","type":"함수","usage":"구분 기호를 지정하여 여러 범위의 문자를 중간 공백 없이 하나로 결합합니다.","formula":"=TEXTJOIN(\", \", TRUE, A2:A5)","desc":"선택한 여러 매장 이름을 '강남점, 서초점, 역삼점' 형태로 예쁘게 나열해 한 셀에 요약합니다.","keywords":"textjoin 문자열합치기 구분기호연결"},{"title":"18. LARGE / SMALL","type":"함수","usage":"데이터 범위 내에서 n번째로 큰 값 또는 n번째로 작은 값을 찾습니다.","formula":"2등 매출: =LARGE(C2:C100, 2)","desc":"단순 최댓값 외에 상위 매출 2위, 3위 매장의 실적 수준을 다이내믹하게 추출합니다.","keywords":"large small 몇번째로큰값 몇번째로작은값"},{"title":"19. 절대 참조 ($)","type":"개념/기능","usage":"수식을 복사해도 참조하는 특정 셀 주소가 바뀌지 않도록 고정합니다.","formula":"=A2 * $F$1 (F1셀 주소 선택 후 F4키 입력)","desc":"수식을 아래로 채워도 환율, 인센티브 요율 등 '고정된 기준값'이 저장된 셀을 계속 고정 참조합니다.","keywords":"absolute reference 절대참조 f4 고정 주소고정"},{"title":"20. CHOOSE","type":"함수","usage":"첫 번째 인자의 숫자에 따라 나열된 목록 중 해당 번째 값을 선택합니다.","formula":"=CHOOSE(A2, \"A팀\", \"B팀\", \"C팀\")","desc":"코드 번호가 1, 2, 3일 때 각각 팀명을 직관적으로 매칭 시켜 표현할 때 유용합니다.","keywords":"choose 선택 번호별매칭"},{"title":"21. WEEKDAY","type":"함수","usage":"날짜에 해당하는 요일을 숫자로 변환합니다 (1:일요일 ~ 7:토요일).","formula":"=IF(WEEKDAY(A2, 2)>5, \"주말\", \"평일\")","desc":"가맹점 매출 데이터가 주말 매출인지 주중 매출인지 분류해 트렌드를 분석하는 밑바탕이 됩니다.","keywords":"weekday 요일 일주일 요일숫자"},{"title":"22. VALUE","type":"함수","usage":"텍스트 형태로 저장되어 연산이 불가능한 숫자를 '진짜 숫자 포맷'으로 바꿉니다.","formula":"=VALUE(A2)","desc":"외부 시스템에서 다운받아 문자로 인식되는 매출액 데이터에 숨어 있는 계산 불능 오류를 해결합니다.","keywords":"value 숫자변환 텍스트숫자문항"},{"title":"23. TEXT (기본)","type":"함수","usage":"숫자를 지정한 서식의 텍스트 형태로 보기 좋게 변환합니다.","formula":"=TEXT(A2, \"#,##0원\") ➔ 5,000,000원","desc":"숫자 알맹이를 유지하면서 문자열 보고서 결합문 사이에 통화 표시 등을 넣을 때 유용합니다.","keywords":"text 형식변환 포맷지정 천단위콤마"},{"title":"24. 이중/다중 IF","type":"수식구조","usage":"IF 함수 안에 또 다른 IF 함수를 중첩하여 3가지 이상의 다중 조건을 평가합니다.","formula":"=IF(C2>=5000, \"우수\", IF(C2>=3000, \"일반\", \"미달\"))","desc":"S, A, B, C 등 다단계 등급 체계나 차등 인센티브 구간을 명확히 구현해 줍니다.","keywords":"nested if 다중if 중첩if 등급구분"},{"title":"25. ISEMPTY / ISBLANK","type":"함수","usage":"지정한 셀이 비어있는지 여부를 판단하여 TRUE/FALSE를 반환합니다.","formula":"=IF(ISBLANK(A2), \"정보 누락\", \"확인 완료\")","desc":"체크 데이터 누락 건을 자동 선별하여 담당자 연락 등 후속 액션을 유도할 수 있습니다.","keywords":"isblank isempty 빈칸 확인 데이터누락"}]},"lv3":{"title":"📊 Level 3: 본격적인 데이터 분석과 입체적 시각화 (중고급)","story":"\"지난 3개년 동안 우리 유통 채널별로 매출 추이가 어떻게 변했는지, 특히 분기별 비중 변화를 월요일 아침 임원 회의 전까지 내 머릿속에 들어오게 요약해 와요.\" 팀장의 갑작스러운 지시는 주말을 통째로 삼켜버릴 것 같은 시한폭탄이었다. 수만 개의 원본 로우 데이터 행을 보며 허둥대던 이 차장은 이내 침착하게 날짜 데이터 속에서 연도와 월을 추출하는 수식을 입력해 분석을 위한 단단한 기초 뼈대를 세웠다. 그리고 스프레드시트의 핵심인 요약 테이블 기능을 실행해 마우스 드래그 몇 번으로 수만 개의 행을 연도별, 지역별, 채널별 구조로 압축해 냈다. 여기에 마우스 클릭 하나로 실시간 필터링이 작동하는 동적 슬라이서 버튼과 시각적인 콤보 차트까지 곁들이자, 딱딱한 숫자 더미는 순식간에 경영진의 의사결정을 도울 입체적인 '라이브 대시보드' 보고서로 탈바꿈했다.","items":[{"title":"1. 피벗 테이블","type":"기능","usage":"방대한 행의 데이터를 단 몇 번의 드래그로 요약, 분석, 교차 요약하는 최강의 기능입니다.","formula":"실행: 삽입 ➔ 피벗 테이블 생성 후 행/열 필드 지정","desc":"유통 채널별, 분기별 매출 합계와 비중을 코딩 없이 마우스 조작만으로 완벽한 표로 완성합니다.","keywords":"pivot table 피벗테이블 데이터요약 대시보드"},{"title":"2. SUMIFS","type":"함수","usage":"2개 이상의 다중 조건을 동시에 만족하는 데이터의 합계를 구합니다.","formula":"=SUMIFS(C2:C100, B2:B100, \"서울\", D2:D100, \"편의점\")","desc":"'2026년 1분기'이면서 '서울 지역'의 '직영점' 매출 합산 등 고차원 실적 집계에 필수입니다.","keywords":"sumifs 다중조건합계 여러조건합"},{"title":"3. COUNTIFS","type":"함수","usage":"여러 조건을 복합적으로 만족하는 데이터 행의 개수를 셉니다.","formula":"=COUNTIFS(A2:A100, \"서울\", B2:B100, \">=50000000\")","desc":"서울 지역에 위치하면서 월 매출이 5천만 원 이상인 우수 점포 수가 몇 개인지 즉시 파악합니다.","keywords":"countifs 다중조건개수 조건 만족 개수"},{"title":"4. INDEX & MATCH 조합","type":"함수 조합","usage":"MATCH로 행 위치를 찾고, INDEX로 해당 교차점의 데이터를 추출해 역방향 검색을 완벽 지원합니다.","formula":"=INDEX(A2:A100, MATCH(\"홍길동\", C2:C100, 0))","desc":"기준 열의 왼쪽 값도 자유롭게 추적할 수 있어 정교한 금융 및 자산 재무 모델링에 필수적입니다.","keywords":"index match 인덱스매치 브이룩업한계극복"},{"title":"5. 슬라이서 (Slicer)","type":"기능","usage":"피벗 테이블이나 차트와 연동되어 직관적인 버튼 클릭으로 필터링을 제어합니다.","formula":"실행: 피벗 테이블 분석 ➔ 슬라이서 삽입","desc":"대시보드 상단에 지역 버튼을 만들어 버튼 터치 시마다 차트가 실시간 동적 변경되게 만듭니다.","keywords":"slicer 슬라이서 대시보드버튼 동적필터"},{"title":"6. 콤보 차트 (Combo Chart)","type":"기능","usage":"서로 다른 단위를 가진 두 데이터(예: 매출액과 성장률)를 한 차트에 막대와 꺾은선으로 결합합니다.","formula":"실행: 삽입 ➔ 차트 ➔ 혼합/콤보 차트 (보조축 체크)","desc":"왼쪽 축은 억 단위 매출 막대그래프, 오른쪽 축은 % 단위 성장률 꺾은선으로 입체 시각화합니다.","keywords":"combo chart 콤보차트 이중축 혼합차트"},{"title":"7. TEXT (날짜 가공)","type":"함수","usage":"날짜 원본을 분석 주기에 맞춘 원하는 형태의 텍스트 축으로 바꿉니다.","formula":"=TEXT(A2, \"yyyy-mm\") ➔ \"2026-07\"","desc":"연월별 일괄 묶음 분석이나 분기별 그래프 축을 설계하기 위한 데이터 전처리에 매우 강력합니다.","keywords":"text 날짜가공 연월추출 주기축"},{"title":"8. AVERAGEIFS","type":"함수","usage":"복수의 복합 조건을 충족하는 셀들의 산술 평균을 계산합니다.","formula":"=AVERAGEIFS(C2:C100, B2:B100, \"경기\", D2:D100, \"마트\")","desc":"경기 지역에 위치한 마트형 매장들의 평균 객단가 등 세부 카테고리별 벤치마크 지표를 도출합니다.","keywords":"averageifs 다중조건평균 카테고리평균"},{"title":"9. RANK / RANK.EQ","type":"함수","usage":"지정한 범위 내에서 특정 값의 상대적 순위를 매깁니다.","formula":"=RANK.EQ(C2, $C$2:$C$100)","desc":"전국 가맹점 실적 순위를 1등부터 순서대로 매겨 내부 평가 리포트를 구성할 때 요긴합니다.","keywords":"rank 순위 매기기 석차 등수"},{"title":"10. YEAR / MONTH / DAY","type":"함수","usage":"날짜 데이터에서 연, 월, 일을 각각 독립된 숫자로 추출합니다.","formula":"월 추출: =MONTH(A2) ➔ 결과: 7","desc":"가맹 계약일 원본에서 '월'만 따로 분리해 내어 계절성 매출 변동 요인을 파악할 때 유용합니다.","keywords":"year month day 연월일 날짜분리"},{"title":"11. 피벗 차트","type":"기능","usage":"피벗 테이블의 데이터 요약 결과와 실시간 연동되어 춤추듯 바뀌는 역동적 차트입니다.","formula":"실행: 피벗테이블 분석 ➔ 피벗 차트 삽입","desc":"피벗 테이블의 구조를 바꾸거나 필터를 걸 때마다 그래프 모양이 실시간 동기화되어 요동칩니다.","keywords":"pivot chart 피벗차트 실시간연동그래프"},{"title":"12. 데이터 막대 / 색상 스케일","type":"기능","usage":"조건부 서식을 활용해 셀 내부에 숫자 크기비례 막대나 그라데이션을 채웁니다.","formula":"실행: 조건부서식 ➔ 데이터 막대 또는 색상 스케일","desc":"숫자를 일일이 읽지 않아도 표 내부의 색상 짙고 옅음으로 매출 분포 핫스팟을 즉시 식별합니다.","keywords":"data bars color scales 데이터막대 색상스케일 시각화"},{"title":"13. 스파크라인 (Sparklines)","type":"기능/함수","usage":"한 셀의 크기 안에 들어가는 미니 꺾은선그래프나 막대그래프를 그립니다.","formula":"=SPARKLINE(C2:G2) (Google Sheets) 또는 삽입 ➔ 스파크라인 (Excel)","desc":"가맹점명 옆 칸에 지난 5개월간의 매출 트렌드 추이를 작고 직관적인 선으로 박아 가독성을 높입니다.","keywords":"sparkline 스파크라인 셀최적화미니차트 트렌드선"},{"title":"14. SUMPRODUCT","type":"함수","usage":"두 배열 범위의 대응되는 값끼리 곱한 뒤, 그 결과들의 총합을 한 번에 구합니다.","formula":"=SUMPRODUCT(B2:B10 * C2:C10)","desc":"[가맹점별 단가 * 발주 수량]의 총 정산 금액을 가공 열 없이 수식 하나로 한방에 계산합니다.","keywords":"sumproduct 곱하고더하기 가공열제거"},{"title":"15. CONCAT / 문자열 연결 대량화","type":"함수","usage":"여러 셀 범위의 문자열을 대량으로 한데 합칩니다.","formula":"=CONCAT(A2, B2)","desc":"복합 키 코드를 결합해 마스터 매칭 고유 Key를 생성하는 정교한 모델링의 기본이 됩니다.","keywords":"concat 문자열결합 고유키생성"},{"title":"16. SUBTOTAL","type":"함수","usage":"필터로 걸러져 화면에 '숨겨진 행'을 제외하고 현재 눈에 보이는 데이터만 요약 계산합니다.","formula":"=SUBTOTAL(9, C2:C100) (9는 SUM을 의미)","desc":"전체 합계 수식과 달리, 내가 '강남권'만 필터링하면 화면에 보이는 강남권 매장 매출만 유동적으로 더해줍니다.","keywords":"subtotal 서브토탈 필터연동계산 화면표시합"},{"title":"17. 차트 보조축 추가","type":"기능","usage":"데이터 단위 차이가 극심할 때 차트 우측에 보조 기준 축을 하나 더 생성합니다.","formula":"실행: 데이터 계열 서식 ➔ 보조 축 체크","desc":"억 단위 매출액과 한 자릿수 % 단위 성장률을 한 공간에 겹쳐서 완벽 비교할 수 있게 만듭니다.","keywords":"secondary axis 보조축 이중축 그래프 매칭"},{"title":"18. 목표값 찾기 (Goal Seek)","type":"기능","usage":"원하는 최종 결과값(예: 순이익 1억)을 얻기 위해 입력값(예: 판매량)이 얼마가 되어야 하는지 역산합니다.","formula":"실행: 데이터 ➔ 가상 분석 ➔ 목표값 찾기","desc":"올해 계약 연봉 1억을 달성하기 위해 하반기 가맹 인센티브 실적을 얼마나 올려야 하는지 시뮬레이션합니다.","keywords":"goal seek 목표값찾기 가상분석 역산"},{"title":"19. 피벗 테이블 값 표시 형식 변환","type":"기능","usage":"피벗 테이블의 단순 합계를 '열 합계 기준 %' 또는 '전년 대비 증감률'로 변경합니다.","formula":"실행: 피벗 값 우클릭 ➔ 값 표시 형식 ➔ 열 합계 비율 등 선택","desc":"전체 매출 중 각 유통 채널이 차지하는 상대적 기여도 비중(%) 리포트를 수식 없이 생성합니다.","keywords":"show values as 값표시형식 비율계산 비중리포트"},{"title":"20. CHOOSE & MATCH 조합","type":"함수 조합","usage":"순위나 조건 인덱스 위치를 찾아서 유연하게 등급 명칭이나 데이터를 매칭 분기합니다.","formula":"=CHOOSE(MATCH(C2, {0, 3000, 5000}, 1), \"C등급\", \"B등급\", \"A등급\")","desc":"복잡한 다중 등급 분류 구간을 수식의 지저분한 이중 IF 구조 없이 깔끔하게 통제합니다.","keywords":"choose match 등급구간화 구조화"},{"title":"21. 이름 정의 (Name Manager)","type":"기능","usage":"특정 셀 범위(`$M$2:$O$500`)에 '가맹점마스터' 같은 고유 이름을 부여해 수식에 직접 타이핑합니다.","formula":"실행: 범위를 잡고 좌측 상단 이름 상자에 단어 입력","desc":"수식 작성 시 매번 다른 시트를 왔다 갔다 범위 지정할 필요가 없어 수식 가독성과 작성 효율이 수십 배 올라갑니다.","keywords":"name manager 이름정의 범위고정 수식간결화"},{"title":"22. WEEKNUM","type":"함수","usage":"특정 날짜가 1년 52주 중 몇 번째 주(Week)에 해당하는지 주차 숫자를 반환합니다.","formula":"=WEEKNUM(A2)","desc":"시즌성 유통 트렌드를 세부 주차별(예: 28주차 매출 대란)로 쪼개어 입체적으로 기획 분석합니다.","keywords":"weeknum 주차 계산 몇번째주 시즌성분석"},{"title":"23. DATEDIF","type":"함수","usage":"두 날짜 사이의 간격을 연도(Y), 월(M), 일(D) 단위로 정확히 계산합니다.","formula":"=DATEDIF(A2, B2, \"M\") (총 개월 수)","desc":"가맹점주가 계약 후 현재까지 몇 개월 동안 매장을 안정적으로 운영해 왔는지 정확한 근속 개월을 구합니다.","keywords":"datedif 날짜간격 개월수계산 근속연수"},{"title":"24. 시트 보호 및 범위 편집 허용","type":"기능","usage":"수식이 깨지지 않도록 수식 셀은 잠그고 점주들이 값을 입력할 셀 영역만 열어둡니다.","formula":"실행: 검토 ➔ 시트 보호 / 범위 편집 허용","desc":"취합용 파일 배포 시 타 부서나 점주가 수식을 건드려 포맷을 망가뜨리는 대형 참사를 미리 차단합니다.","keywords":"protect sheet 시트보호 셀잠금 템플릿방어"},{"title":"25. INT / TRUNC","type":"함수","usage":"소수점 이하 자리를 무조건 버리고 가장 가까운 정수 상태로 만듭니다.","formula":"=INT(A2)","desc":"인센티브나 수수료 일할 계산 시 발생하는 지저분한 소수점 잔여 수치를 완전히 깔끔하게 절사 처리합니다.","keywords":"int trunc 정수변환 소수점버림 원단위절사"}]},"lv4":{"title":"🧠 Level 4: 동적 배열과 다차원 모델링 (고급)","story":"최 팀장은 매번 부하 직원들이 만든 보고서 템플릿의 범위를 수정해 주느라 골머리를 앓고 있었다. 데이터가 매일 수십 개씩 추가되는데, 고정된 수식 범위 때문에 매번 행을 늘려주지 않으면 숫자가 누락되거나, 반대로 사용자가 검색창에 오타를 입력해 수식이 터지는 일이 다반사였기 때문이다. 해결사로 나선 개발자 출신의 양 대리는 참조 범위 자체를 유동적으로 바꾸는 고차원 모델링을 시작했다. 원본에 새 매장 데이터가 입력되자마자 별도 시트에 실시간으로 표가 스르륵 늘어나며 연동되는 동적 필터 시스템을 구축했고, 사용자가 대분류를 선택하면 소분류 목록이 살아 움직이듯 변하는 종속형 드롭다운 메뉴를 완성했다. 이제 오타로 인해 수식이 망가질 걱정도, 범위를 늘리려 드래그 노가다를 할 필요도 없는 완벽하게 유연한 '유기체형 템플릿'이 탄생한 순간이었다.","items":[{"title":"1. FILTER","type":"함수 (동적배열)","usage":"조건을 만족하는 로우 데이터 행 전체를 실시간으로 긁어와 표 구조로 뿌려줍니다.","formula":"=FILTER(A2:E100, D2:D100 = \"A팀\", \"결과 없음\")","desc":"따로 필터를 걸거나 복사 붙여넣기 할 필요 없이 원본이 바뀌면 추출 표 영역도 실시간으로 늘어납니다.","keywords":"filter 필터함수 동적배열 실시간추출"},{"title":"2. UNIQUE","type":"함수 (동적배열)","usage":"중복 제거 메뉴를 수식으로 구현해 중복 없는 고유값 목록만 수식 결과로 나열합니다.","formula":"=UNIQUE(B2:B100)","desc":"매일 쌓이는 누적 매출 시트에서 오직 살아있는 '실시간 고유 가맹점 리스트'를 생성해 마스터로 씁니다.","keywords":"unique 유니크 고유값목록 실시간중복제거"},{"title":"3. LET","type":"함수","usage":"수식 내부에 중간 연산 결과를 변수명으로 정의해 재사용하는 혁신적인 최신 함수입니다.","formula":"=LET(순매출, C2-D2, IF(순매출 > 10000000, 순매출 * 0.1, 0))","desc":"수식의 길이를 획기적으로 줄여 가독성을 높이고 스프레드시트의 자체 연산 속도를 대폭 가속합니다.","keywords":"let 렛 변수지정 수식최적화 연산 가속"},{"title":"4. INDIRECT","type":"함수","usage":"텍스트 형태의 문자열 주소를 스프레드시트가 실제 인식하는 셀 참조 범위로 변환합니다.","formula":"=SUM(INDIRECT(A2 & \"!C2:C100\")) (A2에 적힌 시트명 동적 참조)","desc":"사용자가 드롭다운 메뉴에서 '1월시트'를 고르면 해당 시트로 실시간 순간 이동해 연산하는 대시보드를 만듭니다.","keywords":"indirect 인디렉트 문자열참조 동적시트참조"},{"title":"5. 종속형/이중 드롭다운","type":"기능 구조","usage":"첫 번째 드롭다운(예: 패션)을 선택하면 두 번째 목록에 관련 브랜드만 유동적으로 뜨게 연동합니다.","formula":"설계: 이름 정의 + 데이터 유효성 검사에서 INDIRECT(대분류셀) 수식 활용","desc":"데이터 입력 유저 인터페이스를 고도화하여 꼬이는 데이터 포맷 오염을 차단하는 고급 UI 설계 기법입니다.","keywords":"dependent dropdown 종속형드롭다운 이중목록 유동목록설계"},{"title":"6. SORT (함수형)","type":"함수 (동적배열)","usage":"정렬 기능을 함수화하여 원본 데이터를 훼손하지 않고 정렬된 별도 표를 실시간 생성합니다.","formula":"=SORT(FILTER(A2:C100, B2:B100=\"서울\"), 3, -1)","desc":"서울 지역 매장 데이터만 실시간 FILTER링한 뒤, 매출액 기준 내림차순(-1) 정렬 표를 상시 연동 자동 유지합니다.","keywords":"sort 함수형정렬 동적정렬 실시간정렬"},{"title":"7. OFFSET","type":"함수","usage":"지정한 기준 셀로부터 몇 행, 몇 열 떨어진 유동적인 영역의 셀 범위를 참조합니다.","formula":"=SUM(OFFSET(A1, 1, 2, 10, 1)) (A1에서 아래 1, 우측 2 이동 후 10행 1열 범위)","desc":"매달 새로 채워지는 실적 시트에서 '최근 3개월간의 이동 누적 범위'를 자동으로 추적해 계산해 줍니다.","keywords":"offset 오프셋 동적범위 유동참조"},{"title":"8. LAMBDA","type":"함수","usage":"스프레드시트 안에서 나만의 고유 커스텀 수식(사용자 정의 함수)을 코딩 없이 생성합니다.","formula":"=LAMBDA(x, y, (x-y)/y)(당월매출, 전월매출)","desc":"자주 쓰는 복잡한 우리 회사만의 특수 성장률 정산 공식을 동료들이 단어로 쓸 수 있게 배포 가능합니다.","keywords":"lambda 람다 커스텀함수 사용자정의수식"},{"title":"9. SEQUENCE","type":"함수 (동적배열)","usage":"지정한 행과 열의 크기만큼 일련번호 연속 숫자를 배열로 주르륵 한 번에 생성합니다.","formula":"=SEQUENCE(10, 1, 1, 1) (1부터 10까지 채우기)","desc":"데이터의 양이 수시로 확장되는 템플릿 빌드 시, 순번 넘버링을 드래그 없이 함수로 자동 통제합니다.","keywords":"sequence 시퀀스 연속숫자 순번자동화"},{"title":"10. XMATCH","type":"함수","usage":"MATCH 함수의 진화형으로 역방향 및 와일드카드 이진 탐색을 초고속으로 수행합니다.","formula":"=XMATCH(\"*코리아\", A2:A100, 2)","desc":"대량의 데이터 세트 속에서 정확히 일치하거나 유사한 텍스트의 좌표를 가장 리소스를 아끼며 찾아냅니다.","keywords":"xmatch 엑스매치 위치추적 고속탐색"},{"title":"11. CHOOSECOLS / CHOOSEROWS","type":"함수 (동적배열)","usage":"방대한 데이터 배열 중에서 내가 원하는 특정 열이나 행만 쏙쏙 골라 새로운 동적 표를 빌드합니다.","formula":"=CHOOSECOLS(A2:E100, 1, 3, 5) (1, 3, 5번째 열만 추출)","desc":"전체 마스터 표 중 보안상 민감한 정보를 제외하고 '매장명'과 '실적' 열만 투명하게 분리 연동할 때 씁니다.","keywords":"choosecols chooserows 원하는열만 동적추출 표재조합"},{"title":"12. MAP / REDUCE","type":"함수","usage":"LAMBDA와 함께 동적 배열의 모든 요소에 수식을 일일이 대입하거나 압축 연산합니다.","formula":"=MAP(A2:A10, LAMBDA(val, val*1.1))","desc":"수천 행의 스크롤 압박 없이 배열 단위 루프(Loop) 연산을 메모리 단에서 초고속 처리합니다.","keywords":"map reduce 배열루프 고속행렬연산"},{"title":"13. BYCOL / BYROW","type":"함수","usage":"동적 배열의 각 열이나 각 행 단위로 LAMBDA 함수를 적용해 요약 결과를 뿜어냅니다.","formula":"=BYROW(C2:E100, LAMBDA(row, SUM(row)))","desc":"여러 행의 열별 요약을 개별 셀 수식 드래그 없이 단 한 줄의 마스터 코드로 완전 정복합니다.","keywords":"bycol byrow 행단위계산 열단위계산"},{"title":"14. MATCH (와일드카드 활용)","type":"함수","usage":"물음표(?)나 별표(*) 기호를 사용해 텍스트의 일부만 일치하는 불완전 검색 위치를 찾습니다.","formula":"=MATCH(\"네트웍스*\", A2:A100, 0)","desc":"가맹점 법인명이 '네트웍스서울', '네트웍스부산' 등으로 난잡하게 꼬여있을 때 유연하게 매칭 추적합니다.","keywords":"match wildcards 와일드카드 문자포함검색"},{"title":"15. ISNUMBER / ISTEXT","type":"함수","usage":"셀의 내부 데이터 속성이 숫자인지 문자인지 판별해 무결성을 검증합니다.","formula":"=IF(ISNUMBER(C2), \"연산 가능\", \"오류 검출\")","desc":"숫자 중간에 은밀하게 공백이나 문자 오타가 섞여 데이터가 누락되는 정산 사고를 모니터링 시스템으로 방어합니다.","keywords":"isnumber istext 데이터속성 검증 무결성"},{"title":"16. TOCOL / TOROW","type":"함수 (동적배열)","usage":"다차원으로 흩어진 행렬 격자 구조의 데이터 덩어리를 단 하나의 깨끗한 일렬 열/행으로 쭉 펼쳐 정렬합니다.","formula":"=TOCOL(A2:D5, 1) (1은 빈칸 제외)","desc":"각 부서별로 가로세로 제각각 나열해 보낸 파편화된 매장 목록을 수직 일렬 원천 소스로 정제합니다.","keywords":"tocol torow 행렬펼치기 일렬정리 차원축소"},{"title":"17. HSTACK / VSTACK","type":"함수 (동적배열)","usage":"여러 독립된 배열이나 표 범위를 가로(Horizontal) 또는 세로(Vertical)로 강력하게 이어 붙여 하나의 대형 표로 통합합니다.","formula":"=VSTACK(상반기!A2:D50, 하반기!A2:D50)","desc":"상반기 실적 시트와 하반기 실적 시트를 완벽하게 수직으로 도킹 연동하는 동적 통합 뷰어를 구축합니다.","keywords":"hstack vstack 표이어붙이기 배열결합 시트통합"},{"title":"18. SCAN / MAKEARRAY","type":"함수","usage":"초기값을 바탕으로 각 요소를 순차 탐색하며 누적 계산 표를 동적으로 자동 드로잉해 줍니다.","formula":"=SCAN(0, C2:C10, LAMBDA(prev, curr, prev+curr))","desc":"가맹점 일별 실적 옆 칸에 수식 드래그 없이 실시간 '이동 누적 합계(Running Total)' 표를 자동 드로잉합니다.","keywords":"scan makearray 누적합자동화 동적표생성"},{"title":"19. 조건부 유효성 검사 규칙 제어","type":"기능 구조","usage":"사용자 입력 상황에 따라 다른 셀의 규칙을 함수 조건식으로 완벽 제어합니다.","formula":"설계: 유효성 검사 수식에 IF와 논리 판단 식 결합","desc":"특정 직영 구역 코드를 입력했을 때만 특정 본사 담당자 명단이 활성화되도록 유도하는 스마트 시트 기법입니다.","keywords":"스마트템플릿 유효성제어 고급인터페이스"},{"title":"20. 수식 탭의 '이름 서식 적용'","type":"기능","usage":"정의된 수식 이름을 복잡한 원본 셀 주소 대신 변수 문자로 일괄 교체 자동 변환합니다.","formula":"실행: 수식 탭 ➔ 이름 정의 ➔ 이름 적용","desc":"기존에 더럽게 꼬여 있던 무수한 사내 파일 속 수식을 한눈에 해독할 수 있는 클린 코드로 리팩토링합니다.","keywords":"apply names 수식리팩토링 해독성클린코드"},{"title":"21. DROP / TAKE","type":"함수 (동적배열)","usage":"동적 배열 데이터 세트의 시작이나 끝에서 지정한 만큼의 행/열을 도려내거나 추출합니다.","formula":"=TAKE(SORT(A2:C100, 3, -1), 5) (상위 5개 행만 추출)","desc":"실시간 매출 랭킹 보드에서 가공 열 없이 언제나 상위 TOP 5 매장 리스트만 동적 유지 노출시킬 때 활용합니다.","keywords":"drop take 배열잘라내기 탑파이브 실시간유지"},{"title":"22. EXPAND","type":"함수 (동적배열)","usage":"지정한 배열의 크기를 강제로 확장하고 빈 영역을 원하는 특정 텍스트나 값으로 가득 채웁니다.","formula":"=EXPAND(A2:B5, 10, 2, \"미지정\")","desc":"서로 다른 크기의 소규모 테이블들을 정산 결합하기 위해 행 규격을 동기화하고 패딩 처리를 할 때 유용합니다.","keywords":"expand 배열확장 규격동기화 패딩처리"},{"title":"23. TEXTBEFORE / TEXTAFTER","type":"함수","usage":"지정한 구분 문자열을 기준으로 그 앞단 혹은 뒷단의 텍스트만 초고속 추출합니다.","formula":"=TEXTAFTER(A2, \"_\") (첫 언더바 이후 문자 전체)","desc":"MID, FIND 함수 조합을 쓸 필요 없이 '점포코드_점포명' 구조에서 점포명만 한 번에 칼같이 발라냅니다.","keywords":"textbefore textafter 문자열파싱 슬라이싱 간결화"},{"title":"24. TEXTSPLIT","type":"함수 (동적배열)","usage":"구분 기호를 기반으로 텍스트를 수평 열이나 수직 행 배열로 즉시 자동 쪼개어 분산 배치합니다.","formula":"=TEXTSPLIT(A2, \"/\")","desc":"메뉴 기능을 실행하지 않고 오직 수식 하나만으로 한 셀 내 뭉친 카테고리 정보들을 옆 셀들로 자동 분산 파싱합니다.","keywords":"textsplit 수식형텍스트나누기 실시간파싱"},{"title":"25. LAMBDA 보조용 '모듈화 수식'","type":"수식구조","usage":"고급 LAMBDA 구조를 이름 관리자에 사전 등록해 전사 공유 템플릿의 소스코드를 모듈화합니다.","formula":"실행: 이름관리자 ➔ 'CALC_TAX' 정의 ➔ 수식에 LAMBDA 장착","desc":"현업 실무자들이 수식 내부를 건드려 템플릿 엔진을 고장 내는 대형 사고를 프로그래밍 레벨에서 원천 방어합니다.","keywords":"modular formula 모듈화수식 시스템방어 엔진설계"}]},"lv5":{"title":"⚡ Level 5: 자동화 및 외부 데이터 연동 (마스터)","story":"\"또 시작이군.\" 장 부장은 매일 아침 출근하자마자 사내 전산망, 물류 시스템, 그리고 웹페이지 3곳에서 각각 대용량 CSV 파일들을 다운로드받기 바빴다. 이 파일들을 하나로 모으고, 열을 맞추고, 정산 수식을 복사해 넣은 뒤 PDF로 변환해 수십 명의 담당자에게 이메일로 발송하는 작업에만 매일 소중한 오전 2시간이 통째로 증발했다. 참다못한 그는 시스템의 한계를 부수기로 결심하고 스프레드시트 이면에 숨겨진 자동화 창을 열었다. 외부 파일들을 알아서 긁어와 스스로 정제하는 강력한 데이터 파이프라인을 심어두고, 단 하나의 계산식으로 수천 행을 일괄 통제하는 배열 구조를 짰다. 마지막으로 '정산 마감'이라는 투명한 실행 버튼을 새로 만들어 스크립트 코드를 연결했다. 이제 아침에 출근해 커피 한 모금을 마시며 그 버튼을 딸깍 누르기만 하면, 스프레드시트가 혼자서 데이터를 취합하고 정산해 PDF를 첨부한 이메일 수십 통을 전사에 알아서 발송하는 경이로운 자동화 세계가 눈앞에 펼쳐진다.","items":[{"title":"1. 파워 쿼리 (Power Query)","type":"기능 (Excel 특화)","usage":"다양한 소스(로컬 폴더, CSV, 웹)의 파일들을 병합, 정제하고 새로고침 하나로 일괄 자동 가공합니다.","formula":"실행: 데이터 ➔ 데이터 가져오기 ➔ 폴더에서 / 웹에서","desc":"매일 지정 폴더에 적재되는 전사 대용량 매출 파일들을 알아서 병합하는 자동 파이프라인을 구축합니다.","keywords":"power query 파워쿼리 데이터적재 자동취합 획기적"},{"title":"2. ARRAYFORMULA","type":"함수 (구글시트 전용)","usage":"단 하나의 셀에만 수식을 작성하면 하위 수천 행 전체 영역을 자동 일괄 연산 배포합니다.","formula":"=ARRAYFORMULA(IF(ISBLANK(A2:A), \"\", B2:B * C2:C))","desc":"데이터 행이 무한 추가되어도 하단 수식 드래그 노가다가 필요 없어 수식 누락 휴먼 에러를 원천 봉쇄합니다.","keywords":"arrayformula 배열수식 일괄배포 드래그해제"},{"title":"3. IMPORTRANGE","type":"함수 (구글시트 전용)","usage":"웹상에서 완전히 격리된 별개의 스프레드시트 파일의 데이터를 주소 기반 실시간 동기화 긁어옵니다.","formula":"=IMPORTRANGE(\"구글시트_고유_URL_주소\", \"매출현황!A1:E50\")","desc":"타 본부 핵심 보안 마스터 데이터를 파일 원본 권한 공유 없이 실시간 동적 뷰어로 연결 통합 대시보드를 구축합니다.","keywords":"importrange 임포트레인지 파일간연동 원격데이터동기화"},{"title":"4. QUERY","type":"함수 (구글시트 전용)","usage":"데이터베이스 전용 SQL 명령어 문법을 완전히 지원해 대형 표를 초고속 조건 필터 정렬합니다.","formula":"=QUERY(A1:E100, \"SELECT A, B, C WHERE B = '서울' ORDER BY C DESC LIMIT 5\")","desc":"수식 하나만으로 특정 조건 추출(WHERE), 정렬(ORDER), 개수 제한(LIMIT)을 최고 속도로 관장합니다.","keywords":"query 쿼리 sql 데이터베이스 완벽제어"},{"title":"5. VBA / 매크로 개발","type":"개발/자동화 (Excel)","usage":"VBA 코드를 통해 엑셀을 넘어 OS 및 타 프로그램 영역까지 완전 자동화하는 매크로 시스템을 구축합니다.","formula":"실행 단축키: Alt + F11 (VBA 편집기 열기 및 스크립트 코딩)","desc":"'마감 버튼' 클릭 시 정산서를 PDF로 변환 저장하고, 담당자 메일로 자동 발송하는 완전 무인화를 구현합니다.","keywords":"vba macro 매크로 비주얼베이직 코딩자동화"},{"title":"6. Google Apps Script (GAS)","type":"개발/자동화 (Sheets)","usage":"자바스크립트 기반 클라우드 언어로 구글 드라이브, 지메일 등 구글 생태계를 완전 자동화 스크립팅합니다.","formula":"실행 경로: 확장 프로그램 ➔ Apps Script 편집창 가동","desc":"구글 설문지로 가맹점주 신청서가 접수되면, 시트가 정산 계산 후 지메일 알림을 자동 전송하는 클라우드 자동화를 완성합니다.","keywords":"google apps script gas 앱스크립트 자바스크립트 구글자동화"},{"title":"7. 파워 피벗 & DAX","type":"기능/언어 (Excel)","usage":"엑셀 한계를 넘는 백만 행 이상의 빅데이터를 데이터 모델링으로 압축하고 고차원 비즈니스 지표 계산 언어를 구사합니다.","formula":"DAX 예시: TotalSales:=SUM([SalesAmount])","desc":"대기업 전사 유통 채널 로우 데이터 수백만 건을 엑셀이 튕기지 않고 가볍게 회전 분석할 수 있는 마스터 기능입니다.","keywords":"power pivot 파워피벗 dax 데이터모델링 빅데이터엑셀"},{"title":"8. 외부 웹 API 크롤링 (IMPORTXML)","type":"함수 (구글시트 전용)","usage":"웹페이지의 HTML 소스 내 특정 XPath 구조를 타겟팅하여 실시간 웹 스크래핑 데이터 크롤링을 수행합니다.","formula":"=IMPORTXML(\"웹페이지주소\", \"//td[@class='price']\")","desc":"환율 정보, 경쟁사 온라인몰의 실시간 가격 변동 추이를 내 대시보드로 실시간 자동 긁어와 연동합니다.","keywords":"importxml 웹스크래핑 크롤링 외부데이터가져오기 API"},{"title":"9. M 코드 (파워쿼리 전용 언어)","type":"개발 언어","usage":"파워 쿼리의 GUI 메뉴 이면에 숨겨진 자체 데이터 변환 스크립트 언어를 직접 코딩 제어합니다.","formula":"M코드 예시: Table.RemoveColumns(Source, {\"비고\"})","desc":"메뉴 버튼 조작만으로는 불가능한 난해하고 변칙적인 전사 데이터 정제 프로세스를 완벽하게 프로그래밍합니다.","keywords":"m code 파워쿼리언어 고급데이터정제 스크립트"},{"title":"10. IMPORTDATA","type":"함수 (구글시트 전용)","usage":"온라인상에 실시간으로 공유 발행되는 외부 CSV 또는 TSV 파일의 URL을 통해 데이터를 즉시 가공 연동합니다.","formula":"=IMPORTDATA(\"https://api.test/data.csv\")","desc":"정부 공공데이터 포털이나 물류 시스템 API 연동 데이터를 가공 열 없이 내 시트에 실시간 박아 넣습니다.","keywords":"importdata 외부csv연동 공공데이터 api실시간"},{"title":"11. 파워쿼리 매개변수 (Parameters) 빌드","type":"기능 구조","usage":"파워 쿼리 파이프라인 내부에 유동적 변수 입력 셀을 매칭하여 동적 데이터 모델을 가동합니다.","formula":"설계: 시트 특정 셀의 단어(예: '2026년')를 쿼리 필터 변수로 전송 연동","desc":"비전문가인 현업 팀원들도 메인 시트의 단어 하나만 바꾸면 수 기가바이트 소스 데이터가 자동 타겟팅 정제되는 대시보드 엔진입니다.","keywords":"parameters 매개변수 파워쿼리고급 대시보드엔진설계"},{"title":"12. Apps Script 시간 기반 트리거","type":"기능 자동화","usage":"내가 컴퓨터를 끄고 퇴근해도 구글 클라우드가 매일 새벽 특정 시간에 지정 스크립트를 자동 무인 실행합니다.","formula":"설정: Apps Script 트리거 메뉴 ➔ 시간 기반 ➔ 매일 새벽 5시 가동 세팅","desc":"매일 아침 출근했을 때 간밤의 전사 가맹점 실적 리포트 취합 및 정산 분석이 100% 완료된 시트를 보며 일과를 시작하게 만듭니다.","keywords":"time triggers 시간기반트리거 스케줄러 완전무인퇴근"},{"title":"13. 사용자 정의 폼 (UserForm) 개발","type":"기능 개발 (Excel)","usage":"VBA 코딩을 통해 엑셀 화면 위에 단독으로 구동되는 정식 프로그램용 데이터 입력 팝업 창 UI를 빌드합니다.","formula":"설계: VBA IDE에서 UserForm 생성 및 텍스트박스, 커맨드버튼 컴포넌트 실장","desc":"전사 현업 직원들이 엑셀 셀 시트를 난잡하게 건드려 레이아웃을 망가뜨리지 못하게 정식 프로그램 인터페이스를 선물합니다.","keywords":"userform 사용자정의폼 vba프로그램 인터페이스구축"},{"title":"14. 웹 프롬프트 통합 (IMPORTFEED)","type":"함수 (구글시트 전용)","usage":"외부 RSS 또는 ATOM 뉴스 피드 소스를 실시간 파싱해 스프레드시트 내부로 리스트업합니다.","formula":"=IMPORTFEED(\"뉴스RSS주소\")","desc":"리테일 유통 업계 트렌드 뉴스를 내 아침 대시보드 한쪽 화면에 자동으로 상시 헤드라인 리스트업 모니터링합니다.","keywords":"importfeed rss피드 트렌드모니터링 뉴스실시간파싱"},{"title":"15. ADO / OLEDB 외부 DB 직결 연결","type":"기능 구조 (Excel)","usage":"VBA 코드로 사내 기간계 대형 데이터베이스(Oracle, MSSQL 등)에 SQL로 직접 접속해 데이터를 초고속 바인딩합니다.","formula":"VBA 예시: CreateObject(\"ADODB.Connection\")","desc":"중간 파일 다운로드 절차를 전면 생략하고 엑셀이 본사 대형 데이터 웨어하우스와 다이렉트로 실시간 소통하게 만듭니다.","keywords":"ado oledb 데이터베이스직결 db연동 vba쿼리"},{"title":"16. Webhook 연동 알림 자동화","type":"개발 구조","usage":"Apps Script나 VBA를 통해 업무용 메신저(Slack, 잔디, 카카오톡)의 인바운드 웹훅 주소로 실시간 알림을 보냅니다.","formula":"GAS 예시: UrlFetchApp.fetch(webhookUrl, options)","desc":"월간 정산 목표 금액을 돌파하는 역사적인 순간, 전사 단톡방에 축하 봇 메시지가 실시간 자동 발송되는 구조를 완성합니다.","keywords":"webhook 웹훅 메신저연동 슬랙알림 자동화봇"},{"title":"17. 파워 쿼리 내 커스텀 M 함수 제작","type":"개발 언어","usage":"M 코드를 활용해 데이터 정제 단계에서 반복 활용되는 복잡한 다차원 변환 로직을 하나의 쿼리 전용 함수로 모듈화합니다.","formula":"M 예시: (filepath) => let source = Excel.Workbook(...) in source","desc":"수십 개의 서로 다른 가맹점 원본 파일들의 변칙적인 열 구조를 칼같이 다듬어내는 초고성능 정제 엔진의 정수입니다.","keywords":"custom function 커스텀m함수 파워쿼리마스터 데이터정제"},{"title":"18. 구글 시트 QUERY와 대시보드 UI 연동","type":"수식구조","usage":"대시보드 메인 제어 셀의 텍스트 조건을 QUERY 함수의 SQL 문자열 텍스트 결합 구문과 실시간 연동 매칭시킵니다.","formula":"=QUERY(RawData!A:E, \"SELECT * WHERE B = '\" & B1 & \"'\")","desc":"사용자가 메인 화면 B1 셀에서 '경기권'을 고르면 배후에 숨겨진 수만 행의 데이터 소스에서 경기권 표를 초고속 렌더링합니다.","keywords":"query ui 대시보드엔진 동적sql 매칭렌더링"},{"title":"19. Excel 파워 피벗 측정값 다차원 설계","type":"기능 구조","usage":"단순 요약을 넘어 전년 동기 대비 성장액(YOY), 누적 이동평균 등 시계열 분석 계산 지표 컬럼을 메모리 상에 다차원 적재합니다.","formula":"DAX 예시: YOY_Growth := [Sales] - CALCULATE([Sales], SAMEPERIODLASTYEAR('Calendar'[Date]))","desc":"C-Level 경영진이 요구하는 까다로운 다차원 재무 및 기획 시계열 성과 지표를 리소스 소모 제로에 가깝게 완벽 구현합니다.","keywords":"measures 측정값 dax 고급재무모델링 시계열분석"},{"title":"20. 대량 PDF 일괄 저장 및 암호화 매크로","type":"개발 구조 (Excel)","usage":"VBA 코드로 개별 시트들을 가맹점주별 파일로 각각 슬라이싱 분리 분할한 뒤 보안 암호를 걸어 PDF로 일괄 인쇄합니다.","formula":"VBA 예시: ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF","desc":"인사 및 정산 등 민감한 개인 정보가 담긴 수백 장의 리포트를 마우스 딸깍 한 번으로 개별 파일화 암호화 처리를 마칩니다.","keywords":"pdf export pdf일괄저장 파일암호화 vba보안정산"},{"title":"21. Apps Script 기반 구글 드라이브 파일 폴더 자동 제어","type":"개발 구조","usage":"시트의 정산 결과 명단을 읽어 구글 드라이브 상에 가맹점별 폴더를 스스로 신규 생성하고 파일을 지능적으로 업로드 이동합니다.","formula":"GAS 예시: DriveApp.createFolder(folderName)","desc":"수작업으로 하던 매달 말일자 가맹점별 정산 폴더 세팅 및 보고서 파일 아카이빙 노가다 업무를 100% 무인화 처리합니다.","keywords":"driveapp 구글드라이브제어 폴더자동생성 파일아카이빙"},{"title":"22. 파워쿼리 증분 새로 고침 (Incremental Refresh)","type":"기능 설정","usage":"수천만 행의 대형 빅데이터 중 이미 지나간 과거 행은 박제하고, 최근 변경 및 추가된 행만 쏙 골라 스마트 새로고침을 수행합니다.","formula":"설정: 파워쿼리 내 날짜 범위 매개변수 RangeStart 및 RangeEnd 조건 셋팅","desc":"매번 전체 데이터를 처음부터 다시 불러와 엑셀이 멈추거나 네트워크가 뻗어버리는 대형 인프라 병목 현상을 원천 방어합니다. ","keywords":"incremental refresh 증분새로고침 빅데이터 가속화 동적동기화"},{"title":"23. 외부 JSON 데이터 파싱 및 Apps Script 스케줄링","type":"개발 구조","usage":"외부 웹 서비스가 제공하는 REST API JSON 포맷 원천 소스를 구조적으로 해독해 시트 격자 셀 위에 차곡차곡 파싱 적재합니다.","formula":"GAS 예시: JSON.parse(response.getContentText())","desc":"스프레드시트가 완전히 하나의 독립적인 지능형 타사 웹 서비스 클라이언트 프로그램처럼 동작하는 초고차원 아키텍처입니다.","keywords":"json parse 외부api연동 클라이언트 아키텍처 완성"},{"title":"24. 다차원 동적 배열 수식 블록 최적화 (LAMBDA 재귀)","type":"수식구조","usage":"LAMBDA 내부에서 자기 자신을 다시 호출하는 재귀(Recursion) 함수 기법을 사용하여 난해한 계층형 조직도를 분해 연산합니다.","formula":"수식구조: 이름관리자에 LAMBDA 재귀 논리 조건 구조 설계 장착","desc":"VBA 매크로 매크로 보안 경고 창이 뜨는 것을 원치 않는 기업 환경에서 오직 순수 순정 함수 수식만으로 알고리즘 자동화를 구현합니다.","keywords":"lambda recursion 재귀함수 알고리즘자동화 매크로프리"},{"title":"25. 전사 ERP 시스템 연동 및 마스터 마감 제어판 엔진","type":"시스템 아키텍처","usage":"이 가이드에 수록된 파워쿼리, DB직결, 메신저 알림 웹훅, 스케줄 트리거를 단 하나의 대시보드 화면에 집약한 전사 마감 제어판을 완성합니다.","formula":"설계: 메인 시트에 '1단계: 데이터동기화', '2단계: 마감검증', '3단계: 전사메일발송' 버튼 일괄 실장 구축","desc":"손가락 하나 까딱하는 것으로 한 달의 마감 공정을 종결짓는 스프레드시트 마스터의 최종 도달 지점입니다.","keywords":"dashboard engine 제어판엔진 마스터아키텍처 전사자동화 마감종결"}]}};
+
+    const container = document.getElementById('sectionsContainer');
+
+    // HTML 구조 동적 생성
+    for (const [key, lv] of Object.entries(data)) {
+        const section = document.createElement('div');
+        section.id = key;
+        section.className = 'level-section';
+
+        let cardsHtml = '';
+        lv.items.forEach(item => {
+            cardsHtml += `
+                <div class="item-card" data-level="${key}" data-keywords="${item.keywords}">
+                    <div class="item-title">${item.title} <span class="badge">${item.type}</span></div>
+                    <div class="item-usage"><strong>정의:</strong> ${item.usage}</div>
+                    <div class="formula-box"><span>실전 형태:</span> ${item.formula}</div>
+                    <div class="item-desc"><strong>업무 활용:</strong> ${item.desc}</div>
+                </div>
+            `;
+        });
+
+        section.innerHTML = `
+            <h2 class="level-header">${lv.title}</h2>
+            <div class="story-box" id="story-${key}">
+                <strong>📖 현장의 이야기 (실무 시나리오 소설)</strong>
+                ${lv.story}
+            </div>
+            <div class="cards-grid">
+                ${cardsHtml}
+            </div>
+        `;
+        container.appendChild(section);
+    }
+
+    // 레벨 필터링 제어 시스템
+    function filterLevel(levelId) {
+        const sections = document.querySelectorAll('.level-section');
+        const buttons = document.querySelectorAll('.btn');
+
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (event) event.target.classList.add('active');
+
+        document.getElementById('searchInput').value = '';
+
+        sections.forEach(section => {
+            if (levelId === 'all') {
+                section.style.display = 'block';
+                section.querySelectorAll('.item-card').forEach(card => card.style.display = 'block');
+                const story = section.querySelector('.story-box');
+                if (story) story.style.display = 'block';
+            } else {
+                if (section.id === levelId) {
+                    section.style.display = 'block';
+                    section.querySelectorAll('.item-card').forEach(card => card.style.display = 'block');
+                    const story = section.querySelector('.story-box');
+                    if (story) story.style.display = 'block';
+                    section.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    section.style.display = 'none';
+                }
+            }
+        });
+        document.getElementById('noResult').style.display = 'none';
+    }
+
+    // 전방향 텍스트 스크래핑 기반 고속 실시간 검색 로직
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.item-card');
+        const sections = document.querySelectorAll('.level-section');
+        const buttons = document.querySelectorAll('.btn');
+        
+        buttons.forEach(btn => btn.classList.remove('active'));
+        buttons[0].classList.add('active'); // 전체보기 버튼으로 포커스 가이드 통일
+
+        let totalVisibleCards = 0;
+
+        sections.forEach(section => {
+            let visibleCardsInSection = 0;
+            const sectionCards = section.querySelectorAll('.item-card');
+            const storyBox = section.querySelector('.story-box');
+            const storyText = storyBox ? storyBox.textContent.toLowerCase() : '';
+
+            sectionCards.forEach(card => {
+                const title = card.querySelector('.item-title').textContent.toLowerCase();
+                const usage = card.querySelector('.item-usage').textContent.toLowerCase();
+                const desc = card.querySelector('.item-desc').textContent.toLowerCase();
+                const keywords = card.getAttribute('data-keywords').toLowerCase();
+
+                // 카드 내부 내용 또는 소설 본문에 키워드가 일치하는지 전방향 체크
+                if (title.includes(query) || usage.includes(query) || desc.includes(query) || keywords.includes(query) || storyText.includes(query)) {
+                    card.style.display = 'block';
+                    visibleCardsInSection++;
+                    totalVisibleCards++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // 검색어 매칭에 따른 섹션 및 소설 상자 노출 제어
+            if (visibleCardsInSection > 0 || query === '') {
+                section.style.display = 'block';
+                if (storyBox) {
+                    // 검색어가 소설 내용에만 매칭되고 카드에는 없을 때를 대비해 소설 상자는 유연하게 상시 유지 또는 숨김 처리
+                    storyBox.style.display = (query === '' || storyText.includes(query)) ? 'block' : 'none';
+                }
+            } else {
+                section.style.display = 'none';
+            }
+        });
+
+        const noResultDiv = document.getElementById('noResult');
+        if (totalVisibleCards === 0 && query !== '') {
+            noResultDiv.style.display = 'block';
+        } else {
+            noResultDiv.style.display = 'none';
+        }
+    });
+</script>
 
 </body>
 </html>
