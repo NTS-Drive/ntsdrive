@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 타로 | Fortune</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Fortune으로 돌아가기</a>
+  <div class="app-title">오늘의 타로</div>
+  <button class="action-btn" onclick="openGuide()">가이드</button>
+</div>
+
+<div class="stage" id="stage">
+  <!-- JS가 상태에 따라 내용을 채웁니다 -->
+</div>
+
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal">
+    <h2>오늘의 타로, 이렇게 즐겨요</h2>
+    <p>10가지 직장인 고민 중 하나를 골라 카드를 한 장 뽑아보세요. 78장의 카드가 저마다 다른 기운을 담고 있어요.</p>
+    <p>같은 항목은 하루에 한 번만 뽑을 수 있어요. 오늘 이미 뽑은 항목은 같은 결과를 다시 보여드려요.</p>
+    <p>결과 화면에서 링크를 공유하면, 받은 사람도 똑같은 카드와 해석을 볼 수 있어요.</p>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeGuide()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script src="../../feedback-widget.js" defer></script>
+</body>
+</html>

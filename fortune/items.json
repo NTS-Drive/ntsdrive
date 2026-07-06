@@ -11,11 +11,11 @@
   {
     "id": "tarot-pick",
     "title": "Tarot Pick",
-    "description": "Pull one card and get a quick, fun interpretation.",
+    "description": "Pull one card from a full 78-card deck across 10 workplace-life categories (job changes, salary, your boss, and more). In-game content is entirely in Korean (a deliberate one-off exception, like Cat Care).",
     "type": "Tarot",
-    "status": "In Planning",
+    "status": "Live",
     "emoji": "🃏",
-    "entryPath": null
+    "entryPath": "tarot-pick/index.html"
   },
   {
     "id": "lucky-numbers",

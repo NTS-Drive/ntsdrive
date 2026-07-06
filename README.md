@@ -719,6 +719,42 @@ emotional check-in ritual instead of a competitive game.
 - **툴바 아이콘 정리**: 붓(🖌️)/연필(✏️)/팔레트(🎨) 테마에 안 맞던 반창고(🩹) 아이콘을 크레용(🖍️)으로 교체.
 - **고양이 대화 기능 추가**: "지금 기분이 어떠세요?" 10개 감정 버튼(기쁨/슬픔/화남/피곤함/불안/심심함/평온/뭉클함/지침/설렘) → 클릭 시 고양이가 말풍선으로 랜덤 응답(감정당 5개, 총 50개). 예정된 케어 이벤트와 무관하게 하루 중 언제든 몇 번이든 사용 가능. 기존 원칙(항상 사람을 위로/응원하는 톤, 자책 유발 문구 없음)을 이 50개 문구에도 동일하게 적용.
 
+## Fortune Title 1: Tarot Pick (2026-07-06) — Korean-only Fortune exception
+
+Fortune's first live piece of content, at `fortune/tarot-pick/`. Same
+pattern as Cat Care: the hub listing (title/description in
+`fortune/items.json`) stays English, but everything inside the game is
+entirely in Korean.
+
+- **Full 78-card deck** (22 Major + 56 Minor Arcana across Wands/Cups/
+  Swords/Pentacles), each with an original emoji, Korean keyword, and one
+  of 3 energy tiers (positive/neutral/challenging) — verified with Node
+  (78 cards, zero duplicate names, energy distribution skews positive
+  34/27/17 by design).
+- **10 workplace categories**: 오늘의 출근길 운세, 이달의 이직운, 상사와의
+  궁합, 이번 달 연봉/보너스운, 오늘 회식/야근운, 오늘의 회의운, 이번 주
+  동료운, 올해 승진운, 오늘의 점심 메뉴운, 주말 회복운. Each category has
+  5 phrases per energy tier (150 total, verified with Node) — a card's
+  drawn energy tier picks which pool to pull the result line from, so the
+  content scales as (78 cards) + (10 × 3 × 5 phrases) instead of writing
+  78 × 10 fully separate readings.
+- **One draw per category per day**, tracked independently per category in
+  `localStorage` — drawing "이달의 이직운" doesn't affect the other 9
+  categories' availability. Revisiting an already-drawn category re-shows
+  the same card/result rather than re-rolling.
+- **Shareable result links, no backend required**: a result's state (
+  category, card index, phrase index) is encoded directly in the URL
+  (`?cat=...&card=...&line=...`). Opening a shared link renders that exact
+  card/result in a read-only view — nothing is re-rolled and the viewer's
+  own daily-draw state is untouched. Uses `navigator.share()` on mobile,
+  clipboard copy as the desktop fallback.
+- **No reversed cards in v1** (upright-only), single-card draws only (no
+  spreads) — kept deliberately simple for a first release.
+- **Trademark note**: card names (The Fool, The Tower, etc.) are centuries-
+  old public-domain terms, not reproduced from any specific published deck's
+  artwork or copy — all keywords, emoji, and every one of the 150 category
+  phrases are original.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
