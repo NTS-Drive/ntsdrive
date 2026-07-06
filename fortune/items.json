@@ -1,12 +1,12 @@
 [
   {
-    "id": "daily-fortune",
-    "title": "Daily Fortune",
-    "description": "A short, randomized daily fortune reading for a work-break moment.",
+    "id": "desk-fortune",
+    "title": "Desk Fortune Cookie",
+    "description": "A time-of-day fortune cookie that changes 6x through the workday (commute, morning, lunch, afternoon, leaving, home), with a job-based comment and a day-of-week bonus line. One crack per time slot per day, with a shareable result link. In-game content is entirely in Korean (a deliberate one-off exception, like Cat Care and Tarot Pick).",
     "type": "Fortune",
-    "status": "In Planning",
-    "emoji": "🌤️",
-    "entryPath": null
+    "status": "Live",
+    "emoji": "🥠",
+    "entryPath": "desk-fortune/index.html"
   },
   {
     "id": "tarot-pick",

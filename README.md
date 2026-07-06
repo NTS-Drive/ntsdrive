@@ -755,6 +755,39 @@ entirely in Korean.
   artwork or copy — all keywords, emoji, and every one of the 150 category
   phrases are original.
 
+## Fortune Title 2: Desk Fortune Cookie (2026-07-06) — Korean-only Fortune exception
+
+Fortune's second live piece of content, at `fortune/desk-fortune/`
+(implements the previously-planned "Daily Fortune" slot in `items.json`,
+now fully built out). Same Korean-only exception pattern as Cat Care and
+Tarot Pick — hub listing stays English, in-game content is entirely Korean.
+
+- **6 non-overlapping time slots covering all 24 hours**: 08:00–08:59
+  commute, 09:00–10:59 morning, 11:00–11:59 lunch, 12:00–16:59 afternoon,
+  17:00–18:59 leaving, 19:00–07:59 home/night. Verified with a Node
+  simulation across every slot boundary — no gaps, no overlaps.
+- **10 fortunes / 10 lucky-weapons / 10 survival-tips per slot** (180 lines
+  total, all counted with Node before shipping) — cracking the cookie
+  picks one of each at random for the current slot.
+- **Lunch slot gets an extra recommended-menu card** (visually distinct,
+  dashed border) pulled from a **100-item Korean lunch menu pool** (zero
+  duplicates, verified with Node).
+- **Day-of-week bonus line** appended at the end of every result (7 lines,
+  Mon–Sun each with a different mood — Monday-blues-heavy, Friday-hype-
+  heavy, weekend "rest over reading" tone).
+- **Job selector above the cookie** (10 jobs: 개발자/디자이너/영업직/마케터/
+  인사/재무회계/고객상담/생산현장직/프리랜서/공무원), each with a 15-line
+  comment pool (150 total) appended regardless of time slot — the cookie
+  stays disabled until a job is picked. Selection persists across visits
+  via `localStorage`.
+- **One crack per time slot per day**: revisiting an already-cracked slot
+  shows the same stored result plus one of 6 slot-specific humorous
+  "already checked" messages (adapted from the original planning doc's
+  reopen-message concept) instead of re-rolling.
+- **Shareable result links** (same no-backend URL-param approach as Tarot
+  Pick: `?slot=&f=&w=&t=&day=&job=&jl=&m=`) plus a **save-as-image** button
+  (`html2canvas`, same pattern used for Arcade's #1-leaderboard captures).
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
