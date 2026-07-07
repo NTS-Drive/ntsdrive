@@ -788,6 +788,27 @@ Tarot Pick — hub listing stays English, in-game content is entirely Korean.
   Pick: `?slot=&f=&w=&t=&day=&job=&jl=&m=`) plus a **save-as-image** button
   (`html2canvas`, same pattern used for Arcade's #1-leaderboard captures).
 
+## Fortune Title 3: Lucky Numbers (2026-07-06) — Fortune 3/3 complete
+
+Fortune's third and final planned content, at `fortune/lucky-numbers/`.
+Same Korean-only exception pattern as Cat Care/Tarot Pick/Desk Fortune
+Cookie.
+
+- **5 unique random numbers (1–99)** plus a **bonus "lucky item"** (20-item
+  pool, e.g. "네잎클로버," "노란 우산" — deliberately whimsical, not
+  number-based, to keep the whole thing feeling like a game rather than a
+  prediction) — zero duplicate pool entries verified.
+- **Explicitly not a 6/45 lotto format**, and a disclaimer is shown on both
+  the draw screen and the result screen: not affiliated with any lottery
+  operator, makes no odds-related claims.
+- **One draw per day**, same `localStorage` pattern as the other two
+  Fortune titles.
+- **Shareable result links** via URL params (`?n=1-2-3-4-5&b=idx`), no
+  backend required — same approach as Tarot Pick/Desk Fortune Cookie.
+
+**Fortune's 3-title roadmap goal (Daily Fortune → renamed/shipped as Desk
+Fortune Cookie, Tarot Pick, Lucky Numbers) is now fully complete.**
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

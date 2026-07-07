@@ -20,10 +20,10 @@
   {
     "id": "lucky-numbers",
     "title": "Lucky Numbers",
-    "description": "A for-fun random number generator. Not affiliated with any official lottery, and makes no odds-related claims.",
+    "description": "A for-fun random number generator (5 numbers, 1-99, plus a bonus lucky item) — not a 6/45 lotto format, makes no odds-related claims, and is not affiliated with any official lottery operator. In-game content is entirely in Korean (a deliberate one-off exception, like Cat Care).",
     "type": "Random Generator",
-    "status": "In Planning",
+    "status": "Live",
     "emoji": "🍀",
-    "entryPath": null
+    "entryPath": "lucky-numbers/index.html"
   }
 ]

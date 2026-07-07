@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 행운 넘버 | Fortune</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-bar">
+  <a class="back-link" href="../index.html">&larr; Fortune으로 돌아가기</a>
+  <div class="app-title">오늘의 행운 넘버</div>
+  <button class="action-btn" onclick="openGuide()">가이드</button>
+</div>
+
+<div class="stage" id="stage">
+  <!-- JS가 상태에 따라 내용을 채웁니다 -->
+</div>
+
+<div class="overlay" id="guide-overlay" style="display:none;">
+  <div class="modal">
+    <h2>오늘의 행운 넘버, 이렇게 즐겨요</h2>
+    <p>버튼을 누르면 1~99 사이의 숫자 5개와 보너스 행운템 하나가 랜덤으로 나와요.</p>
+    <p>하루에 한 번만 뽑을 수 있고, 오늘 이미 뽑았다면 같은 결과를 다시 보여드려요.</p>
+    <p>이 콘텐츠는 순수하게 재미로 즐기는 랜덤 생성기예요. 특정 복권 상품이나 사업자와는 전혀 관련이 없고, 실제 당첨 확률과도 무관합니다.</p>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="closeGuide()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script src="../../feedback-widget.js" defer></script>
+</body>
+</html>
