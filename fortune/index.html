@@ -93,6 +93,14 @@ function render(list) {
       <div class="col col-action">${btnHtml}</div>
     `;
     listEl.appendChild(row);
+
+    if (item.entryPath) {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('a.play-btn')) return;
+        window.location.href = item.entryPath;
+      });
+    }
   });
 }
 

@@ -140,6 +140,17 @@ function render() {
     `;
     listEl.appendChild(row);
 
+    if (item.entryPath) {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('a.play-btn')) return;
+        if (window.ntsTrack) {
+          window.ntsTrack('play_click', { item_id: item.id, item_name: item.title, style: item.style });
+        }
+        window.location.href = item.entryPath;
+      });
+    }
+
     const link = row.querySelector('a.play-btn');
     if (link) {
       link.addEventListener('click', () => {

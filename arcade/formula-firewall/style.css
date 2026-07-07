@@ -72,6 +72,9 @@ html, body {
 .tower-btn { border: 1px solid #ddd; padding: 5px 10px; cursor: pointer; background: #fff; display: flex; flex-direction: column; min-width: 120px; border-radius: 3px; }
 .tower-btn:hover { background: var(--selected); border-color: var(--chrome); }
 .tower-btn.selected { border: 2px solid var(--chrome); background: var(--selected); }
+.tower-btn.locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.tower-btn.demolish-btn { border-color: #a13a2c; }
+.tower-btn.demolish-btn.selected { border: 2px solid #a13a2c; background: #fbe9e7; }
 .tower-name { font-weight: 700; font-family: var(--font-mono); font-size: 11px; }
 .tower-cost { font-size: 9px; color: var(--ink-muted); }
 

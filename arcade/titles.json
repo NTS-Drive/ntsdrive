@@ -43,14 +43,5 @@
     "status": "Live",
     "entryPath": "paycheck-python/index.html",
     "addedAt": "2026-07-05"
-  },
-  {
-    "id": "cat-care",
-    "title": "Cat Care",
-    "description": "A one-day desk-cat check-in that starts at 8:40–9:20AM and ends at 6PM. In-game content is entirely in Korean (a deliberate one-off exception to the site's English-only Arcade rule).",
-    "style": "Illustrated canvas UI, real-time async care sim",
-    "status": "Live",
-    "entryPath": "cat-care/index.html",
-    "addedAt": "2026-07-06"
   }
 ]

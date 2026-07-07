@@ -809,6 +809,63 @@ Cookie.
 **Fortune's 3-title roadmap goal (Daily Fortune → renamed/shipped as Desk
 Fortune Cookie, Tarot Pick, Lucky Numbers) is now fully complete.**
 
+## Formula Firewall v2 (2026-07-06) — major mechanics overhaul
+
+- **Tower Energy system replaces the old "attacks drain overall Integrity"
+  rule**: each tower now has its own Energy bar (starts equal to its cost,
+  scaled by difficulty — Intern ×1.4, Manager ×1.0, Director ×0.85 to
+  offset threats now attacking from Level 3 instead of Level 6). Energy
+  damage is cumulative for the whole run, not reset per level. A tower
+  whose Energy hits zero explodes and is permanently removed — global
+  Integrity only drops when a threat reaches the end of the path.
+- **Demolish mode**: new ribbon button toggles a mode where clicking any
+  placed tower removes it for a 50% refund of its original cost.
+  Destroyed-by-enemy towers get no refund — self-demolishing is the only
+  way to recover value, which is the intended risk/reward split.
+- **Two new towers**: `=INDEX()` (200 cost, unlocks Level 4, long-range
+  precision single-target) and `=QUERY()` (300 cost, unlocks Level 7,
+  hits every threat simultaneously within range). Ribbon buttons show a
+  `locked` state until their level. Tower icon letters were reassigned
+  (V/F/S/X/Q) after catching that IFERROR and INDEX would have collided
+  on the same "I" — caught before shipping.
+- **Two new threat types from Level 6+**: a slow, heavily-armored
+  "Corrupted Cell (#REF!)" tank, and a fast "Bonus Byte" that pays extra
+  money on kill and costs nothing if it slips through (spawn odds: 12%
+  bonus / 15% tank / rest normal).
+- **Fixed a real bug**: minimizing the tab mid-wave and restoring it could
+  spawn multiple enemies stacked on top of each other. Root cause: the
+  wave's `setInterval` spawn timer kept firing (throttled) while the
+  animation loop was suspended in the background tab, so several enemies
+  queued up at the same spawn point with zero visual movement between
+  them. Fixed with a Page Visibility listener that explicitly pauses both
+  the spawn interval and the render loop while hidden and cleanly resumes
+  both on return, plus a small random spawn-position jitter as a second
+  line of defense against any other stacking case.
+- **Tower energy bar visualization**, **destruction effects** (expanding
+  ring flash) for both towers and enemies, and a **"Towers Lost" column**
+  added to the Top 10 leaderboard.
+
+## Site-wide: whole-row navigation (2026-07-06)
+
+The root hub and Arcade hub already supported clicking anywhere in a row
+(not just the "Open"/"Play" button) to navigate. Fortune's and Academy's
+hub pages did not — fixed to match, so all four hub-style listing pages
+now behave identically.
+
+## Content pruning (2026-07-06)
+
+Cat Care (Arcade) and Lucky Numbers (Fortune) were pulled from their
+listings pending a redesign — entries removed from `titles.json` /
+`items.json` respectively, files left on disk untouched in case any of
+the existing implementation gets reused.
+
+## Academy: 2 more items registered (2026-07-06)
+
+`academy/items.json` now also lists 비즈니스 영어 마스터
+(`business-english-master.html`) and AI 사용법 마스터
+(`ai-usage-master.html`), both already fully built in earlier sessions —
+they just weren't wired into the Academy hub listing yet.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

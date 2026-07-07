@@ -46,6 +46,18 @@
         <span class="tower-name" style="color:#a13a2c;">=SUMIF()</span>
         <span class="tower-cost">Cost: 250 — Heavy hitter</span>
       </div>
+      <div class="tower-btn" onclick="selectTower('INDEX')" id="btn-INDEX">
+        <span class="tower-name" style="color:#2f7a4f;">=INDEX()</span>
+        <span class="tower-cost" id="cost-INDEX">Cost: 200 — Precision (Lv.4)</span>
+      </div>
+      <div class="tower-btn" onclick="selectTower('QUERY')" id="btn-QUERY">
+        <span class="tower-name" style="color:#6a3d9a;">=QUERY()</span>
+        <span class="tower-cost" id="cost-QUERY">Cost: 300 — Area (Lv.7)</span>
+      </div>
+      <div class="tower-btn demolish-btn" onclick="toggleDemolishMode()" id="btn-demolish">
+        <span class="tower-name">🔨 Demolish</span>
+        <span class="tower-cost">Refunds 50% of cost</span>
+      </div>
     </div>
     <div class="control-section">
       <button class="action-btn" onclick="saveGame(true)">Save</button>
@@ -132,7 +144,7 @@
     <h2>Top 10 Records</h2>
     <table class="leaderboard-table" id="leaderboard-table">
       <thead>
-        <tr><th>#</th><th>Name</th><th>Level</th><th>Role</th><th>Score</th><th>Date</th></tr>
+        <tr><th>#</th><th>Name</th><th>Level</th><th>Role</th><th>Towers Lost</th><th>Score</th><th>Date</th></tr>
       </thead>
       <tbody id="leaderboard-body"></tbody>
     </table>
@@ -167,6 +179,7 @@
       <li>Select a tower in the ribbon, then click an empty cell (not on the shaded path) to place it.</li>
       <li>Click <code>Start Wave</code> to release that level's threats.</li>
       <li>Defeated threats refund some Budget so you can afford more towers.</li>
+      <li>Click <code>🔨 Demolish</code>, then click any of your towers to remove it for a 50% refund of its cost.</li>
     </ul>
 
     <h3>Towers</h3>
@@ -174,13 +187,18 @@
       <li><code>=VLOOKUP()</code> — cheap, balanced, good early pick.</li>
       <li><code>=IFERROR()</code> — fires rapidly but hits softer, good against fast threats.</li>
       <li><code>=SUMIF()</code> — expensive, long range, heavy single-target damage.</li>
+      <li><code>=INDEX()</code> — unlocks at Level 4. Precision sniper: long range, strong single-target hits.</li>
+      <li><code>=QUERY()</code> — unlocks at Level 7. Area attack: hits every threat in range at once.</li>
     </ul>
 
-    <h3>Roles &amp; Difficulty</h3>
-    <p>Intern / Manager / Director change your starting Budget and how fast &amp; strong threats are. Higher difficulty also scores more points.</p>
+    <h3>Tower Energy</h3>
+    <p>Each tower has its own Energy bar (shown just below it), starting at a value equal to its cost. When a threat attacks a tower, it's that tower's Energy — not your overall Integrity — that drains. If a tower's Energy hits zero, it explodes and is removed from the board for good. Energy damage is cumulative across the whole run (it does not refill between levels), so keep an eye on towers that have taken repeated hits.</p>
 
-    <h3>Levels</h3>
-    <p>There are 10 levels. From <b>Level 6 onward</b>, threats that get close to one of your towers will actively attack it, draining Integrity even before they reach the end of the row. Threat speed and attack damage both increase every level.</p>
+    <h3>Roles &amp; Difficulty</h3>
+    <p>Intern / Manager / Director change your starting Budget, how fast &amp; strong threats are, and how much starting Energy your towers get (Intern towers start tougher, to offset threats attacking from Level 3). Higher difficulty also scores more points.</p>
+
+    <h3>Levels &amp; Threats</h3>
+    <p>There are 10 levels. From <b>Level 3 onward</b>, threats that get close to one of your towers will actively attack its Energy. From <b>Level 6 onward</b>, two special threats can appear: a slow, heavily-armored <b>Corrupted Cell (#REF!)</b>, and a fast, harmless <b>Bonus Byte</b> that pays out extra Budget when destroyed (and costs nothing if it slips through). Threat speed and attack damage both increase every level.</p>
 
     <h3>Save, Resume &amp; Reset</h3>
     <ul>

@@ -104,6 +104,17 @@ function render(list) {
     `;
     listEl.appendChild(row);
 
+    if (isLive) {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('a.play-btn')) return; // the link already handles its own navigation+tracking
+        if (window.ntsTrack) {
+          window.ntsTrack('select_content', { content_type: 'category', item_id: cat.id, item_name: cat.name });
+        }
+        window.location.href = cat.path;
+      });
+    }
+
     const link = row.querySelector('a.play-btn');
     if (link) {
       link.addEventListener('click', () => {
