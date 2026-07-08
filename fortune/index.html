@@ -12,9 +12,16 @@
 </head>
 <body>
 <div class="shell">
-  <nav class="topbar">
-    <a class="back-home" onclick="navigate('../index.html')">&larr; 홈으로</a>
-    <a class="brand" onclick="navigate('../index.html')">🗂 NTS Drive</a>
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" onclick="navigate('../index.html')"><div class="mark"></div>NTS Drive</a>
+      <div class="links">
+        <span onclick="navigate('../arcade/index.html')">Arcade</span>
+        <span class="active-link">Fortune</span>
+        <span onclick="navigate('../academy/index.html')">Academy</span>
+        <span onclick="navigate('../index.html')">Community</span>
+      </div>
+    </div>
   </nav>
 
   <main class="main">

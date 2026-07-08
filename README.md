@@ -986,6 +986,60 @@ Caught from live screenshots after the v3 redesign shipped:
   "back-home" pass (`.topbar{position:sticky; top:0}`) — confirmed still
   in place, no further change needed here.
 
+## Post-launch fixes round 3 (2026-07-08, v3.3)
+
+- **Unified top/bottom nav across all 4 pages**: Arcade/Fortune/Academy's
+  simple `.topbar` (brand + "← 홈으로" text link) was replaced with the
+  exact same `.nav` component the root page uses — full Arcade/Fortune/
+  Academy/Community links (current page shown as a non-clickable
+  `.active-link`), sticky positioning, and a clickable "NTS Drive" logo
+  that returns home. The standalone "← 홈으로" link is gone since the
+  logo now serves that purpose on both mobile and desktop, matching how
+  the home page itself works. Removed the now-dead `.topbar`/`.back-home`
+  CSS.
+- **Mobile bottom-nav clearance**: hub pages' `.main` only reserved 30px
+  of bottom padding under the fixed bottom GNB (vs. the root page's
+  78px), which on short-content pages like Fortune could make the nav
+  look like it was floating mid-page with dead space below rather than
+  pinned cleanly to the screen edge. Bumped to 90px to match.
+- **Spreadsheet Master's back-link**: was its own full-width white bar
+  with a border, sitting outside `.container` — visually inconsistent
+  with every other Academy page's plain inline text link. Moved inside
+  `.container` and restyled to match `business-english-master.html` /
+  `ai-usage-master.html` exactly.
+- **Arcade hero CTA scale-on-scroll**: the effect was driven by raw
+  `window.scrollY` over a 260px range — on desktop, where the hero can be
+  proportionally shorter relative to viewport height, the card could
+  scroll out of view before the effect became visually obvious, making
+  it seem broken versus mobile. Shortened the trigger range to 150px
+  (same total scale amount, reached sooner) so it reliably plays while
+  the card is still on screen on both breakpoints. Still purely a
+  function of current scroll position, so scrolling back up smoothly
+  reverses it exactly as before — no behavior change there, just made
+  the forward direction actually visible on desktop.
+
+## Hero background photo (2026-07-08, v3.4)
+
+- Added `assets/hero-bg.jpg` — a dark moody desk-setup photo, resized from
+  the original 4160×6240 upload down to 1467×2200 and re-compressed
+  (2.0MB → 221KB) since a hero background doesn't need print-resolution
+  source dimensions.
+- `.hero` now uses this photo (`background-size:cover;
+  background-position:center 28%`) with a dark gradient scrim
+  (`rgba(8,6,14,0.6→0.42→0.6)`) layered on top for consistent text
+  contrast regardless of which part of the photo lands under the text.
+  Rounded to 28px radius so it reads as a contained hero banner rather
+  than a full-bleed strip.
+- Hero text switched to a light palette for the dark photo: eyebrow
+  → light blue `#8ec2ff`, h1 → white with a soft text-shadow, subtext →
+  `rgba(255,255,255,0.78)`.
+- The 3 floater cards (Academy/Arcade/Fortune) went from solid gradient
+  fills to translucent frosted glass (`rgba(...)` backgrounds +
+  `backdrop-filter:blur(12px)` + a light 1px border), so the photo shows
+  through them instead of hiding it — text inside all three is now white
+  with a subtle shadow for legibility against the varying photo tones
+  behind them.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

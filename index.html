@@ -127,7 +127,7 @@
         blobs[0].style.transform = `translateY(${y*0.12}px)`;
         blobs[1] && (blobs[1].style.transform = `translateY(${-y*0.08}px)`);
         blobs[2] && (blobs[2].style.transform = `translateY(${y*0.06}px)`);
-        const sc = 1 + Math.min(y, 260) * 0.00025;
+        const sc = 1 + Math.min(y, 150) * 0.000433;
         const t = (sc - 1) / 0.065;
         if(arcadeBox){
           arcadeBox.style.setProperty('--sc', sc.toFixed(3));

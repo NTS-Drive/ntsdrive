@@ -101,9 +101,11 @@
         }
 
         .app-bar {
-            background: #ffffff;
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
         .back-link {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -295,11 +297,10 @@
 </head>
 <body>
 
-<div class="app-bar">
-    <a class="back-link" href="../index.html">&larr; 아카데미로 돌아가기</a>
-</div>
-
 <div class="container">
+    <div class="app-bar">
+        <a class="back-link" href="../index.html">&larr; 아카데미로 돌아가기</a>
+    </div>
     <header>
         <h1>📊 스프레드시트 마스터 가이드</h1>
         <p>각 레벨별 실무 시나리오 완벽 수록</p>
