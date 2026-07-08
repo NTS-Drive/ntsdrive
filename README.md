@@ -1018,27 +1018,21 @@ Caught from live screenshots after the v3 redesign shipped:
   reverses it exactly as before — no behavior change there, just made
   the forward direction actually visible on desktop.
 
-## Hero background photo (2026-07-08, v3.4)
+## Hero background photo — tried and reverted (2026-07-08, v3.4 → v3.5)
 
-- Added `assets/hero-bg.jpg` — a dark moody desk-setup photo, resized from
-  the original 4160×6240 upload down to 1467×2200 and re-compressed
-  (2.0MB → 221KB) since a hero background doesn't need print-resolution
-  source dimensions.
-- `.hero` now uses this photo (`background-size:cover;
-  background-position:center 28%`) with a dark gradient scrim
-  (`rgba(8,6,14,0.6→0.42→0.6)`) layered on top for consistent text
-  contrast regardless of which part of the photo lands under the text.
-  Rounded to 28px radius so it reads as a contained hero banner rather
-  than a full-bleed strip.
-- Hero text switched to a light palette for the dark photo: eyebrow
-  → light blue `#8ec2ff`, h1 → white with a soft text-shadow, subtext →
-  `rgba(255,255,255,0.78)`.
-- The 3 floater cards (Academy/Arcade/Fortune) went from solid gradient
-  fills to translucent frosted glass (`rgba(...)` backgrounds +
-  `backdrop-filter:blur(12px)` + a light 1px border), so the photo shows
-  through them instead of hiding it — text inside all three is now white
-  with a subtle shadow for legibility against the varying photo tones
-  behind them.
+Briefly shipped a dark desk-setup photo as the hero background
+(`assets/hero-bg.jpg`, resized 2.0MB→221KB) with translucent frosted-glass
+floater cards and light-colored text — reverted one turn later back to
+the plain light-theme hero at the user's request. The asset file is left
+on disk unused in case it's wanted again later; nothing currently
+references it.
+
+## Small polish (2026-07-08, v3.5)
+
+Added `cursor:pointer` to `.nav .brand` ("NTS Drive" logo) — it was
+already clickable (navigates home) but showed the default text cursor
+on hover, which didn't signal that. Applies to all 4 pages since they
+share the same `.nav` component.
 
 ## Ad placement
 
