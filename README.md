@@ -1034,6 +1034,39 @@ already clickable (navigates home) but showed the default text cursor
 on hover, which didn't signal that. Applies to all 4 pages since they
 share the same `.nav` component.
 
+## Hero headline reorder + two-tier sizing (2026-07-08, v3.6)
+
+Line order flipped and given two font sizes: "미니게임, 학습, 커뮤니티가
+모인" now leads (wrapped in `.h1-lead`, `font-size:0.62em` relative to the
+parent h1 so it scales proportionally at every breakpoint), followed by
+"직장인을 위한 드라이브" at the full headline size.
+
+## Post-launch fixes round 4 — mobile nav & responsive (2026-07-08, v3.7)
+
+- **Short-content pages' bottom nav looked mid-page instead of pinned to
+  the screen edge** (visible on Fortune/Academy screenshots, not on
+  Arcade): those hub pages' `.shell` had no minimum height, so on content
+  shorter than one viewport, full-page screenshot tools (and some mobile
+  browser edge cases) computed the fixed nav's position against a
+  resized/short "page" rather than the real device viewport. Added
+  `.shell{min-height:100vh}` so every hub page — regardless of how few
+  items it lists — always has at least a full viewport of layout height,
+  matching how the longer Arcade page happened to already look correct.
+- **Real horizontal-overflow bug on the home page's mobile folder grid**:
+  `.folders`/`.best-grid` used bare `repeat(n,1fr)` tracks, which in CSS
+  Grid don't shrink below their content's intrinsic min-width unless
+  explicitly told to. On narrow phones this let card text/badges force
+  the grid wider than the viewport, and the screenshot showed the page
+  scrolled sideways with the left edge of cards clipped off. Fixed by
+  switching every grid to `minmax(0,1fr)` tracks and adding
+  `min-width:0` to `.folder`/`.best-card` so they can actually shrink to
+  their column's allotted width instead of overflowing it.
+- **Bottom GNB**: removed the "더보기" (More) tab (previously just
+  scrolled/linked back to the folder section — redundant now that the
+  top nav exists everywhere) from all 4 pages. Order settled on
+  홈 → Arcade → Fortune → Academy on every page, with the current section
+  shown as the non-clickable `.active` item.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
