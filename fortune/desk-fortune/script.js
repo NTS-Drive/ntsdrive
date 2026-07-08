@@ -10,12 +10,12 @@ const SLOTS = [
 
 function getCurrentSlotId() {
   const mins = new Date().getHours() * 60 + new Date().getMinutes();
-  if (mins >= 8 * 60 && mins < 9 * 60) return 'commute';
-  if (mins >= 9 * 60 && mins < 11 * 60) return 'morning';
-  if (mins >= 11 * 60 && mins < 12 * 60) return 'lunch';
-  if (mins >= 12 * 60 && mins < 17 * 60) return 'afternoon';
-  if (mins >= 17 * 60 && mins < 19 * 60) return 'leaving';
-  return 'home'; // 19:00–23:59 and 00:00–7:59
+  if (mins < 9 * 60) return 'commute';   // 00:00–08:59
+  if (mins < 11 * 60) return 'morning';  // 09:00–10:59
+  if (mins < 12 * 60) return 'lunch';    // 11:00–11:59
+  if (mins < 17 * 60) return 'afternoon';// 12:00–16:59
+  if (mins < 19 * 60) return 'leaving';  // 17:00–18:59
+  return 'home'; // 19:00–23:59
 }
 
 /* ===== Content pools: 10 fortunes / 10 weapons / 10 tips per slot ===== */

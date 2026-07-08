@@ -74,8 +74,8 @@ body.leaving{animation:pageOut .3s ease both;}
 .folder.soon .ficon .glyph{opacity:0.7;}
 
 .folder h3{font-family:'Space Grotesk'; font-size:16px; margin-bottom:6px;}
-.folder p{font-size:12.5px; color:var(--sub); line-height:1.55; min-height:39px;}
-.folder .badge{display:inline-block; margin-top:14px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:#F1F1F5; color:var(--sub);}
+.folder p{font-size:12.5px; color:var(--sub); line-height:1.55; min-height:39px; width:100%;}
+.folder .badge{display:inline-block; margin-top:auto; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:#F1F1F5; color:var(--sub);}
 
 /* ---- BEST 3 (root) ---- */
 .best-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
@@ -143,7 +143,14 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .folder.soon{grid-column:span 1;}
   .ficon{width:60px; height:46px;}
   .best-grid{grid-template-columns:1fr;}
-  .stage{height:260px;}
+  .stage{height:230px; max-width:300px;}
+  .floater{width:210px; height:150px;}
+  .floater .card{width:160px; height:108px; padding:13px; border-radius:16px;}
+  .floater .c1{left:0; top:30px;}
+  .floater .c2{left:50px; top:0;}
+  .floater .c3{left:90px; top:42px;}
+  .floater .tag{font-size:12px;}
+  .floater .c2 .cta-sub{font-size:10px;}
   .folder, .best-card{transition:transform .1s;}
   .folder:active, .best-card:active{transform:scale(0.97); box-shadow:none;}
   .folder:hover, .best-card:hover{transform:none; box-shadow:none;}

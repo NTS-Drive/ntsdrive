@@ -952,6 +952,40 @@ Caught from live screenshots after the v3 redesign shipped:
   separate `Records` button (unaffected by this bug) remains the way to
   check the leaderboard mid-session.
 
+## Post-launch fixes round 2 (2026-07-08, v3.2)
+
+- **Real content bug**: `academy/spreadsheet-master/index.html` was still
+  a 44-line "coming soon" stub ("첫 게시글을 준비 중입니다") left over from
+  before Academy pivoted to the interactive-guide format — the real
+  127-item, 5-level guide had only ever been delivered as a standalone
+  download, never actually placed at this path. Replaced with the
+  complete v2.1 guide (451 lines); verified its existing `../index.html`
+  back-link correctly resolves to the Academy hub (this file genuinely
+  lives one level deeper, unlike the two Academy files fixed in v3.1).
+- **Hero headline**: line break moved to right after "직장인을 위한" per
+  updated copy direction.
+- **Feedback widget vs. mobile GNB**: the feedback pill's `bottom:14px`
+  sat inside the fixed bottom nav's footprint on narrow screens. Added a
+  mobile-only override (`bottom:84px` under 760px) so it floats above the
+  GNB instead of overlapping it.
+- **Desk Fortune Cookie slot boundary**: "home" now ends at 23:59 sharp
+  (was wrapping through to 07:59) and "commute" now starts at 00:00
+  (was 08:00) — the entire post-midnight span before the actual 08:40
+  start window reads as commute-flavored instead of home-flavored.
+- **Folder grid badge alignment**: badges ("2개 운영중" / "3개 테마 완성" /
+  "준비중") now pin to the bottom of each card via `margin-top:auto`
+  instead of a fixed `margin-top`, so they land on a shared baseline
+  across a row regardless of how many lines each card's description wraps to.
+- **Hero mobile overflow**: the floater's card block used fixed desktop
+  pixel dimensions (up to ~350px total span) with no mobile override,
+  overflowing narrow viewports. Added a dedicated mobile size/offset set
+  (floater 210px, cards 160×108px) that fits within a 300px stage —
+  comfortable on real phone widths (375px+), with only negligible
+  clipping possible on legacy sub-340px devices.
+- **Sticky top nav on detail pages**: already shipped in v3.1's
+  "back-home" pass (`.topbar{position:sticky; top:0}`) — confirmed still
+  in place, no further change needed here.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

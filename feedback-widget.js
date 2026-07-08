@@ -10,7 +10,8 @@
     '  align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);',
     '  transition: color 0.15s ease, border-color 0.15s ease;',
     '}',
-    '#nts-feedback-widget:hover { color: #2F5DA8; border-color: #2F5DA8; }'
+    '#nts-feedback-widget:hover { color: #2F5DA8; border-color: #2F5DA8; }',
+    '@media (max-width: 760px) { #nts-feedback-widget { bottom: 84px; } }'
   ].join('\n');
   document.head.appendChild(style);
 
