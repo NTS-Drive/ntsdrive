@@ -1,163 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NTS_Drive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="analytics.js"></script>
 </head>
 <body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
 
-<div class="explorer">
-
-  <div class="addressbar">
-    <div class="breadcrumb">
-      <span class="crumb current">🗂️ NTS_Drive</span>
+<nav class="nav">
+  <div class="nav-in">
+    <div class="brand"><div class="mark"></div>NTS Drive</div>
+    <div class="links">
+      <span onclick="navigate('arcade/index.html')">Arcade</span>
+      <span onclick="navigate('fortune/index.html')">Fortune</span>
+      <span onclick="navigate('academy/index.html')">Academy</span>
+      <span onclick="document.getElementById('folders').scrollIntoView({behavior:'smooth'})">Community</span>
     </div>
-    <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Search NTS_Drive">
+    <div class="right">
+      <button class="first-btn" onclick="document.getElementById('onboard').classList.add('show')">처음이신가요?</button>
     </div>
   </div>
+</nav>
 
-  <div class="toolbar">
-    <button class="tool-btn" id="refreshBtn" title="Refresh">
-      <svg viewBox="0 0 20 20" width="15" height="15"><path d="M15 5a6 6 0 1 0 1.6 5.4M16 3v4h-4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Refresh
-    </button>
-    <div class="toolbar-spacer"></div>
+<section class="hero">
+  <div class="eyebrow">NTS DRIVE</div>
+  <h1>직장인을 위한 미니게임, 학습, 커뮤니티가<br>모인 드라이브</h1>
+  <p class="subtext">일하다 지칠 때 열어보는 폴더</p>
+
+  <div class="stage">
+    <div class="floater" id="floater">
+      <div class="card c1"><span class="tag">Academy</span></div>
+      <div class="card c2" onclick="document.getElementById('folders').scrollIntoView({behavior:'smooth'})">
+        <span class="tag">Arcade</span>
+        <span class="cta-sub">▶ 지금 바로 게임 하기</span>
+      </div>
+      <div class="card c3"><span class="tag">Fortune</span></div>
+    </div>
   </div>
+</section>
 
-  <div class="explorer-body">
+<section class="section" id="folders">
+  <div class="section-head"><h2>폴더 둘러보기</h2><span id="folder-count-label">불러오는 중…</span></div>
+  <div class="folders" id="folders-grid"></div>
+</section>
 
-    <aside class="sidebar">
-      <div class="side-section">
-        <div class="side-title">Quick access</div>
-        <button class="side-item active" data-filter="all">All folders</button>
-      </div>
-      <div class="side-section ad-side">
-        <div class="side-title">Ad space</div>
-        <div class="ad-slot-vert">160×300<br>Reserved for AdSense</div>
-      </div>
-    </aside>
-
-    <main class="listpane">
-      <div class="list-head cols-root">
-        <div class="col col-name">Name</div>
-        <div class="col col-type">Type</div>
-        <div class="col col-status">Status</div>
-        <div class="col col-action">Open</div>
-      </div>
-      <div id="fileList" class="file-list cols-root"></div>
-      <div id="emptyState" class="empty-state" hidden>No matches found.</div>
-    </main>
+<section class="section">
+  <div class="section-head"><h2>이번 주 BEST</h2><span>운영자 큐레이션</span></div>
+  <div class="best-grid">
+    <a class="best-card" href="arcade/formula-firewall/index.html">
+      <div class="rank">01</div>
+      <div class="info"><h4>Formula Firewall</h4><p>Arcade · 타워디펜스</p></div>
+    </a>
+    <a class="best-card" href="fortune/tarot-pick/index.html">
+      <div class="rank">02</div>
+      <div class="info"><h4>Tarot Pick</h4><p>Fortune · 타로운세</p></div>
+    </a>
+    <a class="best-card" href="academy/ai-usage-master.html">
+      <div class="rank">03</div>
+      <div class="info"><h4>AI 사용법 마스터</h4><p>Academy · 학습 콘텐츠</p></div>
+    </a>
   </div>
+</section>
 
-  <div class="statusbar">
-    <span id="statusCount">Loading...</span>
+<footer>© 2026 NTS Drive · 직장인을 위한 작은 쉼표</footer>
+
+<div class="overlay" id="onboard">
+  <div class="modal">
+    <span class="close" onclick="document.getElementById('onboard').classList.remove('show')">✕</span>
+    <h3>NTS Drive 처음이시라면</h3>
+    <div class="step"><div class="num">1</div><p><b>여기서 뭘 할 수 있냐면,</b> 업무 스타일 미니게임, 학습 콘텐츠, 소통 공간이 한 곳에 모여있어요.</p></div>
+    <div class="step"><div class="num">2</div><p><b>가장 빠른 시작은 게임이에요.</b> Arcade의 타워디펜스부터 가볍게 해보세요.</p></div>
+    <div class="step"><div class="num">3</div><p><b>로그인 없이 바로 시작</b> 가능해요. 부담 없이 눌러보세요.</p></div>
+    <button class="btn-primary" onclick="navigate('arcade/index.html')">Arcade로 이동하기</button>
   </div>
 </div>
 
+<nav class="bottom-nav">
+  <a class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bicon">⌂</span>홈</a>
+  <a onclick="navigate('arcade/index.html')"><span class="bicon">🕹️</span>Arcade</a>
+  <a onclick="navigate('fortune/index.html')"><span class="bicon">✦</span>Fortune</a>
+  <a onclick="navigate('academy/index.html')"><span class="bicon">▣</span>Academy</a>
+  <a onclick="document.getElementById('folders').scrollIntoView({behavior:'smooth'})"><span class="bicon">⋯</span>더보기</a>
+</nav>
+
 <script>
-let CATEGORIES = [];
-
-async function itemCount(source) {
-  if (!source) return null;
-  try {
-    const res = await fetch(source, { cache: 'no-store' });
-    const data = await res.json();
-    return data.length;
-  } catch (e) {
-    return null;
+  function navigate(url){
+    document.body.classList.add('leaving');
+    setTimeout(()=>{ window.location.href = url; }, 280);
   }
-}
 
-function render(list) {
-  const listEl = document.getElementById('fileList');
-  const emptyEl = document.getElementById('emptyState');
-  listEl.innerHTML = '';
-  emptyEl.hidden = list.length > 0;
+  // 3D floater hero interaction
+  const stage = document.querySelector('.stage');
+  const floater = document.getElementById('floater');
+  stage.addEventListener('mousemove', (e)=>{
+    const r = stage.getBoundingClientRect();
+    const x = (e.clientX - r.left)/r.width - 0.5;
+    const y = (e.clientY - r.top)/r.height - 0.5;
+    floater.style.transform = `rotateY(${x*14}deg) rotateX(${-y*14}deg)`;
+  });
+  stage.addEventListener('mouseleave', ()=>{ floater.style.transform = 'rotateY(0) rotateX(0)'; });
 
-  list.forEach(cat => {
-    const row = document.createElement('div');
-    row.className = 'file-row cols-root';
-    const isLive = cat.status === 'Live';
-    const btnHtml = cat.status === 'Live'
-      ? `<a class="play-btn" href="${cat.path}">Open</a>`
-      : `<span class="play-btn disabled">Soon</span>`;
-
-    row.innerHTML = `
-      <div class="col col-name">
-        <span class="file-icon">${cat.emoji}</span>
-        <div>
-          <div class="file-title">${cat.name}</div>
-          <div class="file-desc">${cat.description}</div>
-        </div>
-      </div>
-      <div class="col col-type">Folder</div>
-      <div class="col col-status"><span class="dot ${isLive ? 'live' : 'planning'}"></span>${cat.status}</div>
-      <div class="col col-action">${btnHtml}</div>
-    `;
-    listEl.appendChild(row);
-
-    if (isLive) {
-      row.style.cursor = 'pointer';
-      row.addEventListener('click', (e) => {
-        if (e.target.closest('a.play-btn')) return; // the link already handles its own navigation+tracking
-        if (window.ntsTrack) {
-          window.ntsTrack('select_content', { content_type: 'category', item_id: cat.id, item_name: cat.name });
+  // 배경 블롭 패럴랙스 + Arcade 박스 좌우 이동
+  const blobs = document.querySelectorAll('.blob');
+  const arcadeBox = document.querySelector('.floater .c2');
+  let ticking = false;
+  window.addEventListener('scroll', ()=>{
+    if(!ticking){
+      requestAnimationFrame(()=>{
+        const y = window.scrollY;
+        blobs[0].style.transform = `translateY(${y*0.12}px)`;
+        blobs[1] && (blobs[1].style.transform = `translateY(${-y*0.08}px)`);
+        blobs[2] && (blobs[2].style.transform = `translateY(${y*0.06}px)`);
+        const sc = 1 + Math.min(y, 260) * 0.00025;
+        const t = (sc - 1) / 0.065;
+        if(arcadeBox){
+          arcadeBox.style.setProperty('--sc', sc.toFixed(3));
+          arcadeBox.style.boxShadow = `0 ${10+8*t}px ${18+14*t}px rgba(15,17,21,${(0.18+0.24*t).toFixed(2)})`;
         }
-        window.location.href = cat.path;
+        ticking = false;
       });
-    }
-
-    const link = row.querySelector('a.play-btn');
-    if (link) {
-      link.addEventListener('click', () => {
-        if (window.ntsTrack) {
-          window.ntsTrack('select_content', {
-            content_type: 'category',
-            item_id: cat.id,
-            item_name: cat.name
-          });
-        }
-      });
+      ticking = true;
     }
   });
-}
 
-async function init() {
-  try {
-    const res = await fetch('categories.json', { cache: 'no-store' });
-    CATEGORIES = await res.json();
+  // ---- 폴더 그리드: categories.json + 각 itemsSource 를 함께 불러와 동적 렌더링 ----
+  const FOLDER_STYLE = {
+    arcade:    { emoji: '🕹️', cls: 'f-arcade',    featured: true,  unit: '개 운영중' },
+    fortune:   { emoji: '✦',  cls: 'f-fortune',   featured: false, unit: '개 운영중' },
+    academy:   { emoji: '▣',  cls: 'f-academy',   featured: false, unit: '개 테마 완성' },
+    community: { emoji: '◇',  cls: 'f-community', featured: false, unit: null },
+    store:     { emoji: '🛍️', cls: 'f-store',     featured: false, unit: null }
+  };
 
-    const counts = await Promise.all(CATEGORIES.map(c => itemCount(c.itemsSource)));
-    CATEGORIES.forEach((c, i) => { c.count = counts[i]; });
+  async function loadFolders() {
+    const grid = document.getElementById('folders-grid');
+    const label = document.getElementById('folder-count-label');
+    try {
+      const categories = await (await fetch('categories.json', { cache: 'no-store' })).json();
+      label.textContent = `${categories.length}개 영역`;
 
-    render(CATEGORIES);
-    document.getElementById('statusCount').textContent = `${CATEGORIES.length} folders`;
-  } catch (e) {
-    document.getElementById('statusCount').textContent = 'Could not load categories.json';
-    document.getElementById('emptyState').hidden = false;
-    document.getElementById('emptyState').textContent = 'If viewing locally, run a small server (e.g. npx serve).';
+      const cards = await Promise.all(categories.map(async cat => {
+        const style = FOLDER_STYLE[cat.id] || { emoji: cat.emoji, cls: '', featured: false, unit: '개 운영중' };
+        let badgeText = '준비중';
+        let soonClass = ' soon';
+
+        if (cat.status === 'Live') {
+          soonClass = '';
+          let count = null;
+          if (cat.itemsSource) {
+            try {
+              const items = await (await fetch(cat.itemsSource, { cache: 'no-store' })).json();
+              count = items.filter(i => i.status === 'Live').length;
+            } catch (e) { count = null; }
+          }
+          badgeText = count != null ? `${count}${style.unit || '개 운영중'}` : 'Live';
+        }
+
+        const featuredClass = style.featured ? ' featured' : '';
+        return `
+          <div class="folder${featuredClass}${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="navigate('${cat.path}')"` : ''}>
+            <div class="ficon"><span class="glyph">${style.emoji}</span></div>
+            <h3>${cat.name}</h3>
+            <p>${cat.description}</p>
+            <span class="badge">${badgeText}</span>
+          </div>
+        `;
+      }));
+
+      grid.innerHTML = cards.join('');
+    } catch (e) {
+      label.textContent = '';
+      grid.innerHTML = '<div class="empty">폴더 목록을 불러오지 못했어요.</div>';
+    }
   }
-}
-
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  const q = e.target.value.trim().toLowerCase();
-  const filtered = CATEGORIES.filter(c =>
-    c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)
-  );
-  render(filtered);
-});
-
-document.getElementById('refreshBtn').addEventListener('click', init);
-
-init();
+  loadFolders();
 </script>
 <script src="feedback-widget.js" defer></script>
 </body>

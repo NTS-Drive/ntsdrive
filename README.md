@@ -866,6 +866,50 @@ the existing implementation gets reused.
 (`ai-usage-master.html`), both already fully built in earlier sessions —
 they just weren't wired into the Academy hub listing yet.
 
+## Site-wide redesign v3 (2026-07-08)
+
+Following design work done in a separate [전략] track (design package:
+`nts_drive_design_package.zip` + discussion doc), the whole site's shell
+was rebuilt to a new visual system — a shared `styles.css` now drives all
+4 hub-style pages (root, Arcade, Fortune, Academy).
+
+- **Design tokens**: Space Grotesk (display) + Inter (body), palette
+  `--blue #0071E3 / --coral #FF6F59 / --violet #8B5CF6 / --teal #14B8A6 /
+  --amber #F5A524`, ink `#0F1115` on off-white `#FBFBFD`.
+- **Root page**: signature 3D "floater" hero (3 tilting folder cards,
+  mouse-tracked via `perspective`/`rotateY`/`rotateX`), the blue Arcade
+  card doubling as the primary CTA (scroll-into-view on click, plus a
+  scroll-linked scale/shadow effect), ambient blurred-blob parallax,
+  dynamically-rendered folder grid, a manually-curated "이번 주 BEST"
+  strip, and a click-to-open onboarding modal (no auto-trigger).
+- **Folder grid stays fully data-driven**: fetches `categories.json`,
+  and for each `Live` category also fetches its `itemsSource` JSON to
+  compute a live count (verified end-to-end with an actual Node `fetch`
+  run against a local server: Arcade → 5, Fortune → 2, Academy → 3,
+  Community/Store → "준비중"). Adding/removing a title anywhere on the
+  site updates this badge automatically — no hand-editing the homepage.
+- **Arcade/Fortune/Academy hub pages**: rebuilt to a shared "file list"
+  pattern (breadcrumb, single-column file rows with a folded-corner
+  document icon, Live badge), each still reading its own `titles.json` /
+  `items.json` and rendering only `status: "Live"` entries — matching
+  the design decision to drop "N/M live" progress language entirely.
+  Per-title icon colors were hand-mapped (with a neutral gray fallback
+  for any future title without an explicit mapping).
+- **Arcade's listing order was reordered** in `titles.json` to match the
+  design doc's finalized sequence: Formula Firewall → Number Streak →
+  Paycheck Python → Card Memory → Deck Dash.
+- **Whole-page navigation**: a shared `navigate(url)` pattern (fade+slide
+  out via a `.leaving` class, then `location.href`) replaces in-page
+  panel switching everywhere — "opening a folder" is a real page load.
+- **Mobile**: top nav links and the hamburger are both dropped in favor
+  of a fixed bottom GNB (홈/Arcade/Fortune/Academy/더보기) on all 4 pages,
+  now wired to the real Arcade/Fortune/Academy pages instead of scroll
+  anchors now that those pages exist.
+- **Scope note**: this pass only covers the 4 hub/listing-style pages.
+  Individual game and content pages (Formula Firewall, Tarot Pick,
+  Spreadsheet Master, etc.) keep their existing per-title visual identity
+  and were intentionally left untouched.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

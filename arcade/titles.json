@@ -1,14 +1,5 @@
 [
   {
-    "id": "deck-dash",
-    "title": "Deck Dash",
-    "description": "Sprint across an endless slide deck, dodging typos, pop-ups, and last-minute chaos.",
-    "style": "Slide deck & chat notifications",
-    "status": "Live",
-    "entryPath": "deck-dash/index.html",
-    "addedAt": "2026-07-05"
-  },
-  {
     "id": "formula-firewall",
     "title": "Formula Firewall",
     "description": "Defend your spreadsheet from corrupted data errors marching across the grid.",
@@ -27,6 +18,15 @@
     "addedAt": "2026-07-05"
   },
   {
+    "id": "paycheck-python",
+    "title": "Paycheck Python",
+    "description": "Eat money to grow strong and dodge your workload — walls, your own tail, and office obstacles all end the run.",
+    "style": "Outlook mail chrome, classic grid-snake",
+    "status": "Live",
+    "entryPath": "paycheck-python/index.html",
+    "addedAt": "2026-07-05"
+  },
+  {
     "id": "card-memory",
     "title": "Card Memory",
     "description": "Match each emoji to its English word across 5 escalating stages — animals, flags, then total chaos.",
@@ -36,12 +36,12 @@
     "addedAt": "2026-07-05"
   },
   {
-    "id": "paycheck-python",
-    "title": "Paycheck Python",
-    "description": "Eat money to grow strong and dodge your workload — walls, your own tail, and office obstacles all end the run.",
-    "style": "Outlook mail chrome, classic grid-snake",
+    "id": "deck-dash",
+    "title": "Deck Dash",
+    "description": "Sprint across an endless slide deck, dodging typos, pop-ups, and last-minute chaos.",
+    "style": "Slide deck & chat notifications",
     "status": "Live",
-    "entryPath": "paycheck-python/index.html",
+    "entryPath": "deck-dash/index.html",
     "addedAt": "2026-07-05"
   }
 ]
