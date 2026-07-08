@@ -38,7 +38,7 @@
   <div class="stage">
     <div class="floater" id="floater">
       <div class="card c1"><span class="tag">Academy</span></div>
-      <div class="card c2" onclick="document.getElementById('folders').scrollIntoView({behavior:'smooth'})">
+      <div class="card c2" onclick="navigate('arcade/index.html')">
         <span class="tag">Arcade</span>
         <span class="cta-sub">▶ 지금 바로 게임 하기</span>
       </div>
@@ -96,6 +96,14 @@
     document.body.classList.add('leaving');
     setTimeout(()=>{ window.location.href = url; }, 280);
   }
+
+  // Fix: the browser can restore this exact page from its back/forward
+  // cache (bfcache) mid-fade — still carrying the .leaving class from
+  // when we navigated away, which left the page stuck at opacity:0. If
+  // that happens, drop the class so the normal pageIn animation plays.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('leaving');
+  });
 
   // 3D floater hero interaction
   const stage = document.querySelector('.stage');

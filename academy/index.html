@@ -12,7 +12,10 @@
 </head>
 <body>
 <div class="shell">
-  <nav class="topbar"><a class="brand" onclick="navigate('../index.html')">🗂 NTS Drive</a></nav>
+  <nav class="topbar">
+    <a class="back-home" onclick="navigate('../index.html')">&larr; 홈으로</a>
+    <a class="brand" onclick="navigate('../index.html')">🗂 NTS Drive</a>
+  </nav>
 
   <main class="main">
     <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>Academy</b></div>
@@ -38,6 +41,9 @@
     document.body.classList.add('leaving');
     setTimeout(()=>{ window.location.href = url; }, 280);
   }
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('leaving');
+  });
 
   const ICON_STYLE = {
     'spreadsheet-master':       { emoji: '📊', fl: '#5FE0C7', fc: '#14B8A6' },

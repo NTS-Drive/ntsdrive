@@ -910,6 +910,48 @@ was rebuilt to a new visual system — a shared `styles.css` now drives all
   Spreadsheet Master, etc.) keep their existing per-title visual identity
   and were intentionally left untouched.
 
+## Post-launch bug fixes & polish (2026-07-08, v3.1)
+
+Caught from live screenshots after the v3 redesign shipped:
+
+- **Real bug — wrong back-link path**: `academy/business-english-master.html`
+  and `academy/ai-usage-master.html` live directly inside `academy/`, but
+  their "← 아카데미로 돌아가기" link was `../index.html` (written as if
+  they were one level deeper, like `spreadsheet-master/index.html` is) —
+  so clicking it landed on the *root* homepage instead of the Academy hub.
+  Fixed to `index.html`; verified the resolved URL with `urllib.parse.urljoin`.
+- **Real bug — bfcache showed a blank page on browser Back**: the
+  fade-out `navigate()` helper adds a `.leaving` class before changing
+  `location.href`. If the browser restores the page from its back/forward
+  cache, it can restore that exact mid-fade DOM state (opacity 0), which
+  looked like "pressing back doesn't bring the page back." Fixed with a
+  `pageshow` listener that strips `.leaving` on `event.persisted`, added
+  to all 4 hub pages.
+- **Hero sizing**: the 3D floater cards' vertical math left almost no
+  margin before clipping (worst case exactly 0px on mobile). Increased
+  `.stage` height (280→320 desktop, 220→260 mobile) for real breathing room.
+- **Folder grid sizing**: Arcade now spans the full row alone
+  (`grid-column:1/-1`); Fortune/Academy/Community/Store are all equal
+  single-column cards in the row below (previously Community/Store were
+  double-width while Fortune/Academy were single, an inconsistent mix).
+- **Explicit "← 홈으로" link** added to the Arcade/Fortune/Academy hub
+  topbars, alongside the existing brand-click affordance.
+- **Arcade hero CTA card** now navigates straight to `arcade/index.html`
+  instead of scrolling down to the folder grid.
+- **Onboarding modal** ("처음이신가요?") now opens anchored near the top
+  of the viewport (under the sticky nav, within the hero's visual range)
+  instead of dead-centered on screen.
+- **Number Streak**: the post-guess pause (`REVEAL_MS`) — which drives
+  both the result toast duration and the delay before the next round's
+  number is revealed — changed from 3.8s to 1.5s.
+- **Arcade end-of-run modal**: removed the "View Records" button across
+  all 5 titles (Formula Firewall, Number Streak, Card Memory, Deck Dash,
+  Paycheck Python) — clicking it opened the leaderboard overlay stacked
+  behind the end-of-run overlay instead of replacing it, making the
+  ranking unreadable. "Play Again" is now the only action; the ribbon's
+  separate `Records` button (unaffected by this bug) remains the way to
+  check the leaderboard mid-session.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

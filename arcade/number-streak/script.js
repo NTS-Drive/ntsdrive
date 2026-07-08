@@ -6,7 +6,7 @@ const TOTAL_LEVELS = 10;
 const ROUNDS_PER_LEVEL = 10;
 const BASE_POINTS = 10;
 const MAX_MULT = 2.0;
-const REVEAL_MS = 3800; // how long the result + revealed number stay up before the round advances
+const REVEAL_MS = 1500; // how long the result + revealed number stay up before the round advances
 const LEVEL_RANGES = [5, 10, 20, 50, 100, 150, 200, 300, 500, 1000];
 function levelThreshold(level) { return 40 + level * 10; }
 function currentMax() { return LEVEL_RANGES[currentLevel - 1]; }
