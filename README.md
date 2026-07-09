@@ -1067,6 +1067,33 @@ parent h1 so it scales proportionally at every breakpoint), followed by
   홈 → Arcade → Fortune → Academy on every page, with the current section
   shown as the non-clickable `.active` item.
 
+## Real-device horizontal scroll bugs (2026-07-09, v3.8)
+
+Both reported from an actual mobile device (not just DevTools emulation),
+and both were genuine, previously-unfixed bugs:
+
+- **Root page**: despite `body{overflow-x:hidden}`, the page could still
+  scroll/render shifted horizontally on real mobile browsers, clipping
+  the hero headline and floater cards on the left edge. Root cause: per
+  the CSS spec, setting only `overflow-x` (without `overflow-y`) forces
+  the browser to compute the unset axis to `auto`, which some mobile
+  browsers (Samsung Internet among them) handle inconsistently for
+  clipping purposes. Fixed by also setting `overflow-x:hidden` on `html`
+  (not just `body`) and explicitly setting `overflow-y:auto` alongside
+  it, removing the ambiguity. As defense in depth, also shrank the
+  decorative `.blob` elements' size/offsets on mobile so there's less
+  overflow for any residual quirk to expose.
+- **Spreadsheet Master, from Level 5 on**: this page is a fully
+  standalone HTML file with its own `<style>` block — it never inherited
+  the site-wide `styles.css`, and its own `body` rule had **no
+  `overflow-x:hidden` at all**. Levels 1–4's shorter formula examples
+  happened to fit without issue, but Level 5's longer automation
+  examples (e.g. the Power Query card) were wide enough to expose the
+  missing protection and push the whole page wider. Added
+  `overflow-x:hidden` to both `html` and `body` in this file, plus
+  `max-width:100%` + `word-break:break-word` on `.formula-box` so even a
+  single long unbreakable token wraps instead of forcing overflow.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

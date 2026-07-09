@@ -3,8 +3,8 @@
   --blue:#0071E3; --coral:#FF6F59; --violet:#8B5CF6; --teal:#14B8A6; --amber:#F5A524;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; position:relative; animation:pageIn .45s ease both;}
+html{scroll-behavior:smooth; overflow-x:hidden;}
+body{background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; overflow-y:auto; position:relative; animation:pageIn .45s ease both;}
 @keyframes pageIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
 body.leaving{animation:pageOut .3s ease both;}
 @keyframes pageOut{to{opacity:0; transform:translateY(-10px);}}
@@ -138,6 +138,9 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 @media (max-width:760px){
   .nav .links{display:none;}
   body{padding-bottom:78px;}
+  .blob1{width:280px; height:280px; top:-80px; right:-60px;}
+  .blob2{width:220px; height:220px; left:-60px;}
+  .blob3{width:200px; height:200px; right:-50px;}
   .folders{grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;}
   .folder.soon{grid-column:span 1;}
   .ficon{width:60px; height:46px;}
