@@ -1094,6 +1094,90 @@ and both were genuine, previously-unfixed bugs:
   `max-width:100%` + `word-break:break-word` on `.formula-box` so even a
   single long unbreakable token wraps instead of forcing overflow.
 
+## New: Post — "미래에 열리는 편지" (2026-07-09)
+
+A brand-new top-level category, built and validated but **deliberately not
+yet linked from the home page** (`categories.json` untouched) — the site
+owner wants to reveal it together with a broader nav reshuffle (dropping
+Store, repositioning Community/Academy/Post) at a later date. Reachable
+directly at `post/index.html` for review in the meantime.
+
+- **Concept**: write a short letter to someone, pick an unlock time, get a
+  shareable link. Whoever opens it before the unlock time sees only a
+  sealed envelope with a live countdown; after it, the letter reveals
+  with a paper-drop-in animation.
+- **7 emotional templates** (놀림/축하/응원/고백/감사/위로/송별) — each just
+  changes the envelope emoji and a single italic example line to spark
+  ideas; the letter itself is always hand-written by the sender, never
+  auto-generated.
+- **No backend, same as Tarot Pick / Desk Fortune Cookie**: the entire
+  letter (recipient/sender names, title, body, unlock timestamp, and
+  optional photo) is UTF-8-safe base64url-encoded into a single `?d=`
+  query param. The "lock" is a client-side time check, not real
+  encryption — stated explicitly in the UI disclaimer, matching the same
+  honest framing used for the other time-gated features on the site.
+- **Optional photo → 32×32 / 16-color dot art, done entirely in the
+  browser**: upload validation caps the source file at 8MB; the image is
+  center-cropped to square, downsampled to a 32×32 canvas, and each pixel
+  quantized to the nearest color in a fixed 16-color palette (shared by
+  the composer and viewer, so it never needs to be transmitted) — packing
+  2 palette indices per byte brings a full image down to exactly 512
+  bytes (~683 base64 characters). Verified end-to-end with a Node
+  simulation: pack→unpack roundtrip exact match, and a worst-case letter
+  (300 Korean characters + full image + max-length names/title) produces
+  a **2,314-character URL** — longer than the ultra-conservative 2,000-char
+  guideline some older systems use, but comfortably within what modern
+  browsers and KakaoTalk/messaging apps handle.
+- On reveal, the photo fades in with a polaroid-style rotate+scale
+  animation half a second after the letter text appears.
+- **Unlock time**: 4 presets (1시간 후 / 오늘 자정 / 내일 아침 9시 / 다음
+  출근일 아침 9시) plus a manual `datetime-local` picker; picking a preset
+  fills the picker, editing the picker manually clears the preset
+  selection. "다음 출근일" correctly skips weekends — verified with a Node
+  simulation covering all 7 possible starting weekdays (Fri/Sat both
+  correctly roll to the following Monday).
+- **Design system is intentionally isolated** from the rest of the site
+  (its own `post/style.css`, not the shared `styles.css`): cream/ink
+  palette with a single deep-burgundy accent, Noto Serif KR headlines,
+  generous whitespace — an editorial/Magazine-B mood distinct from every
+  other section's palette.
+
+## Post goes live site-wide + nav reshuffle (2026-07-09, v3.9)
+
+Post is no longer hidden — `categories.json` now includes it (status
+`Live`, no `itemsSource` since it's a single tool, not a list), and every
+page's navigation was updated to match:
+
+- **Store removed entirely** from `categories.json`. The home page's
+  folder-grid rearrangement the user specified translates to: the old
+  Store slot → Community, the old Community slot → Academy, the old
+  Academy slot → Post. Net effect: home folder order is now Arcade
+  (full-width) → Fortune, Post, Academy, Community (four equal cards).
+- **Top nav, all 5 pages** (root + Arcade/Fortune/Academy/Post): links are
+  now exactly Arcade → Fortune → Post → Academy — Community was dropped
+  from the nav bar (it's still reachable from the home folder grid, just
+  no longer a top-level nav link). Post sits between Fortune and Academy
+  everywhere, as requested.
+- **Bottom mobile GNB, all 5 pages**: 홈 → Arcade → Fortune → Post →
+  Academy (5 items now, up from 4).
+- **Post's own page** previously had a minimal standalone topbar (just a
+  "← 홈으로" link) fitting its intentionally isolated editorial design.
+  It now also carries the same site-wide nav links and bottom GNB as
+  every other section — styled in Post's own cream/serif/burgundy palette
+  rather than reusing the blue sans-serif look elsewhere, so the section
+  still feels distinct while behaving consistently for navigation.
+  Added a matching `navigate()` helper (fade transition + the same
+  bfcache-blank-page fix already shipped elsewhere) so Post's page
+  transitions now match the rest of the site.
+- New `.f-post` folder-icon color (deep burgundy `#8B2635` family) added
+  to `styles.css`, distinct from every other section's palette.
+- Verified end-to-end: `categories.json` validity, div/brace balance
+  across all 5 touched HTML files + 2 stylesheets, JS syntax on every
+  inline and external script, live serving (200) on every asset, all 20
+  cross-page nav links resolved via `urllib.parse.urljoin`, and the home
+  page's folder-count logic re-verified with an actual Node `fetch` run
+  (Arcade→5, Fortune→2, Post→Live/no count, Academy→3, Community→준비중).
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

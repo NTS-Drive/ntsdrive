@@ -18,6 +18,15 @@
     "itemsSource": "fortune/items.json"
   },
   {
+    "id": "post",
+    "name": "Post",
+    "description": "Write a letter to someone and seal it until a time you choose — it can't be opened before then.",
+    "emoji": "✉️",
+    "status": "Live",
+    "path": "post/index.html",
+    "itemsSource": null
+  },
+  {
     "id": "academy",
     "name": "Academy",
     "description": "Bite-sized learning content for office workers.",
@@ -33,15 +42,6 @@
     "emoji": "💬",
     "status": "Planned",
     "path": "community/index.html",
-    "itemsSource": null
-  },
-  {
-    "id": "store",
-    "name": "Store",
-    "description": "Practical and fandom merchandise for office life.",
-    "emoji": "🛍️",
-    "status": "Planned",
-    "path": "store/index.html",
     "itemsSource": null
   }
 ]
