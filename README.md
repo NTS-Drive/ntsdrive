@@ -1350,6 +1350,35 @@ descriptions/content go Korean).
   scope. Academy's `items.json` was already fully Korean from earlier
   work, so nothing needed changing there.
 
+## Post polish round 2 + remaining English subtitles (2026-07-10, v3.15)
+
+- **Real bug found and fixed**: Post's mobile bottom-nav icons were
+  invisible. Root cause: the shared `styles.css` got a `.bicon svg{width;
+  height}` sizing rule when the site-wide icons were swapped from emoji
+  to line-art SVGs, but Post uses its own separate `post/style.css` and
+  never got that rule — so its SVGs rendered at the browser's default
+  intrinsic size (300×150) instead of the intended 20×20, effectively
+  disappearing from the small nav bar. Added the same rule to Post's
+  stylesheet.
+- Reveal screen: "숨겨둔 마음 보기 →" dropped its arrow; "나도 편지
+  써보기" changed from a plain text link to a `.ghost-btn` sitting next
+  to "저장하기"; the save button lost its 💾 emoji and now reads "편지
+  저장하기".
+- Template order changed to 축하 → 응원 → 고백 → 감사 → 놀림 → 위로 →
+  환영 → 송별 (verified with Node that the rendered order matches
+  exactly).
+- Compose form label wording simplified: "숨겨둔 마음 (선택 — 링크를
+  하나 남겨보세요)" → "링크 (선택)"; the photo label dropped the
+  "48×48" grid-size detail → "사진 (선택 - 그림으로 변환됩니다)"; the
+  upload tab button shortened from "사진 업로드" to "업로드".
+- 받는 사람/보내는 사람/편지 제목/편지 내용 now sit inside a
+  `.compose-paper` card sharing the exact same background/border/radius
+  as the reveal screen's `.letter-paper`, so the writing screen visually
+  echoes the letter the recipient will eventually see.
+- Arcade/Fortune/Academy's static page-head subtitles — a separate piece
+  of copy from `categories.json`'s description field that a previous
+  session's Korean-localization pass missed — translated to Korean too.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

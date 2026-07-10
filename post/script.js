@@ -12,14 +12,14 @@ const MAX_PHOTO_MB = 8;
 const IMG_GRID = 48;
 
 const TEMPLATES = [
-  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때.....ㅋㅋㅋ..ㅋ.ㅋㅋ..ㅋㅋ.ㅋㅋㅋ' },
   { id: 'celebrate', emoji: '🎉', label: '축하 편지', example: '축하해! 오늘 하루는 아무 생각하지 말고 즐겨!' },
   { id: 'cheer',     emoji: '💪', label: '응원 편지', example: '너는 결국 해낼 사람이야.' },
   { id: 'confess',   emoji: '💌', label: '고백 편지', example: '사실 예전부터 하고 싶었던 말이 있었어.' },
   { id: 'thanks',    emoji: '🙏', label: '감사 편지', example: '그때 네가 없었으면 나 정말 힘들었을 거야. 고마워.' },
+  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때.....ㅋㅋㅋ..ㅋ.ㅋㅋ..ㅋㅋ.ㅋㅋㅋ' },
   { id: 'comfort',   emoji: '😢', label: '위로 편지', example: '괜찮아, 지금은 그냥 힘들어해도 돼.' },
-  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' },
-  { id: 'welcome',   emoji: '👋', label: '환영 편지', example: '만나서 반가워. 앞으로 잘 부탁해.' }
+  { id: 'welcome',   emoji: '👋', label: '환영 편지', example: '만나서 반가워. 앞으로 잘 부탁해.' },
+  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' }
 ];
 
 // Fixed 16-color palette shared by both the composer (encoding) and the
@@ -221,37 +221,39 @@ function renderCompose() {
     <div class="tpl-row">${tplRow}</div>
     <div class="tpl-example" id="tplExample">"${TEMPLATES[composeState.tpl].example}"</div>
 
-    <div class="two-col">
-      <div class="field">
-        <label>받는 사람</label>
-        <input type="text" id="toName" maxlength="20" placeholder="예: 은우">
+    <div class="compose-paper">
+      <div class="two-col">
+        <div class="field">
+          <label>받는 사람</label>
+          <input type="text" id="toName" maxlength="20" placeholder="예: 은우">
+        </div>
+        <div class="field">
+          <label>보내는 사람</label>
+          <input type="text" id="fromName" maxlength="20" placeholder="예: 지민">
+        </div>
       </div>
+
       <div class="field">
-        <label>보내는 사람</label>
-        <input type="text" id="fromName" maxlength="20" placeholder="예: 지민">
+        <label>편지 제목</label>
+        <input type="text" id="letterTitle" maxlength="40" placeholder="편지에 제목을 붙여보세요">
+      </div>
+
+      <div class="field" style="margin-bottom:0;">
+        <label>편지 내용</label>
+        <textarea id="letterBody" maxlength="${MAX_CHARS}" placeholder="지금의 마음을 적어보세요"></textarea>
+        <div class="char-count" id="charCount">0 / ${MAX_CHARS}</div>
       </div>
     </div>
 
     <div class="field">
-      <label>편지 제목</label>
-      <input type="text" id="letterTitle" maxlength="40" placeholder="편지에 제목을 붙여보세요">
-    </div>
-
-    <div class="field">
-      <label>편지 내용</label>
-      <textarea id="letterBody" maxlength="${MAX_CHARS}" placeholder="지금의 마음을 적어보세요"></textarea>
-      <div class="char-count" id="charCount">0 / ${MAX_CHARS}</div>
-    </div>
-
-    <div class="field">
-      <label>숨겨둔 마음 (선택 — 링크를 하나 남겨보세요)</label>
+      <label>링크 (선택)</label>
       <input type="text" id="hiddenLink" placeholder="https://...">
     </div>
 
     <div class="field">
-      <label>사진 — ${IMG_GRID}×${IMG_GRID} 도트 그림으로 변환됩니다</label>
+      <label>사진 (선택 - 그림으로 변환됩니다)</label>
       <div class="photo-tabs">
-        <button type="button" class="photo-tab-btn ${composeState.photoMode === 'upload' ? 'active' : ''}" onclick="switchPhotoMode('upload', this)">사진 업로드</button>
+        <button type="button" class="photo-tab-btn ${composeState.photoMode === 'upload' ? 'active' : ''}" onclick="switchPhotoMode('upload', this)">업로드</button>
         <button type="button" class="photo-tab-btn ${composeState.photoMode === 'draw' ? 'active' : ''}" onclick="switchPhotoMode('draw', this)">직접 그리기</button>
       </div>
       <div id="photoModeArea"></div>
@@ -532,12 +534,12 @@ function renderReveal(letter) {
       ${photoHtml}
       <div class="letter-body">${escapeHtml(letter.body)}</div>
       ${letter.from ? `<div class="letter-sign">— ${escapeHtml(letter.from)}</div>` : ''}
-      ${safeLink ? `<div class="hidden-link-row"><a class="hidden-link-btn" href="${safeLink}" target="_blank" rel="noopener">숨겨둔 마음 보기 →</a></div>` : ''}
+      ${safeLink ? `<div class="hidden-link-row"><a class="hidden-link-btn" href="${safeLink}" target="_blank" rel="noopener">숨겨둔 마음 보기</a></div>` : ''}
     </div>
     <div class="reveal-actions">
-      <button class="ghost-btn" onclick="saveLetterImage()">💾 저장하기</button>
+      <button class="ghost-btn" onclick="saveLetterImage()">편지 저장하기</button>
+      <button class="ghost-btn" onclick="navigate(location.pathname)">나도 편지 써보기</button>
     </div>
-    <div class="write-again"><a onclick="navigate(location.pathname)">나도 편지 써보기</a></div>
   `;
   if (letter.img) {
     const grid = letter.imgGrid || 32; // links sealed before this field existed were always 32x32
