@@ -1269,6 +1269,87 @@ per-letter personalized preview isn't technically possible, confirming
   strictly an optional extra step; the default share flow (copy/share/
   "편지 확인하러 가기") always uses the original long link.
 
+## Site-wide update: Post promoted to primary + full Korean content (2026-07-10, v3.14)
+
+A large batch of changes from a single design-team handoff document,
+covering GNB order, the home page hero/copy, 15 Post-specific items, and
+Korean localization for Arcade/Fortune (menu labels stay English, only
+descriptions/content go Korean).
+
+### 1. GNB order (all 5 pages)
+- Desktop: Post → Arcade → Fortune → Academy
+- Mobile bottom nav: 홈 → Post → Arcade → Fortune → Academy
+
+### 2. Home page
+- Headline lead line changed to "커뮤니티, 미니게임, 교육이 있는".
+- Hero floater cards: the blue CTA card is now **Post** ("▶ 마음을 담은
+  편지 쓰러가기", links to `post/index.html`); the card that was
+  "Fortune" is now **Arcade**; "Academy" card unchanged.
+- `categories.json` reordered (Post first) and every description
+  translated to Korean — names stay English per the confirmed scope.
+- "이번 주 BEST" reordered: Post → Formula Firewall → Tarot Pick.
+- Onboarding modal copy replaced; its CTA now reads "Post로 이동하기"
+  and links to Post instead of Arcade.
+- **All home-page emoji swapped for line-style SVG icons** — Post
+  (envelope), Arcade (joystick), Academy (open book), Community
+  (monitor), Fortune (a 4-point sparkle, since no shape was specified
+  for it), plus a house icon for "홈" — applied consistently to both the
+  folder grid and the bottom nav's icons across all 5 pages so the two
+  never look mismatched against each other.
+
+### 3. Post (15 items)
+- **8 templates** now (added "환영 편지" — "만나서 반가워. 앞으로 잘
+  부탁해.").
+- **"저장하기" button** on the reveal screen using `html2canvas` (same
+  library already used by Desk Fortune Cookie / several Arcade games) to
+  export the letter as a PNG.
+- Removed "(선택)" from the 받는사람/보내는사람/편지 제목/사진 labels.
+- **New optional "숨�는둔 마음" link field**: composer gets a URL input
+  below the letter body (auto-prefixes `https://` if missing); the
+  reveal screen shows a "숨겨둔 마음 보기 →" link at the bottom of the
+  letter-paper, opening in a new tab — only rendered if the stored value
+  actually starts with `http(s)://`, as a minor XSS guard.
+- Top-left wordmark changed from "POST" to "NTS DRIVE".
+- **Share screen reverted** to showing the raw link directly in a
+  text box (the "📫 편지 확인하러 가기" button from a previous session
+  is gone) — plus the "🔗 짧게 만들러 가기" is.gd shortcut is removed
+  entirely per direct feedback that KakaoTalk previews only send the
+  image card anyway, making it dead weight.
+- **Fixed a real bug**: `copyShareLink` used to prepend explanatory text
+  ("📫 편지가 도착했어요...") before the URL in the copied string — if
+  that combined text landed in something that expects a bare URL (e.g.
+  an address bar), it got treated as a search query instead of a link.
+  Now copies the pure URL only.
+- KakaoTalk preview text (`og:description`/`twitter:description`)
+  updated to "♬띵동♪ 마음을 담은 편지가 도착했어요. 정해진 시간이
+  되어야 볼 수 있어요."
+- Three template example lines rewritten (응원/축하/놀림 편지) and the
+  받는사람/보내는사람 placeholder examples changed to "은우"/"지민" —
+  matching the site's existing characters from the Academy content.
+- **Mobile GNB-floats-mid-page bug on the reveal screen fixed** with the
+  same `min-height:100vh` pattern already used to fix this exact class
+  of bug elsewhere on the site — Post's layout doesn't use the shared
+  `.shell` wrapper, so it needed its own copy of the fix on `body`.
+- **New draw tool**: a "사진 업로드" / "직접 그리기" tab next to the
+  photo field. Drawing uses the *same* fixed 16-color palette as photo
+  quantization (deliberately not a wider palette — for hand-drawn pixel
+  art there's no quantization "damage" to avoid, so the existing
+  palette costs nothing extra and keeps the retro dot-art look
+  consistent). Mouse + touch painting on a scaled-up `IMG_GRID×IMG_GRID`
+  canvas, a 16-swatch color picker, and a clear button; whichever
+  source (upload or draw) was used most recently is what actually gets
+  sealed into the letter.
+- Verified with Node: the new `link` field round-trips correctly through
+  encode/decode (including the `null`/absent case), and all 8 templates'
+  text matches exactly what was requested.
+
+### 4–6. Korean content
+- Arcade's 5 game descriptions and Fortune's 2 content descriptions
+  translated to Korean in their respective JSON files — menu labels
+  (Arcade/Fortune/Academy/Post) stay in English everywhere, confirmed
+  scope. Academy's `items.json` was already fully Korean from earlier
+  work, so nothing needed changing there.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

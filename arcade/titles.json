@@ -2,7 +2,7 @@
   {
     "id": "formula-firewall",
     "title": "Formula Firewall",
-    "description": "Defend your spreadsheet from corrupted data errors marching across the grid.",
+    "description": "그리드 위를 행진하는 오류 데이터로부터 스프레드시트를 지켜내는 타워디펜스 게임이에요.",
     "style": "Spreadsheet ribbon interface",
     "status": "Live",
     "entryPath": "formula-firewall/index.html",
@@ -11,7 +11,7 @@
   {
     "id": "number-streak",
     "title": "Number Streak",
-    "description": "Guess higher, lower, or draw across 10 escalating levels. Chain correct guesses for a growing score multiplier.",
+    "description": "숫자가 더 클지 작을지 맞히는 게임이에요. 10단계에 걸쳐 난이도가 올라가고, 연속으로 맞히면 점수 배율이 커져요.",
     "style": "Higher/lower/draw number probability",
     "status": "Live",
     "entryPath": "number-streak/index.html",
@@ -20,7 +20,7 @@
   {
     "id": "paycheck-python",
     "title": "Paycheck Python",
-    "description": "Eat money to grow strong and dodge your workload — walls, your own tail, and office obstacles all end the run.",
+    "description": "돈을 먹으며 몸집을 키우고, 업무(장애물)를 피해 다니는 게임이에요 — 벽이나 자기 꼬리에 닿으면 게임이 끝나요.",
     "style": "Outlook mail chrome, classic grid-snake",
     "status": "Live",
     "entryPath": "paycheck-python/index.html",
@@ -29,7 +29,7 @@
   {
     "id": "card-memory",
     "title": "Card Memory",
-    "description": "Match each emoji to its English word across 5 escalating stages — animals, flags, then total chaos.",
+    "description": "이모지와 그에 맞는 영어 단어를 짝지어 맞히는 게임이에요. 동물, 국기를 거쳐 5단계에서는 완전히 뒤섞여요.",
     "style": "Image-editor UI, emoji memory match",
     "status": "Live",
     "entryPath": "card-memory/index.html",
@@ -38,7 +38,7 @@
   {
     "id": "deck-dash",
     "title": "Deck Dash",
-    "description": "Sprint across an endless slide deck, dodging typos, pop-ups, and last-minute chaos.",
+    "description": "끝없이 이어지는 슬라이드 위를 달리며 오타, 팝업, 막판 돌발 상황을 피하는 게임이에요.",
     "style": "Slide deck & chat notifications",
     "status": "Live",
     "entryPath": "deck-dash/index.html",

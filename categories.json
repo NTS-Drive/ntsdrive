@@ -1,8 +1,17 @@
 [
   {
+    "id": "post",
+    "name": "Post",
+    "description": "마음을 담아 편지를 쓰고, 원하는 시간까지 잠가둘 수 있어요.",
+    "emoji": "✉️",
+    "status": "Live",
+    "path": "post/index.html",
+    "itemsSource": null
+  },
+  {
     "id": "arcade",
     "name": "Arcade",
-    "description": "Quick single-session diversions for a busy workday.",
+    "description": "바쁜 하루 중 잠깐, 가볍게 즐기는 미니게임 모음이에요.",
     "emoji": "🕹️",
     "status": "Live",
     "path": "arcade/index.html",
@@ -11,25 +20,16 @@
   {
     "id": "fortune",
     "name": "Fortune",
-    "description": "Daily fortune, tarot pulls, and a just-for-fun lucky number generator.",
+    "description": "오늘의 운세, 타로 한 장, 그리고 재미로 보는 행운 숫자예요.",
     "emoji": "🔮",
     "status": "Live",
     "path": "fortune/index.html",
     "itemsSource": "fortune/items.json"
   },
   {
-    "id": "post",
-    "name": "Post",
-    "description": "Write a letter to someone and seal it until a time you choose — it can't be opened before then.",
-    "emoji": "✉️",
-    "status": "Live",
-    "path": "post/index.html",
-    "itemsSource": null
-  },
-  {
     "id": "academy",
     "name": "Academy",
-    "description": "Bite-sized learning content for office workers.",
+    "description": "직장인을 위한 짧고 실용적인 학습 콘텐츠예요.",
     "emoji": "🎓",
     "status": "Live",
     "path": "academy/index.html",
@@ -38,7 +38,7 @@
   {
     "id": "community",
     "name": "Community",
-    "description": "A board to post and read — for working professionals.",
+    "description": "직장인들이 자유롭게 글을 쓰고 읽는 공간이에요.",
     "emoji": "💬",
     "status": "Planned",
     "path": "community/index.html",

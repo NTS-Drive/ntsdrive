@@ -12,13 +12,14 @@ const MAX_PHOTO_MB = 8;
 const IMG_GRID = 48;
 
 const TEMPLATES = [
-  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때 발표하다가 마이크 떨어뜨린 거, 나 아직도 생각나…' },
-  { id: 'celebrate', emoji: '🎉', label: '축하 편지', example: '축하해! 네가 얼마나 노력했는지 아니까, 이 순간이 더 벅차.' },
-  { id: 'cheer',     emoji: '💪', label: '응원 편지', example: '지금은 힘들어도, 너는 결국 해낼 사람이야.' },
+  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때.....ㅋㅋㅋ..ㅋ.ㅋㅋ..ㅋㅋ.ㅋㅋㅋ' },
+  { id: 'celebrate', emoji: '🎉', label: '축하 편지', example: '축하해! 오늘 하루는 아무 생각하지 말고 즐겨!' },
+  { id: 'cheer',     emoji: '💪', label: '응원 편지', example: '너는 결국 해낼 사람이야.' },
   { id: 'confess',   emoji: '💌', label: '고백 편지', example: '사실 예전부터 하고 싶었던 말이 있었어.' },
   { id: 'thanks',    emoji: '🙏', label: '감사 편지', example: '그때 네가 없었으면 나 정말 힘들었을 거야. 고마워.' },
   { id: 'comfort',   emoji: '😢', label: '위로 편지', example: '괜찮아, 지금은 그냥 힘들어해도 돼.' },
-  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' }
+  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' },
+  { id: 'welcome',   emoji: '👋', label: '환영 편지', example: '만나서 반가워. 앞으로 잘 부탁해.' }
 ];
 
 // Fixed 16-color palette shared by both the composer (encoding) and the
@@ -169,10 +170,15 @@ function renderPixelCanvas(indices, canvas, grid) {
 /* ===== Compose state ===== */
 let composeState = {
   tpl: 0,
+  photoMode: 'upload',
   photoIndices: null,
+  photoSource: null, // 'upload' | 'draw'
+  uploadIndices: null,
+  drawIndices: null,
   unlockMs: getPresetTime('tomorrow9'),
   selectedPreset: 'tomorrow9'
 };
+let drawColorIndex = 6; // default pen color for the draw tool
 
 const stage = document.getElementById('stage');
 
@@ -217,17 +223,17 @@ function renderCompose() {
 
     <div class="two-col">
       <div class="field">
-        <label>받는 사람 (선택)</label>
-        <input type="text" id="toName" maxlength="20" placeholder="예: 김대리">
+        <label>받는 사람</label>
+        <input type="text" id="toName" maxlength="20" placeholder="예: 은우">
       </div>
       <div class="field">
-        <label>보내는 사람 (선택)</label>
-        <input type="text" id="fromName" maxlength="20" placeholder="예: 나">
+        <label>보내는 사람</label>
+        <input type="text" id="fromName" maxlength="20" placeholder="예: 지민">
       </div>
     </div>
 
     <div class="field">
-      <label>편지 제목 (선택)</label>
+      <label>편지 제목</label>
       <input type="text" id="letterTitle" maxlength="40" placeholder="편지에 제목을 붙여보세요">
     </div>
 
@@ -238,10 +244,17 @@ function renderCompose() {
     </div>
 
     <div class="field">
-      <label>사진 (선택 — ${IMG_GRID}×${IMG_GRID} 도트 그림으로 변환됩니다)</label>
-      <div id="photoArea">
-        <div class="photo-drop" onclick="document.getElementById('photoInput').click()">사진을 선택해주세요 (최대 ${MAX_PHOTO_MB}MB)</div>
+      <label>숨겨둔 마음 (선택 — 링크를 하나 남겨보세요)</label>
+      <input type="text" id="hiddenLink" placeholder="https://...">
+    </div>
+
+    <div class="field">
+      <label>사진 — ${IMG_GRID}×${IMG_GRID} 도트 그림으로 변환됩니다</label>
+      <div class="photo-tabs">
+        <button type="button" class="photo-tab-btn ${composeState.photoMode === 'upload' ? 'active' : ''}" onclick="switchPhotoMode('upload', this)">사진 업로드</button>
+        <button type="button" class="photo-tab-btn ${composeState.photoMode === 'draw' ? 'active' : ''}" onclick="switchPhotoMode('draw', this)">직접 그리기</button>
       </div>
+      <div id="photoModeArea"></div>
       <input type="file" id="photoInput" accept="image/*" style="display:none;">
     </div>
 
@@ -256,13 +269,16 @@ function renderCompose() {
   `;
 
   renderPresetRow();
+  renderPhotoModeArea();
 
   document.getElementById('letterBody').addEventListener('input', updateCharCount);
   document.getElementById('photoInput').addEventListener('change', e => {
     if (e.target.files[0]) {
       processImageFile(e.target.files[0], indices => {
+        composeState.uploadIndices = indices;
         composeState.photoIndices = indices;
-        renderPhotoPreview();
+        composeState.photoSource = 'upload';
+        renderPhotoModeArea();
       });
     }
   });
@@ -305,20 +321,105 @@ function updateCharCount() {
   el.classList.toggle('over', body.length >= MAX_CHARS);
 }
 
-function renderPhotoPreview() {
-  const area = document.getElementById('photoArea');
-  area.innerHTML = `
-    <div class="photo-preview-row">
-      <canvas id="photoPreviewCanvas"></canvas>
-      <span class="photo-remove" onclick="removePhoto()">사진 지우기</span>
-    </div>
-  `;
-  renderPixelCanvas(composeState.photoIndices, document.getElementById('photoPreviewCanvas'));
+function switchPhotoMode(mode, btn) {
+  composeState.photoMode = mode;
+  document.querySelectorAll('.photo-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPhotoModeArea();
 }
+
+function renderPhotoModeArea() {
+  const area = document.getElementById('photoModeArea');
+  if (!area) return;
+
+  if (composeState.photoMode === 'upload') {
+    if (composeState.uploadIndices) {
+      area.innerHTML = `
+        <div class="photo-preview-row">
+          <canvas id="photoPreviewCanvas"></canvas>
+          <span class="photo-remove" onclick="removePhoto()">사진 지우기</span>
+        </div>
+      `;
+      renderPixelCanvas(composeState.uploadIndices, document.getElementById('photoPreviewCanvas'));
+    } else {
+      area.innerHTML = `<div class="photo-drop" onclick="document.getElementById('photoInput').click()">사진을 선택해주세요 (최대 ${MAX_PHOTO_MB}MB)</div>`;
+    }
+  } else {
+    if (!composeState.drawIndices) composeState.drawIndices = initDrawIndices();
+    const swatches = PALETTE.map((c, i) => `<span class="palette-swatch ${drawColorIndex === i ? 'selected' : ''}" style="background:rgb(${c[0]},${c[1]},${c[2]})" onclick="selectDrawColor(${i}, this)"></span>`).join('');
+    area.innerHTML = `
+      <div class="draw-palette">${swatches}</div>
+      <canvas id="drawCanvas" class="draw-canvas" width="${IMG_GRID * 7}" height="${IMG_GRID * 7}"></canvas>
+      <div class="draw-actions"><span class="photo-remove" onclick="clearDrawing()">전체 지우기</span></div>
+    `;
+    setupDrawCanvas();
+  }
+}
+
 function removePhoto() {
-  composeState.photoIndices = null;
+  composeState.uploadIndices = null;
   document.getElementById('photoInput').value = '';
-  document.getElementById('photoArea').innerHTML = `<div class="photo-drop" onclick="document.getElementById('photoInput').click()">사진을 선택해주세요 (최대 ${MAX_PHOTO_MB}MB)</div>`;
+  if (composeState.photoSource === 'upload') {
+    composeState.photoIndices = null;
+    composeState.photoSource = null;
+  }
+  renderPhotoModeArea();
+}
+
+/* ===== Draw tool (16-color palette, same grid the photo path uses) ===== */
+function initDrawIndices() {
+  return new Array(IMG_GRID * IMG_GRID).fill(5); // blank cream background (palette index 5)
+}
+function selectDrawColor(i, btn) {
+  drawColorIndex = i;
+  document.querySelectorAll('.palette-swatch').forEach(el => el.classList.remove('selected'));
+  if (btn) btn.classList.add('selected');
+}
+function clearDrawing() {
+  composeState.drawIndices = initDrawIndices();
+  if (composeState.photoSource === 'draw') {
+    composeState.photoIndices = null;
+    composeState.photoSource = null;
+  }
+  renderPhotoModeArea();
+}
+function setupDrawCanvas() {
+  const canvas = document.getElementById('drawCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cell = canvas.width / IMG_GRID;
+
+  function paintFull() {
+    for (let y = 0; y < IMG_GRID; y++) {
+      for (let x = 0; x < IMG_GRID; x++) {
+        const [r, g, b] = PALETTE[composeState.drawIndices[y * IMG_GRID + x]];
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(x * cell, y * cell, cell, cell);
+      }
+    }
+  }
+  paintFull();
+
+  function paintAt(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = Math.floor((clientX - rect.left) * (canvas.width / rect.width) / cell);
+    const cy = Math.floor((clientY - rect.top) * (canvas.height / rect.height) / cell);
+    if (cx < 0 || cy < 0 || cx >= IMG_GRID || cy >= IMG_GRID) return;
+    composeState.drawIndices[cy * IMG_GRID + cx] = drawColorIndex;
+    const [r, g, b] = PALETTE[drawColorIndex];
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.fillRect(cx * cell, cy * cell, cell, cell);
+    composeState.photoIndices = composeState.drawIndices;
+    composeState.photoSource = 'draw';
+  }
+
+  let drawing = false;
+  canvas.onmousedown = e => { drawing = true; paintAt(e.clientX, e.clientY); };
+  canvas.onmousemove = e => { if (drawing) paintAt(e.clientX, e.clientY); };
+  window.addEventListener('mouseup', () => { drawing = false; });
+  canvas.ontouchstart = e => { drawing = true; const t = e.touches[0]; paintAt(t.clientX, t.clientY); e.preventDefault(); };
+  canvas.ontouchmove = e => { if (drawing) { const t = e.touches[0]; paintAt(t.clientX, t.clientY); } e.preventDefault(); };
+  canvas.ontouchend = () => { drawing = false; };
 }
 
 function handleSeal() {
@@ -330,12 +431,16 @@ function handleSeal() {
     return;
   }
 
+  let hiddenLink = document.getElementById('hiddenLink').value.trim();
+  if (hiddenLink && !/^https?:\/\//i.test(hiddenLink)) hiddenLink = 'https://' + hiddenLink;
+
   const letter = {
     tpl: composeState.tpl,
     to: document.getElementById('toName').value.trim(),
     from: document.getElementById('fromName').value.trim(),
     title: document.getElementById('letterTitle').value.trim(),
     body,
+    link: hiddenLink || null,
     unlock: composeState.unlockMs,
     img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
     imgGrid: composeState.photoIndices ? IMG_GRID : null // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
@@ -351,35 +456,27 @@ function renderShareResult(url) {
     <div class="share-result">
       <div class="env-icon">✉️</div>
       <h2>편지가 봉인됐어요</h2>
-      <p>아래 버튼으로 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
-      <a class="seal-link-btn" href="${url}" target="_blank" rel="noopener">📫 편지 확인하러 가기</a>
+      <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
+      <div class="link-box">
+        <input type="text" id="shareUrl" readonly value="${url}">
+      </div>
       <div class="share-actions">
         <button class="ghost-btn" onclick="copyShareLink('${url}')">링크 복사</button>
         <button class="ghost-btn" onclick="shareLink('${url}')">공유하기</button>
-      </div>
-      <div class="shorten-row">
-        <a class="shorten-link" onclick="openShortener('${url}')">🔗 링크가 너무 길다면, 짧게 만들러 가기</a>
       </div>
       <div class="write-again"><a onclick="navigate(location.pathname)">편지 한 통 더 쓰기</a></div>
     </div>
   `;
 }
-function openShortener(url) {
-  // Opens is.gd's own create page as a normal page navigation (not a
-  // script-based fetch) — this sidesteps CORS entirely, since CORS only
-  // restricts cross-origin requests initiated by JS, not full page loads.
-  // The default sharing flow above always uses the original long link;
-  // this is purely an optional extra step for anyone who wants it.
-  window.open('https://is.gd/create.php?url=' + encodeURIComponent(url), '_blank', 'noopener');
-}
-const SHARE_MESSAGE = '📫 편지가 도착했어요, 확인해보세요!';
 function copyShareLink(url) {
-  const text = `${SHARE_MESSAGE}\n${url}`;
-  navigator.clipboard.writeText(text).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+  // Copies the raw link only (no explanatory text prepended) — combining
+  // text + URL previously caused some paste targets (e.g. an address bar)
+  // to treat the whole thing as a search query instead of a link.
+  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ title: 'Post — 시간이 닿아야 열리는 편지', text: SHARE_MESSAGE, url }).catch(() => {});
+    navigator.share({ title: 'Post — 시간이 닿아야 열리는 편지', url }).catch(() => {});
   } else {
     copyShareLink(url);
   }
@@ -426,6 +523,7 @@ function renderReveal(letter) {
   const photoHtml = letter.img ? `
     <div class="letter-photo-wrap"><canvas id="revealCanvas"></canvas></div>
   ` : '';
+  const safeLink = letter.link && /^https?:\/\//i.test(letter.link) ? letter.link : null;
   stage.innerHTML = `
     <div class="letter-paper">
       <div class="letter-meta"><span>${tpl.emoji} ${tpl.label}</span><span>${formatUnlockDate(letter.unlock)}</span></div>
@@ -434,6 +532,10 @@ function renderReveal(letter) {
       ${photoHtml}
       <div class="letter-body">${escapeHtml(letter.body)}</div>
       ${letter.from ? `<div class="letter-sign">— ${escapeHtml(letter.from)}</div>` : ''}
+      ${safeLink ? `<div class="hidden-link-row"><a class="hidden-link-btn" href="${safeLink}" target="_blank" rel="noopener">숨겨둔 마음 보기 →</a></div>` : ''}
+    </div>
+    <div class="reveal-actions">
+      <button class="ghost-btn" onclick="saveLetterImage()">💾 저장하기</button>
     </div>
     <div class="write-again"><a onclick="navigate(location.pathname)">나도 편지 써보기</a></div>
   `;
@@ -442,6 +544,18 @@ function renderReveal(letter) {
     const indices = unpackIndices(base64ToBytes(letter.img), grid * grid);
     renderPixelCanvas(indices, document.getElementById('revealCanvas'), grid);
   }
+}
+
+function saveLetterImage() {
+  const paper = document.querySelector('.letter-paper');
+  if (!paper || typeof html2canvas === 'undefined') { toast('저장 기능을 불러오지 못했어요.'); return; }
+  html2canvas(paper, { backgroundColor: '#F7F3EC', scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `편지_${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast('편지가 저장됐어요.');
+  }).catch(() => toast('저장에 실패했어요.'));
 }
 
 function escapeHtml(str) {

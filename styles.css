@@ -67,7 +67,8 @@ body.leaving{animation:pageOut .3s ease both;}
 .ficon{width:72px; height:56px; position:relative; margin-bottom:18px;}
 .ficon:before{content:''; position:absolute; left:0; top:-9px; width:42%; height:11px; border-radius:6px 6px 0 0; background:var(--tabc);}
 .ficon:after{content:''; position:absolute; inset:0; border-radius:3px 12px 12px 12px; background:linear-gradient(160deg, var(--bodyl), var(--bodyc));}
-.ficon .glyph{position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; font-size:22px; padding-top:6px;}
+.ficon .glyph{position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; padding-top:6px; color:#fff;}
+.ficon .glyph svg{width:26px; height:26px;}
 
 .f-arcade{--tabc:#0A63D6; --bodyl:#3E8CFF; --bodyc:#0071E3;}
 .f-fortune{--tabc:#7C4FE0; --bodyl:#B7A3FF; --bodyc:#8B5CF6;}
@@ -172,6 +173,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
     flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
     font-size:10.5px; color:var(--sub); font-weight:600; text-decoration:none; padding:4px 0; cursor:pointer;
   }
-  .bottom-nav a .bicon{font-size:19px; line-height:1;}
+  .bottom-nav a .bicon{font-size:19px; line-height:1; display:flex; align-items:center; justify-content:center;}
+  .bottom-nav a .bicon svg{width:20px; height:20px;}
   .bottom-nav a.active{color:var(--blue);}
 }
