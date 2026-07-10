@@ -1379,6 +1379,56 @@ descriptions/content go Korean).
   of copy from `categories.json`'s description field that a previous
   session's Korean-localization pass missed — translated to Korean too.
 
+## Post: 내 편지함 (inbox) + browser notifications (2026-07-10, v3.16)
+
+Motivated by real feedback from the user's own test group ("알림이 있으면
+좋겠다") — and an honest constraint check first: true push notifications
+(working even with the tab closed) need a server to trigger them at the
+right time, which is out of scope for a free, backend-less PoC. What
+*is* achievable without a backend: a personal collection page (using
+`localStorage`, not a server) plus **best-effort browser notifications
+that only fire while that tab stays open** — explicitly framed to the
+user as a partial solution, not a replacement for real push.
+
+- **Code restructuring first**: extracted every genuinely shared piece
+  (palette, templates, encode/decode, date formatting, image processing,
+  `renderPixelCanvas`, `escapeHtml`, `navigate`, `toast`, etc.) out of
+  `post/script.js` into a new `post/shared.js`, loaded before either
+  `script.js` (compose/locked/reveal) or the new `inbox.js` — so a future
+  change to, say, the palette or template list only has to happen once.
+- **New `post/inbox.html` + `post/inbox.js`**: a dedicated page (not a
+  tab inside the existing compose/reveal page — chosen because the
+  inbox's list-based UI is a different enough shape from the letter
+  paper/envelope screens that sharing one file would have made the
+  router more complex for little benefit).
+  - Pasting a received link (or just the raw `?d=...` token) extracts
+    and stores only that token in `localStorage` — never the decoded
+    content, matching Post's existing "everything lives in the link"
+    principle. Duplicate detection, and a friendly error toast if the
+    pasted text doesn't decode.
+  - List cards link straight to `index.html?d=...`, reusing the
+    existing locked/reveal screens rather than re-implementing them —
+    each card just shows the template icon, title, to/from, and either
+    a live countdown or "지금 열람 가능".
+  - Notification permission is requested explicitly (never auto-prompted
+    on page load) with a status banner reflecting granted/denied/not-yet
+    asked. A `setInterval` (15s) scan compares each stored letter's
+    unlock time against `Date.now()`; the first time one crosses into
+    "unlocked", it fires a `Notification` (if granted) and flips a
+    `notified` flag in storage so it only fires once.
+  - Copy is explicit about the two real limitations: this list only
+    lives in the current browser (re-registering is needed on another
+    device), and notifications stop the moment the tab is closed.
+  - A "📮 내 편지함 보기" link was added to the compose screen's
+    masthead.
+- Verified with Node: extracting the `d` param from a full URL vs. a
+  bare token both work, a round-trip through a mocked `localStorage`
+  decodes correctly, and the locked/unlocked time-boundary check
+  behaves as expected.
+- Small fix bundled in: the KakaoTalk preview description dropped its
+  "♬띵동♪" musical-note prefix and changed "되어야" → "되면" per direct
+  feedback.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

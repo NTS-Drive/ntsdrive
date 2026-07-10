@@ -29,6 +29,8 @@ body.leaving { animation: pageOut .28s ease both; }
 .masthead .kicker { font-size: 11px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
 .masthead h1 { font-family: var(--font-serif); font-weight: 700; font-size: 40px; letter-spacing: -0.01em; margin-bottom: 12px; }
 .masthead .sub { font-family: var(--font-serif); font-style: italic; font-size: 15px; color: var(--ink-muted); }
+.inbox-link { display: inline-block; margin-top: 18px; font-size: 12.5px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; }
+.inbox-link:hover { color: var(--accent); }
 
 /* ===== Template picker ===== */
 .tpl-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 40px; }
@@ -198,3 +200,44 @@ body.leaving { animation: pageOut .28s ease both; }
   .bottom-nav a.active { color: var(--accent); }
 }
 
+
+/* ===== Inbox page ===== */
+.inbox-steps { margin-bottom: 30px; }
+.inbox-steps .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+.inbox-steps .num {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.inbox-steps p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; padding-top: 2px; }
+
+.inbox-add-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.inbox-add-row input {
+  flex: 1; border: 1px solid var(--line); border-radius: 6px; background: var(--panel);
+  font-family: var(--font-body); font-size: 13px; color: var(--ink); padding: 12px 14px; outline: none;
+}
+.inbox-add-row input:focus { border-color: var(--accent); }
+
+.inbox-notify-row { margin-bottom: 24px; }
+.notify-status {
+  font-size: 12px; color: var(--ink-muted); background: var(--accent-soft); border-radius: 6px;
+  padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.notify-status .ghost-btn { padding: 7px 14px; font-size: 12px; flex-shrink: 0; }
+
+.inbox-empty {
+  text-align: center; color: var(--ink-muted); font-size: 13px; padding: 50px 20px;
+  border: 1px dashed var(--line); border-radius: 6px; line-height: 1.8;
+}
+
+.inbox-card {
+  display: flex; align-items: center; gap: 14px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 6px; padding: 16px 18px; margin-bottom: 10px;
+}
+.inbox-card-icon { font-size: 24px; flex-shrink: 0; }
+.inbox-card-body { flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.inbox-card-title { font-family: var(--font-serif); font-size: 15px; margin-bottom: 4px; }
+.inbox-card-who { font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px; }
+.inbox-card-status { font-size: 11.5px; color: var(--accent); font-weight: 600; }
+.inbox-card-status.unlocked { color: #2f7a4f; }
+.inbox-card-remove { font-size: 11px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; flex-shrink: 0; }
+.inbox-card-remove:hover { color: var(--accent); }
