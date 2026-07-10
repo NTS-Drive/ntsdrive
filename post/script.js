@@ -9,7 +9,7 @@ window.addEventListener('pageshow', (e) => {
 
 const MAX_CHARS = 300;
 const MAX_PHOTO_MB = 8;
-const IMG_GRID = 32;
+const IMG_GRID = 48;
 
 const TEMPLATES = [
   { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때 발표하다가 마이크 떨어뜨린 거, 나 아직도 생각나…' },
@@ -84,7 +84,7 @@ function decodeLetter(str) {
   return JSON.parse(json);
 }
 
-/* ===== Photo -> 32x32 / 16-color dot art ===== */
+/* ===== Photo -> IMG_GRID x IMG_GRID / 16-color dot art ===== */
 function nearestPaletteIndex(r, g, b) {
   let best = 0, bestDist = Infinity;
   for (let i = 0; i < PALETTE.length; i++) {
@@ -154,10 +154,11 @@ function processImageFile(file, onDone) {
   reader.readAsDataURL(file);
 }
 
-function renderPixelCanvas(indices, canvas) {
-  canvas.width = IMG_GRID; canvas.height = IMG_GRID;
+function renderPixelCanvas(indices, canvas, grid) {
+  grid = grid || IMG_GRID;
+  canvas.width = grid; canvas.height = grid;
   const ctx = canvas.getContext('2d');
-  const imgData = ctx.createImageData(IMG_GRID, IMG_GRID);
+  const imgData = ctx.createImageData(grid, grid);
   for (let i = 0; i < indices.length; i++) {
     const [r, g, b] = PALETTE[indices[i]] || [0, 0, 0];
     imgData.data[i * 4] = r; imgData.data[i * 4 + 1] = g; imgData.data[i * 4 + 2] = b; imgData.data[i * 4 + 3] = 255;
@@ -237,7 +238,7 @@ function renderCompose() {
     </div>
 
     <div class="field">
-      <label>사진 (선택 — 32×32 도트 그림으로 변환됩니다)</label>
+      <label>사진 (선택 — ${IMG_GRID}×${IMG_GRID} 도트 그림으로 변환됩니다)</label>
       <div id="photoArea">
         <div class="photo-drop" onclick="document.getElementById('photoInput').click()">사진을 선택해주세요 (최대 ${MAX_PHOTO_MB}MB)</div>
       </div>
@@ -336,7 +337,8 @@ function handleSeal() {
     title: document.getElementById('letterTitle').value.trim(),
     body,
     unlock: composeState.unlockMs,
-    img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null
+    img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
+    imgGrid: composeState.photoIndices ? IMG_GRID : null // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
   };
 
   const encoded = encodeLetter(letter);
@@ -349,27 +351,37 @@ function renderShareResult(url) {
     <div class="share-result">
       <div class="env-icon">✉️</div>
       <h2>편지가 봉인됐어요</h2>
-      <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
-      <div class="link-box">
-        <input type="text" id="shareUrl" readonly value="${url}">
-      </div>
+      <p>아래 버튼으로 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
+      <a class="seal-link-btn" href="${url}" target="_blank" rel="noopener">📫 편지 확인하러 가기</a>
       <div class="share-actions">
-        <button class="ghost-btn" onclick="copyShareLink()">링크 복사</button>
+        <button class="ghost-btn" onclick="copyShareLink('${url}')">링크 복사</button>
         <button class="ghost-btn" onclick="shareLink('${url}')">공유하기</button>
+      </div>
+      <div class="shorten-row">
+        <a class="shorten-link" onclick="openShortener('${url}')">🔗 링크가 너무 길다면, 짧게 만들러 가기</a>
       </div>
       <div class="write-again"><a onclick="navigate(location.pathname)">편지 한 통 더 쓰기</a></div>
     </div>
   `;
 }
-function copyShareLink() {
-  const input = document.getElementById('shareUrl');
-  navigator.clipboard.writeText(input.value).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+function openShortener(url) {
+  // Opens is.gd's own create page as a normal page navigation (not a
+  // script-based fetch) — this sidesteps CORS entirely, since CORS only
+  // restricts cross-origin requests initiated by JS, not full page loads.
+  // The default sharing flow above always uses the original long link;
+  // this is purely an optional extra step for anyone who wants it.
+  window.open('https://is.gd/create.php?url=' + encodeURIComponent(url), '_blank', 'noopener');
+}
+const SHARE_MESSAGE = '📫 편지가 도착했어요, 확인해보세요!';
+function copyShareLink(url) {
+  const text = `${SHARE_MESSAGE}\n${url}`;
+  navigator.clipboard.writeText(text).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ title: 'Post — 미래에 열리는 편지', text: '편지가 도착했어요.', url }).catch(() => {});
+    navigator.share({ title: 'Post — 시간이 닿아야 열리는 편지', text: SHARE_MESSAGE, url }).catch(() => {});
   } else {
-    copyShareLink();
+    copyShareLink(url);
   }
 }
 
@@ -426,8 +438,9 @@ function renderReveal(letter) {
     <div class="write-again"><a onclick="navigate(location.pathname)">나도 편지 써보기</a></div>
   `;
   if (letter.img) {
-    const indices = unpackIndices(base64ToBytes(letter.img), IMG_GRID * IMG_GRID);
-    renderPixelCanvas(indices, document.getElementById('revealCanvas'));
+    const grid = letter.imgGrid || 32; // links sealed before this field existed were always 32x32
+    const indices = unpackIndices(base64ToBytes(letter.img), grid * grid);
+    renderPixelCanvas(indices, document.getElementById('revealCanvas'), grid);
   }
 }
 

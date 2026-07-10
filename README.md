@@ -1178,6 +1178,97 @@ page's navigation was updated to match:
   page's folder-count logic re-verified with an actual Node `fetch` run
   (Arcade→5, Fortune→2, Post→Live/no count, Academy→3, Community→준비중).
 
+## Post: Open Graph link preview (2026-07-09, v3.10)
+
+Post had zero Open Graph tags — sharing a link on KakaoTalk/etc. would
+show little to nothing useful. Since Post is fully client-side (no
+backend), preview crawlers only ever read the raw HTML's `<meta>` tags
+and never execute the JS that decodes the `?d=` letter payload — so a
+per-letter personalized preview isn't technically possible, confirming
+[전략]'s direction: one fixed, generic preview for every Post link
+(compose page or a shared sealed letter alike).
+
+- Added `og:title` / `og:description` / `og:image` (+ matching
+  `twitter:card` set) using the copy confirmed by the user: title "시간이
+  닿아야 열리는 편지", description "(띵동) 편지가 도착했어요. 정해진
+  시간이 되면 열어볼 수 있어요." — deliberately generic since the sender
+  is already implied by who shared the link, so no "someone sent you"
+  framing was needed.
+- Also synced the `<title>` tag to match the OG title (was "Post | NTS
+  Drive").
+- New `post/og-image.png` (1200×630, standard OG size) generated with
+  Python/Pillow: cream background, a minimal line-art envelope with a
+  wax-seal dot in Post's burgundy accent, a letter-spaced "POST" wordmark
+  in Noto Serif CJK KR, and the tagline underneath — matching Post's
+  existing editorial design language rather than reusing any of the
+  site's other section colors.
+
+## Post: share screen polish (2026-07-09, v3.11)
+
+- The "편지가 봉인됐어요" success screen no longer shows the raw, very
+  long encoded URL in a text box. It's now a styled `📫 편지 확인하러 가기`
+  button/link — clarified to the user that this only prettifies *our own
+  page*, since KakaoTalk and similar apps paste plain text and don't
+  render `<a>` tags, so the underlying shared URL is still exactly as
+  long as before.
+- "링크 복사" and "공유하기" now prepend a friendly line
+  (`📫 편지가 도착했어요, 확인해보세요!`) to the copied/shared text, so
+  even though the URL itself can't be shortened without a backend, what
+  actually lands in the recipient's chat reads better before any OG
+  preview card loads.
+
+## Post: OG image v2 (2026-07-09, v3.12)
+
+- **Switched to 1600×800 (exactly 2:1)** after researching KakaoTalk's
+  actual behavior: it resizes/crops shared-link thumbnails to 800×400
+  (2:1), not the generic 1.91:1 OG standard — the original 1200×630 would
+  have been slightly cropped there. Since "카톡 공유가 메인" (KakaoTalk
+  sharing is the primary use case), rendering at 2x that target
+  resolution keeps it sharp after Kakao's own resize while still being
+  close enough to 1.91:1 for Facebook/Slack/etc. not to crop badly either.
+- **Envelope now has real dimensionality**: a soft blurred drop shadow, a
+  filled body (was outline-only), a shaded flap triangle, and a two-tone
+  wax seal with a small highlight — replacing the flat line-art version.
+- **Added a small illustrated "travel stamp"** in the envelope's top-right
+  corner (perforated edge, sky/sun/sea/mountains/tiny sailboat, a
+  "TRAVEL" postmark label), rotated slightly like a real stamp — per the
+  user's idea that office workers often can't actually travel, so a
+  travel-themed stamp offers a small bit of vicarious escapism (대리만족)
+  right on the share card.
+
+## Post: 48×48 photo grid + link shortening (2026-07-10, v3.13)
+
+- **`IMG_GRID` raised from 32 to 48** for noticeably better photo
+  recognizability (verified visually with a real test photo — facial
+  features and glasses read much more clearly at 48×48 than 32×32).
+- **Backward compatibility fix, done at the same time**: letters now also
+  store `imgGrid` (the grid size that letter's photo was actually encoded
+  at). Old links sealed before this field existed have no `imgGrid`, so
+  the reveal logic falls back to 32 for those — meaning **any letter
+  already sent out before this update keeps rendering correctly even
+  though the site-wide default is now 48**. Verified with a Node
+  simulation covering both an old-format (32×32, no `imgGrid`) and a
+  new-format (48×48, `imgGrid:48`) letter — both round-trip their photo
+  data byte-for-byte correctly. `renderPixelCanvas` now takes an explicit
+  grid parameter instead of always assuming the current global constant.
+  Worst-case URL length (300 Korean chars + full photo + max-length
+  fields) is now 3,469 characters (was 2,314 at 32×32) — still
+  comfortably within what modern browsers and KakaoTalk handle.
+- The upload label's "32×32" text was hardcoded separately from the
+  actual grid logic — now reads `${IMG_GRID}×${IMG_GRID}` directly from
+  the constant so it can never drift out of sync again.
+- **Optional link-shortening**: a small "🔗 링크가 너무 길다면, 짧게
+  만들러 가기" link on the share screen opens `is.gd`'s own create page
+  in a new tab (`is.gd/create.php?url=...`) — a plain page navigation,
+  not a script-based cross-origin API call, so it sidesteps CORS
+  entirely (CORS only restricts JS-initiated cross-origin requests, not
+  full page loads). is.gd states shortened links are expected to last
+  "forever" barring abuse/technical issues, which was the deciding
+  factor over alternatives — a broken short link would defeat the whole
+  point of a letter that might not be opened for months. This is
+  strictly an optional extra step; the default share flow (copy/share/
+  "편지 확인하러 가기") always uses the original long link.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

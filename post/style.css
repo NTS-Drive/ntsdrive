@@ -97,12 +97,16 @@ body.leaving { animation: pageOut .28s ease both; }
 .share-result .env-icon { font-size: 44px; margin-bottom: 18px; }
 .share-result h2 { font-family: var(--font-serif); font-size: 22px; margin-bottom: 10px; }
 .share-result p { font-size: 13px; color: var(--ink-muted); margin-bottom: 26px; line-height: 1.7; }
-.link-box {
-  display: flex; gap: 8px; border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
-  margin-bottom: 16px; align-items: center;
+.seal-link-btn {
+  display: inline-block; background: var(--ink); color: #fff; text-decoration: none;
+  font-family: var(--font-serif); font-size: 16px; letter-spacing: 0.02em;
+  padding: 16px 28px; border-radius: 4px; margin-bottom: 20px; transition: background .15s;
 }
-.link-box input { flex: 1; border: none; background: transparent; font-size: 12px; color: var(--ink-muted); outline: none; }
+.seal-link-btn:hover { background: var(--accent); }
 .share-actions { display: flex; gap: 10px; justify-content: center; }
+.shorten-row { text-align: center; margin-top: 18px; }
+.shorten-link { font-size: 12px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; }
+.shorten-link:hover { color: var(--accent); }
 .ghost-btn { background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 12px 20px; font-size: 13px; color: var(--ink); cursor: pointer; }
 .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
 
