@@ -1,60 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Log | NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="animation.css">
 <script src="../analytics.js"></script>
 </head>
 <body>
-<div class="shell">
-  <nav class="nav">
-    <div class="nav-in">
-      <a class="brand" onclick="navigate('../index.html')"><div class="mark"></div>NTS Drive</a>
-      <div class="links">
-        <span onclick="navigate('../post/index.html')">Post</span>
-        <span class="active-link">Log</span>
-        <span onclick="navigate('../play/index.html')">Play</span>
-        <span onclick="navigate('../academy/index.html')">Academy</span>
-      </div>
-    </div>
-  </nav>
 
-  <main class="main">
-    <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>Log</b></div>
-    <div class="page-head">
-      <h1>Log</h1>
-      <p>여러 사람의 마음이 모여 쌓이는 공간이에요. 곧 만나보실 수 있어요.</p>
-    </div>
-    <div class="empty">🚧 준비 중이에요. 조금만 기다려주세요.</div>
-  </main>
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span class="active">Log</span>
+    <span onclick="navigate('../play/index.html')">Play</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
 </div>
+
+<div class="stage" id="stage"></div>
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
   <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a onclick="navigate('../play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
-  <a onclick="navigate('../academy/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg></span>Academy</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
 </nav>
 
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
 <script>
-  function navigate(url){
-    document.body.classList.add('leaving');
-    setTimeout(()=>{ window.location.href = url; }, 280);
+const stage = document.getElementById('stage');
+let currentRoom = null;
+let roomEncoded = null;
+let revealTimerId = null;
+
+function storageKey(re) { return `log_room:${re}`; }
+
+function loadLetters(re) {
+  try {
+    const raw = localStorage.getItem(storageKey(re));
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function saveLetters(re, list) {
+  try { localStorage.setItem(storageKey(re), JSON.stringify(list)); }
+  catch (e) { toast('저장 공간이 부족해서 목록을 저장하지 못했어요.'); }
+}
+
+function init() {
+  const params = new URLSearchParams(window.location.search);
+
+  if (!params.has('room') && !params.has('add')) {
+    renderIntro();
+    return;
   }
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) document.body.classList.remove('leaving');
+
+  // A friend's letter link (?add=...) embeds the room's own fields, so it
+  // can double as a way into the right dashboard even without a separate
+  // ?room= param.
+  let re = params.get('room');
+  if (!re && params.has('add')) {
+    try {
+      const letter = decodeData(params.get('add'));
+      re = encodeData({ title: letter.title, dday: letter.dday, goal: letter.goal, createdAt: letter.createdAt });
+    } catch (e) { /* fall through to error below */ }
+  }
+
+  if (!re) {
+    stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>방 링크가 필요해요</h2><p>방 만들기 화면에서 받은 링크로 접속해주세요.</p></div>`;
+    return;
+  }
+
+  try {
+    currentRoom = decodeData(re);
+  } catch (e) {
+    stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>링크를 읽을 수 없어요</h2><p>링크가 손상되었을 수 있어요.</p></div>`;
+    return;
+  }
+  roomEncoded = re;
+
+  // If we arrived via a friend's ?add= link, try to auto-register it now.
+  if (params.has('add')) {
+    tryRegister(params.get('add'), true);
+    // clean the URL so refreshing doesn't re-attempt the same add
+    const clean = `${window.location.pathname}?room=${roomEncoded}`;
+    window.history.replaceState({}, '', clean);
+  }
+
+  renderDashboard();
+}
+
+/* ===== Intro (no room yet) ===== */
+function renderIntro() {
+  stage.innerHTML = `
+    <div class="masthead">
+      <div class="kicker">Log</div>
+      <h1>여러 마음이<br>모여 쌓이는 곳</h1>
+      <div class="sub">디데이가 되거나 목표 글자 수를 채우면, 한 번에 열려요</div>
+    </div>
+    <div class="intro-steps">
+      <div class="step"><div class="num">1</div><p>대상자와 디데이, 목표 글자 수를 정해 방을 만들어요.</p></div>
+      <div class="step"><div class="num">2</div><p>친구용 링크를 전달하면, 친구들이 각자 짧은 편지를 써요.</p></div>
+      <div class="step"><div class="num">3</div><p>받은 편지 링크를 내 방에 등록하면 글자 수가 쌓여요. 목표를 채우거나 디데이가 되면 한 번에 열려요.</p></div>
+    </div>
+    <button class="seal-btn" onclick="navigate('create.html')">방 만들기</button>
+  `;
+}
+
+/* ===== Dashboard ===== */
+function renderDashboard() {
+  const letters = loadLetters(roomEncoded);
+  const total = letters.reduce((sum, l) => sum + l.text.length, 0);
+  const isRevealed = Date.now() >= currentRoom.dday || total >= currentRoom.goal;
+
+  if (isRevealed) {
+    renderReveal(letters, total);
+    return;
+  }
+
+  const remaining = Math.max(0, currentRoom.goal - total);
+  const pct = Math.min(100, Math.round((total / currentRoom.goal) * 100));
+
+  stage.innerHTML = `
+    <div class="masthead" style="margin-bottom:24px;">
+      <div class="kicker">Log</div>
+    </div>
+    <div class="room-title">${escapeHtml(currentRoom.title)}</div>
+    <div class="room-dday">${formatDday(currentRoom.dday)}에 열리거나, 목표를 채우면 열려요</div>
+
+    <div class="gauge-wrap">
+      <div class="gauge-count"><b>${total}</b> / ${currentRoom.goal}자</div>
+      <div class="gauge-remain">앞으로 ${remaining}자가 더 모이면 열려요</div>
+      <div class="gauge-bar-track"><div class="gauge-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="gauge-participants">지금까지 ${letters.length}명이 마음을 보탰어요</div>
+    </div>
+
+    <div class="inbox-add-row">
+      <input type="text" id="letterInput" placeholder="받은 편지 링크를 붙여넣으세요">
+      <button class="ghost-btn" onclick="handleRegister()">등록</button>
+    </div>
+
+    <div id="letterList"></div>
+
+    <div class="disclaimer">이 방의 진행 상황은 지금 사용 중인 브라우저에만 저장돼요.<br>다른 기기·브라우저에서는 링크를 다시 등록해야 해요.</div>
+  `;
+  renderLetterList(letters);
+
+  clearInterval(revealTimerId);
+  revealTimerId = setInterval(() => {
+    const l = loadLetters(roomEncoded);
+    const t = l.reduce((s, x) => s + x.text.length, 0);
+    if (Date.now() >= currentRoom.dday || t >= currentRoom.goal) {
+      clearInterval(revealTimerId);
+      renderDashboard();
+    }
+  }, 15000);
+}
+
+function renderLetterList(letters) {
+  const container = document.getElementById('letterList');
+  if (!container) return;
+  if (letters.length === 0) {
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>친구에게 받은 링크를 위에 붙여넣어보세요.</div>`;
+    return;
+  }
+  container.innerHTML = letters.map((l, i) => `
+    <div class="inbox-card">
+      <div class="inbox-card-icon">✉️</div>
+      <div class="inbox-card-body">
+        <div class="inbox-card-title">${l.from ? escapeHtml(l.from) : `편지 ${i + 1}`}</div>
+        <div class="inbox-card-len">${l.text.length}자 · 아직 잠겨있어요</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function handleRegister() {
+  const input = document.getElementById('letterInput');
+  const encoded = extractParam(input.value, 'add');
+  if (!encoded) { toast('올바른 편지 링크가 아니에요.'); return; }
+  tryRegister(encoded, false);
+  input.value = '';
+}
+
+function tryRegister(encoded, silent) {
+  let letter;
+  try {
+    letter = decodeData(encoded);
+  } catch (e) {
+    if (!silent) toast('편지 링크를 읽을 수 없어요.');
+    return;
+  }
+
+  // Must belong to this room
+  if (letter.title !== currentRoom.title || letter.dday !== currentRoom.dday || letter.goal !== currentRoom.goal) {
+    if (!silent) toast('이 방의 편지가 아니에요.');
+    return;
+  }
+
+  const letters = loadLetters(roomEncoded);
+  if (letters.some(l => l.text === letter.text && l.createdAt === letter.createdAt)) {
+    if (!silent) toast('이미 등록된 편지예요.');
+    return;
+  }
+
+  const total = letters.reduce((sum, l) => sum + l.text.length, 0);
+  const remaining = currentRoom.goal - total;
+  if (letter.text.length > remaining) {
+    alert('🚨 목표 글자 수를 초과했어요.');
+    return;
+  }
+
+  letters.push({ text: letter.text, from: letter.from || '', createdAt: letter.createdAt });
+  saveLetters(roomEncoded, letters);
+  const newTotal = total + letter.text.length;
+
+  trackEvent('log_letter_registered', {
+    room_title: currentRoom.title,
+    letter_length: letter.text.length,
+    current_total_chars: newTotal
   });
 
-  // Fix: body's pageIn animation animates `transform`, and with fill-mode:both that computed transform lingers after the animation completes — which makes body a containing block for any position:fixed descendant (bottom nav, floating buttons), anchoring them to the full page height instead of the viewport. Strip the animation once it's done so body goes back to a normal (untransformed) containing block.
-  document.body.addEventListener('animationend', function onDone(e) {
-    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  if (!silent) toast('편지가 등록됐어요.');
+  renderDashboard();
+}
+
+/* ===== Reveal: cards flip open one by one ===== */
+function renderReveal(letters, total) {
+  clearInterval(revealTimerId);
+  stage.innerHTML = `
+    <div class="reveal-burst">
+      <div class="burst-icon">🎉</div>
+      <h2>${escapeHtml(currentRoom.title)}</h2>
+      <p>${letters.length}명이 보낸 ${total}자의 마음이 도착했어요</p>
+    </div>
+    <div class="reveal-grid" id="revealGrid">
+      ${letters.map((l, i) => `
+        <div class="reveal-card" id="rcard${i}">
+          <div class="reveal-card-inner">
+            <div class="reveal-card-face reveal-card-back">✉️</div>
+            <div class="reveal-card-face reveal-card-front">
+              <div class="letter-text">${escapeHtml(l.text)}</div>
+              <div class="letter-meta">${l.from ? escapeHtml(l.from) : '익명'}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="share-actions" style="margin-top:26px;">
+      <button class="ghost-btn" onclick="navigate('create.html')">나도 방 만들어보기</button>
+    </div>
+  `;
+  letters.forEach((l, i) => {
+    setTimeout(() => {
+      const card = document.getElementById(`rcard${i}`);
+      if (card) card.classList.add('flipped');
+    }, 300 + i * 220);
   });
+}
+
+init();
 </script>
 </body>
 </html>

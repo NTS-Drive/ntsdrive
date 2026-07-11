@@ -1597,6 +1597,159 @@ mailto-based contact form, 담당자 성명 확정(한동민), 시행일자 2026
 numbered-clause legal text. The top-of-document notice recommending
 legal review before real publication was intentionally left in place.
 
+## Log — full implementation (2026-07-11, v3.20)
+
+Built out the "Log" (rolling paper bomb) feature per the finalized
+specification, landing in the `log/` slot that was previously a
+"준비중" placeholder. Same backend-less architecture as Post (everything
+lives in the URL), but for a many-to-one "room" instead of Post's 1:1
+letters.
+
+### Data model & flow
+- **Room** `{title, dday, goal, createdAt}` — created in `create.html`,
+  encoded into a "친구용 링크" pointing at `write.html`.
+- **Letter** `{title, dday, goal, text, from, createdAt}` — a friend
+  writes up to 100 characters in `write.html` (room fields are copied in
+  so the letter link is fully self-contained, same principle as Post);
+  submitting produces a link back to `index.html?add=<encoded>`.
+- **Dashboard** (`index.html?room=<encoded>`) — the 주인공's view: pastes
+  each friend's link into an add-box (reusing the same
+  paste-and-extract pattern as Post's inbox), which decodes the letter,
+  **verifies it actually belongs to this room** (title/dday/goal must
+  match), and only stores its character count + sender name in
+  `localStorage` — never renders the letter text until reveal
+  conditions are met. Opening a friend's `?add=` link directly also
+  works and auto-registers into the right room, since the room can be
+  reconstructed from the letter's embedded fields.
+- **Overflow guard**: registering a letter longer than the room's
+  remaining capacity is blocked with the exact alert text from spec
+  ("🚨 목표 글자 수를 초과했어요."). Verified against the spec's own
+  worked example (10 chars remaining: a 9-char letter succeeds, an
+  11-char letter is blocked, and — filling in the boundary case the spec
+  didn't spell out — exactly 10 chars also succeeds).
+- **Reveal condition**: `Date.now() >= dday` **OR** `total >= goal`,
+  whichever comes first. The dashboard re-checks every 15s while
+  unrevealed so it flips over on its own without a manual refresh.
+- **Reveal animation** (`animation.css`): each registered letter renders
+  as a 3D flip card (CSS `perspective` + `backface-visibility`, back
+  face is an envelope icon, front face is the actual text), flipping
+  open one at a time with a staggered ~220ms delay per card.
+
+### Reused vs new
+- Reused: Post's UTF-8-safe base64url encode/decode scheme, the
+  paste-a-link-and-extract-the-param pattern from Post's inbox, and the
+  `animationend`-based fix for the site-wide `position:fixed` /
+  transform-animation containing-block bug (applied here too, since Log
+  has its own `body{animation:pageIn}}`).
+- New: room/letter dual-object model (vs. Post's single letter object),
+  the room-membership check on registration, the character-overflow
+  guard, and the gauge/reveal-condition logic.
+- Its own visual identity: warm amber (`#C17F2A`) accent on a
+  slightly-warmer cream than Post, keeping the same editorial
+  serif/structural language as the rest of the "personal content"
+  section of the site (Post) without being visually identical to it.
+
+### GA4
+Three events wired through the existing `gtag` (via `analytics.js`,
+already loaded site-wide — no new tracking infrastructure needed):
+`log_room_created`, `log_letter_written`, and (the one that matters for
+the 1만-registration backend-migration trigger discussed earlier)
+`log_letter_registered` with `room_title` / `letter_length` /
+`current_total_chars` parameters.
+
+### Site-wide
+`categories.json`'s Log entry flipped from `Planned` to `Live`; its home
+folder-grid color changed from the neutral "준비중" gray to a dedicated
+amber (`--tabc:#9A5F1E` family), matching Log's own accent.
+
+### Verification
+10 Node-simulated scenarios covering: room/letter encode-decode
+round-trips, room-membership matching (accept same room, reject
+mismatched), the overflow guard's exact boundary behavior from spec, and
+all three reveal-condition combinations (neither met, goal-only,
+dday-only) — all passed. Plus the usual div-balance / CSS-brace-balance
+/ JS-syntax / live-serving checks across all 6 new/changed Log files.
+
+## Snap & Film: local camera memories (2026-07-11, v3.21)
+
+Two new backend-less camera features, following the site's rebrand toward
+"지금 이 순간, 내 마음 기록 드라이브" (a mix of writing-to-the-future
+content and living-in-the-moment content). Unlike Post/Log, these
+photos are **never turned into a shareable link** — the user explicitly
+chose "나 혼자만 다시 보기" (personal-only) over sharing, which removes
+the URL-length constraint entirely and lets photos be stored at decent
+quality directly in `localStorage`.
+
+### Snap (`snap/index.html`) — instant photo
+- Square-ish capture (Instax Square-style), warm color grade, mounted in
+  a white frame with an authentic instant-photo silhouette (thin
+  top/side border, thick bottom margin for the "shake to develop" look).
+- An optional one-line caption, entered right after taking the photo,
+  saved alongside it — shown under the photo in the album.
+- No lock — visible immediately.
+
+### Film (`film/index.html`) — expired-film photo
+- 3:2 capture (classic 35mm ratio), desaturated + warm-shadow color
+  grade, procedural grain (per-pixel random noise), vignette, and a
+  thin dark mount frame — distinct from Snap's thick white one.
+- **Unlock delay is randomly chosen at capture time** from
+  `[6, 12, 15, 18, 21, 24]` hours — verified with 200 simulated draws,
+  100% landed within that set.
+- Deliberately shows **no preview of the shot** — the confirmation
+  screen only says how many hours until it's ready, preserving the
+  "you don't know what you got until it's developed" feeling real film
+  has. The photo itself only appears once, later, in the album.
+
+### Album (`album/index.html`) — shared gallery
+- 전체/Snap/Film filter tabs (same pattern as Play's filter row).
+- Snap cards scatter with a small per-card random rotation for a
+  corkboard feel; Film cards show a dark "현상 중" placeholder with a
+  live countdown (refreshes every 15s) until their random unlock time
+  passes.
+- **The film-developing animation plays exactly once** — a `revealed`
+  flag flips to `true` the first time a card is displayed past its
+  unlock time, so revisiting the album later just shows the plain photo.
+- Lightbox view per photo with **download** (writes the actual JPEG to
+  the device via a normal file download — the only way a photo leaves
+  `localStorage`, since there is no auto-save to the phone's native
+  photo library; browsers don't allow a site to write there silently)
+  and delete.
+
+### Storage policy (the actual point of this session's back-and-forth)
+- Retention: **max 2 weeks, max 24 photos** (down from an initial
+  36/1-month draft after discussion).
+- **A hard 2MB byte budget**, independent of the count/age limits —
+  added specifically because count and age alone don't guarantee a byte
+  ceiling, and this origin's `localStorage` is shared with Post's inbox
+  and Log's room data. Every save re-sorts newest-first and evicts from
+  the oldest end until back under budget, so a run of larger photos can
+  never crowd out Post/Log's much lighter storage needs. Verified with a
+  Node simulation: 24 photos at 90KB each (≈2.16MB raw) automatically
+  trims to 22 photos at 1.94MB, safely under budget.
+- The UI states this plainly wherever a photo might be lost early
+  ("저장 공간에 따라 2주·24컷보다 일찍 삭제될 수 있어요, 아끼는 사진은
+  미리 다운로드해두세요") on both capture screens and the album itself,
+  rather than only documenting it after the fact.
+- 7 Node-simulated scenarios covering save/load round-trip, age-based
+  eviction, count cap, the byte-budget eviction under real photo-sized
+  data, the reveal-flag update, deletion, and the random-delay
+  distribution — all passed.
+
+### Site-wide consistency fix
+Found (via cross-checking, not assumption) that only Snap/Film/Album's
+own pages had been updated with the new 5-item nav (Post/Log/Play/Snap/
+Film) — every other page (`post/`, `log/`, `play/`, `academy/`, plus
+`post/inbox.html`, `log/create.html`, `log/write.html`) still showed the
+old Post/Log/Play/Academy nav with no route to the camera features.
+Patched all 7 files' top nav and bottom nav to the consistent 6-item
+structure (홈 + Post/Log/Play/Snap/Film). Also found the home page's
+folder-grid `ICONS`/`FOLDER_STYLE` map was missing `snap`/`film`
+entries entirely — cards were silently falling back to Log's icon —
+added proper icons plus new `.f-snap` (orange) / `.f-film` (olive)
+color classes. Academy intentionally remains reachable only by direct
+URL (its own internal nav was still updated to the new 5-item set for
+outbound navigation, just no longer a destination from anywhere else).
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

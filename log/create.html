@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방 만들기 | Log</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="../analytics.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span class="active">Log</span>
+    <span onclick="navigate('../play/index.html')">Play</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+
+function renderCreate() {
+  stage.innerHTML = `
+    <div class="masthead">
+      <div class="kicker">Log</div>
+      <h1>마음을 모으는 방 만들기</h1>
+      <div class="sub">친구들의 편지가 모여 목표를 채우면, 한 번에 열려요</div>
+    </div>
+
+    <div class="compose-paper">
+      <div class="field">
+        <label>방 제목 (대상자)</label>
+        <input type="text" id="roomTitle" maxlength="30" placeholder="예: 지민이의 생일">
+      </div>
+      <div class="field">
+        <label>디데이 (이 시간이 되면 자동으로 열려요)</label>
+        <input type="datetime-local" id="roomDday">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>목표 글자 수 (100~1,000자)</label>
+        <input type="number" id="roomGoal" min="${GOAL_MIN}" max="${GOAL_MAX}" step="10" value="300">
+        <div class="field-hint">친구들이 쓴 편지 글자 수가 이 목표에 닿으면, 디데이 전이라도 바로 열려요.</div>
+      </div>
+    </div>
+
+    <button class="seal-btn" onclick="handleCreate()">방 만들기</button>
+    <div class="disclaimer">방 정보는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요.<br>친구용 링크를 잃어버리면 그 방은 다시 만들 수 없다는 점, 참고해주세요.</div>
+  `;
+}
+
+function handleCreate() {
+  const title = document.getElementById('roomTitle').value.trim();
+  const ddayVal = document.getElementById('roomDday').value;
+  let goal = parseInt(document.getElementById('roomGoal').value, 10);
+
+  if (!title) { toast('방 제목을 입력해주세요.'); return; }
+  if (!ddayVal) { toast('디데이를 설정해주세요.'); return; }
+  const dday = new Date(ddayVal).getTime();
+  if (isNaN(dday) || dday <= Date.now()) { toast('디데이는 현재보다 미래여야 해요.'); return; }
+  if (isNaN(goal)) { toast('목표 글자 수를 입력해주세요.'); return; }
+  goal = Math.min(GOAL_MAX, Math.max(GOAL_MIN, goal));
+
+  const room = { title, dday, goal, createdAt: Date.now() };
+  const roomEncoded = encodeData(room);
+  const writeUrl = `${window.location.origin}${window.location.pathname.replace('create.html','write.html')}?room=${roomEncoded}`;
+  const dashUrl = `${window.location.origin}${window.location.pathname.replace('create.html','index.html')}?room=${roomEncoded}`;
+
+  trackEvent('log_room_created', { room_title: title, goal_chars: goal });
+  renderShareResult(writeUrl, dashUrl);
+}
+
+function renderShareResult(writeUrl, dashUrl) {
+  stage.innerHTML = `
+    <div class="share-result">
+      <div class="env-icon">📖</div>
+      <h2>방이 만들어졌어요</h2>
+      <p>아래 링크를 친구들에게 전달해서 편지를 받아보세요.<br>받은 편지 링크는 내 방 대시보드에 등록하면 돼요.</p>
+      <div class="link-box"><input type="text" readonly value="${writeUrl}"></div>
+      <div class="share-actions">
+        <button class="ghost-btn" onclick="copyLink('${writeUrl}')">친구용 링크 복사</button>
+        <button class="seal-btn" style="width:auto; padding:12px 22px;" onclick="navigate('index.html?room=${dashUrl.split('room=')[1]}')">내 방 대시보드 열기</button>
+      </div>
+    </div>
+  `;
+}
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+}
+
+renderCreate();
+</script>
+</body>
+</html>

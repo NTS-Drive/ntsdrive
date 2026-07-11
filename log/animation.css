@@ -1,0 +1,31 @@
+/* ===== D-Day reveal: cards flip open one by one ===== */
+.reveal-burst { text-align: center; padding: 20px 0 8px; }
+.reveal-burst .burst-icon { font-size: 44px; margin-bottom: 12px; animation: burstPop .5s ease; }
+@keyframes burstPop { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+.reveal-burst h2 { font-family: var(--font-serif); font-size: 22px; margin-bottom: 6px; }
+.reveal-burst p { font-size: 12.5px; color: var(--ink-muted); margin-bottom: 26px; }
+
+.reveal-grid { display: flex; flex-direction: column; gap: 12px; }
+
+.reveal-card { perspective: 900px; height: auto; }
+.reveal-card-inner {
+  position: relative; width: 100%; min-height: 90px;
+  transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(.2,.7,.3,1);
+}
+.reveal-card.flipped .reveal-card-inner { transform: rotateY(180deg); }
+
+.reveal-card-face {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 8px; padding: 18px 20px; display: flex; align-items: center;
+  box-sizing: border-box;
+}
+.reveal-card-back {
+  background: linear-gradient(135deg, var(--accent-soft), #EFD9B4);
+  border: 1px solid var(--line); justify-content: center; font-size: 22px; color: var(--accent);
+}
+.reveal-card-front {
+  background: var(--panel); border: 1px solid var(--line); transform: rotateY(180deg);
+  flex-direction: column; align-items: flex-start; gap: 4px;
+}
+.reveal-card-front .letter-text { font-family: var(--font-serif); font-size: 14.5px; line-height: 1.7; color: var(--ink); }
+.reveal-card-front .letter-meta { font-size: 10.5px; color: var(--ink-muted); }

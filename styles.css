@@ -100,9 +100,11 @@ body.leaving{animation:pageOut .3s ease both;}
 .f-fortune{--tabc:#7C4FE0; --bodyl:#B7A3FF; --bodyc:#8B5CF6;}
 .f-post{--tabc:#6E1C2A; --bodyl:#C1443A; --bodyc:#8B2635;}
 .f-academy{--tabc:#0E9E88; --bodyl:#5FE0C7; --bodyc:#14B8A6;}
+.f-snap{--tabc:#C9531F; --bodyl:#FFB088; --bodyc:#FF8F5B;}
+.f-film{--tabc:#5A6B4C; --bodyl:#A9C09B; --bodyc:#7C9268;}
 .f-community{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
 .f-store{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
-.f-log{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
+.f-log{--tabc:#9A5F1E; --bodyl:#E0A857; --bodyc:#C17F2A;}
 .f-play{--tabc:#0A63D6; --bodyl:#3E8CFF; --bodyc:#0071E3;}
 .folder.soon .ficon .glyph{opacity:0.7;}
 

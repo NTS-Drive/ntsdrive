@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Film | NTS Drive</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="../camera/style.css">
+<script src="../analytics.js"></script>
+</head>
+<body class="cam-mode">
+
+<div class="cam-topbar">
+  <a class="mark" onclick="navigate('../index.html')">NTS DRIVE</a>
+  <div class="cam-nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('../log/index.html')">Log</span>
+    <span onclick="navigate('../play/index.html')">Play</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span class="active">Film</span>
+  </div>
+</div>
+
+<div class="cam-stage" id="stage"></div>
+
+<a class="cam-album-link" onclick="navigate('../album/index.html')">🖼 내 사진첩</a>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="../camera/shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+
+function renderViewfinder() {
+  stage.innerHTML = `
+    <div class="cam-kicker film">Film</div>
+    <div class="cam-title">필름으로 찍기</div>
+    <div class="cam-sub">찍은 사진은 6~24시간 사이, 랜덤한 시간이 지나야 볼 수 있어요</div>
+    <div class="viewfinder ratio-32"><video id="video" autoplay playsinline muted></video></div>
+    <div class="shutter-row"><button class="shutter-btn" onclick="handleShutter()"></button></div>
+    <div class="cam-notice">
+      사진은 이 브라우저에만 저장돼요. 저장 공간에 따라 최대 2주·24컷보다 일찍 삭제될 수 있으니,
+      아끼는 사진은 <a onclick="navigate('../album/index.html')">내 사진첩</a>에서 미리 다운로드해두세요.
+    </div>
+  `;
+  const video = document.getElementById('video');
+  openCamera(video);
+}
+
+function handleShutter() {
+  const video = document.getElementById('video');
+  if (!video.videoWidth) { toast('카메라를 준비 중이에요, 잠시만요.'); return; }
+  const raw = captureFrame(video, 1.5); // 3:2
+  stopCamera(video);
+  const filtered = applyFilmFilter(raw);
+  saveFilmPhoto(filtered);
+}
+
+function saveFilmPhoto(canvas) {
+  const dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+  const hours = pickFilmDelayHours();
+  const photo = {
+    id: makeId(), type: 'film', dataUrl,
+    createdAt: Date.now(), unlockAt: Date.now() + hours * 60 * 60 * 1000,
+    delayHours: hours, revealed: false
+  };
+  const ok = addPhoto(photo);
+  if (ok) renderDeveloping(hours);
+}
+
+function renderDeveloping(hours) {
+  stage.innerHTML = `
+    <div class="cam-kicker film">Film</div>
+    <div class="cam-title">필름이 현상되고 있어요</div>
+    <div class="cam-sub">이번 컷은 약 ${hours}시간 뒤에 볼 수 있어요<br>(정확히 몇 시간일지는 매번 랜덤이에요)</div>
+    <div class="cam-result-actions">
+      <button class="cam-btn" onclick="renderViewfinder()">한 장 더 찍기</button>
+      <button class="cam-btn primary" onclick="navigate('../album/index.html')">내 사진첩 보기</button>
+    </div>
+  `;
+}
+
+renderViewfinder();
+</script>
+</body>
+</html>

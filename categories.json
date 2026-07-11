@@ -11,9 +11,9 @@
   {
     "id": "log",
     "name": "Log",
-    "description": "여러 사람의 마음이 모여 쌓이는 공간이에요. 곧 만나보실 수 있어요.",
+    "description": "여러 사람의 마음이 모여 쌓이는 공간이에요. 방을 만들어보세요.",
     "emoji": "📖",
-    "status": "Planned",
+    "status": "Live",
     "path": "log/index.html",
     "itemsSource": null
   },
@@ -27,12 +27,21 @@
     "itemsSource": null
   },
   {
-    "id": "academy",
-    "name": "Academy",
-    "description": "바쁘다 바빠 현실 세계에 꼭 필요한 짧고 실용적인 학습 콘텐츠예요.",
-    "emoji": "🎓",
+    "id": "snap",
+    "name": "Snap",
+    "description": "즉석사진처럼, 지금 이 순간을 바로 남겨보세요.",
+    "emoji": "📸",
     "status": "Live",
-    "path": "academy/index.html",
-    "itemsSource": "academy/items.json"
+    "path": "snap/index.html",
+    "itemsSource": null
+  },
+  {
+    "id": "film",
+    "name": "Film",
+    "description": "필름카메라로 찍은 사진은, 몇 시간 뒤에야 볼 수 있어요.",
+    "emoji": "🎞️",
+    "status": "Live",
+    "path": "film/index.html",
+    "itemsSource": null
   }
 ]

@@ -22,7 +22,8 @@
       <span onclick="navigate('post/index.html')">Post</span>
       <span onclick="navigate('log/index.html')">Log</span>
       <span onclick="navigate('play/index.html')">Play</span>
-      <span onclick="navigate('academy/index.html')">Academy</span>
+      <span onclick="navigate('snap/index.html')">Snap</span>
+      <span onclick="navigate('film/index.html')">Film</span>
     </div>
     <div class="right">
       <button class="first-btn" onclick="document.getElementById('onboard').classList.add('show')">처음이신가요?</button>
@@ -32,8 +33,8 @@
 
 <section class="hero">
   <div class="eyebrow">NTS DRIVE</div>
-  <h1><span class="h1-lead">소소한 재미를 원하는</span><br>우리를 위한 드라이브</h1>
-  <p class="subtext">기분 전환이 필요할 때 열어보는 폴더</p>
+  <h1><span class="h1-lead">지금 이 순간</span><br>내 마음 기록 드라이브</h1>
+  <p class="subtext">미래를 기대하고, 과거를 추억하는 시간</p>
 
   <div class="clock-widget" id="clockWidget">
     <span class="tick tick-12"></span>
@@ -103,7 +104,8 @@
   <a onclick="navigate('post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
   <a onclick="navigate('log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a onclick="navigate('play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
-  <a onclick="navigate('academy/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg></span>Academy</a>
+  <a onclick="navigate('snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
 </nav>
 
 <script>
@@ -173,13 +175,15 @@
     post: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>',
     log: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg>',
-    academy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg>'
+    snap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg>',
+    film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>'
   };
   const FOLDER_STYLE = {
     post:    { icon: ICONS.post,    cls: 'f-post',    unit: null },
     log:     { icon: ICONS.log,     cls: 'f-log',      unit: null },
     play:    { icon: ICONS.play,    cls: 'f-play',     unit: '개 운영중' },
-    academy: { icon: ICONS.academy, cls: 'f-academy',  unit: '개 테마 완성' }
+    snap:    { icon: ICONS.snap,    cls: 'f-snap',     unit: null },
+    film:    { icon: ICONS.film,    cls: 'f-film',     unit: null }
   };
 
   async function loadFolders() {

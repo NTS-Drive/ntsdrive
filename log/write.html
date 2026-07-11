@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>편지 쓰기 | Log</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="../analytics.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span class="active">Log</span>
+    <span onclick="navigate('../play/index.html')">Play</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+let room = null;
+
+function init() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('room')) {
+    stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>방 링크가 필요해요</h2><p>친구에게 받은 링크로 다시 접속해주세요.</p></div>`;
+    return;
+  }
+  try {
+    room = decodeData(params.get('room'));
+  } catch (e) {
+    stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>링크를 읽을 수 없어요</h2><p>링크가 손상되었을 수 있어요.</p></div>`;
+    return;
+  }
+  renderWrite();
+}
+
+function renderWrite() {
+  stage.innerHTML = `
+    <div class="masthead">
+      <div class="kicker">Log</div>
+      <h1>${escapeHtml(room.title)}</h1>
+      <div class="sub">${formatDday(room.dday)}에 열리는 편지예요</div>
+    </div>
+
+    <div class="compose-paper">
+      <div class="field">
+        <label>보내는 사람 (선택)</label>
+        <input type="text" id="fromName" maxlength="20" placeholder="예: 은우">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>편지 내용 (최대 ${LETTER_MAX_CHARS}자)</label>
+        <textarea id="letterText" maxlength="${LETTER_MAX_CHARS}" placeholder="짧게, 마음을 담아 적어주세요"></textarea>
+        <div class="char-count" id="charCount">0 / ${LETTER_MAX_CHARS}</div>
+      </div>
+    </div>
+
+    <button class="seal-btn" onclick="handleWrite()">편지 링크 만들기</button>
+    <div class="disclaimer">이 편지는 ${escapeHtml(room.title)} 방에 등록하면 글자 수만 먼저 반영되고,<br>내용은 디데이가 되거나 목표가 채워져야 볼 수 있어요.</div>
+  `;
+  document.getElementById('letterText').addEventListener('input', updateCharCount);
+}
+
+function updateCharCount() {
+  const len = document.getElementById('letterText').value.length;
+  const el = document.getElementById('charCount');
+  el.textContent = `${len} / ${LETTER_MAX_CHARS}`;
+  el.classList.toggle('over', len >= LETTER_MAX_CHARS);
+}
+
+function handleWrite() {
+  const text = document.getElementById('letterText').value.trim();
+  const from = document.getElementById('fromName').value.trim();
+  if (!text) { toast('편지 내용을 적어주세요.'); return; }
+  if (text.length > LETTER_MAX_CHARS) { toast(`편지는 ${LETTER_MAX_CHARS}자 이내로 적어주세요.`); return; }
+
+  const letter = { title: room.title, dday: room.dday, goal: room.goal, text, from, createdAt: Date.now() };
+  const encoded = encodeData(letter);
+  const url = `${window.location.origin}${window.location.pathname.replace('write.html','index.html')}?add=${encoded}`;
+
+  trackEvent('log_letter_written', { room_title: room.title, letter_length: text.length });
+  renderShareResult(url);
+}
+
+function renderShareResult(url) {
+  stage.innerHTML = `
+    <div class="share-result">
+      <div class="env-icon">✉️</div>
+      <h2>편지가 준비됐어요</h2>
+      <p>이 링크를 ${escapeHtml(room.title)}에게 전달해주세요.<br>방 주인이 등록하면 글자 수가 반영돼요.</p>
+      <div class="link-box"><input type="text" id="shareUrl" readonly value="${url}"></div>
+      <div class="share-actions">
+        <button class="ghost-btn" onclick="copyLink('${url}')">링크 복사</button>
+      </div>
+    </div>
+  `;
+}
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+}
+
+init();
+</script>
+</body>
+</html>
