@@ -1429,6 +1429,90 @@ user as a partial solution, not a replacement for real push.
   "♬띵동♪" musical-note prefix and changed "되어야" → "되면" per direct
   feedback.
 
+## Major restructuring: Play/Log + envelope hero + legal pages (2026-07-10, v3.17)
+
+The largest single batch of changes so far, from a numbered spec covering
+Post, sitewide IA, Academy, the onboarding modal, and the home page.
+
+### Site structure
+- **"Arcade" renamed to "Play"**, now merging what used to be two
+  separate hubs (Arcade + Fortune) into one page (`play/index.html`)
+  with a 전체/Mini Game/Fortune filter row. The individual game/content
+  files themselves didn't move (`arcade/formula-firewall/...`,
+  `fortune/tarot-pick/...` etc. are unchanged) — only the listing page
+  was rebuilt, fetching both `arcade/titles.json` and
+  `fortune/items.json` and tagging each item's group for filtering.
+- The old `arcade/index.html` / `fortune/index.html` hub pages are now
+  redirect stubs (meta-refresh + `location.replace`) pointing to
+  `play/index.html`, so any old bookmarks/links still land somewhere
+  useful instead of 404ing.
+- **New `log/index.html`** — a "준비중" placeholder for the future
+  rolling-paper feature.
+- **GNB order everywhere**: Post → Log → Play → Academy (desktop nav and
+  mobile bottom nav, 5 items including 홈), applied across all 9+ pages
+  site-wide.
+- **Feedback widget removed from all 15 pages** that had it — replaced
+  by the new footer contact link (see below).
+- **New legal/contact pages**: `privacy/` and `terms/` are content stubs
+  ("준비 중") awaiting real copy; `contact/index.html` is a working form
+  (제목/내용/회신 이메일) that builds a `mailto:myer@kakao.com` link on
+  submit — deliberately the no-backend-needed option, with a visible
+  fallback line under the button ("mailto가 안 열리면 myer@kakao.com으로
+  바로 보내주셔도 좋아요") in case a visitor's device has no mail client
+  configured.
+
+### Home page
+- Headline → "소소한 재미를 원하는 / 우리를 위한 드라이브"; subtext →
+  "기분 전환이 필요할 때 열어보는 폴더".
+- **The 3-card floater hero is gone entirely**, replaced by a single
+  interactive envelope element in Post's own burgundy/cream language —
+  clip-path flap, wax seal, and a "letter" card peeking out from
+  underneath. On scroll, the flap lifts and fades, the letter peeks out
+  further, the seal fades, and the whole envelope scales up slightly —
+  all driven by one scroll handler (replacing the old blue-CTA-card
+  scale effect). Clicking anywhere on it goes to Post.
+- Folder grid: only **Post / Log / Play / Academy** remain (Community
+  dropped), laid out as a plain 2×2 grid on both desktop and mobile —
+  the old "Arcade spans the full row" featured treatment is gone since
+  there's no longer a reason for one folder to dominate.
+- Folder-count badge logic special-cases `play`, since it no longer has
+  a single `itemsSource` file — it now fetches both
+  `arcade/titles.json` and `fortune/items.json` and sums the Live
+  counts. Verified end-to-end with an actual Node `fetch` run: Post→
+  Live, Log→준비중, **Play→7 (5+2, correct)**, Academy→3.
+- Footer rebuilt: 개인정보처리방침 / 이용약관 / 문의하기 links above a
+  shortened "© 2026 NTS Drive" line (dropped "· 직장인을 위한 작은
+  쉼표").
+- Onboarding modal copy and title replaced per the new spec.
+
+### Academy
+- Subtitle → "바쁘다 바빠 현실 세계에 꼭 필요한 짧고 실용적인 학습
+  콘텐츠예요."; added an `.audience-filter` button row below it with
+  "직장인" as the only (active) option for now — a placeholder for
+  future audience segments (학생/자영업자 등) mentioned but not yet built.
+
+### Post
+- KakaoTalk preview text updated (dropped "♬띵동♪").
+- The "📮 내 편지함 보기" text link — previously easy to miss in the
+  masthead — is now a fixed-position floating pill button in the
+  bottom-right corner (`내 편지함`), positioned to clear the mobile
+  bottom nav (`bottom:92px` on narrow screens vs. `bottom:26px` on
+  desktop). It took over the screen real estate the removed feedback
+  widget used to occupy.
+- Inbox page: real bug fixes for mobile responsiveness (add-link row
+  and notification banner now stack vertically under 600px instead of
+  overflowing), and a real alignment bug in the numbered step circles —
+  turned out to be a plain CSS `align-items` issue, not an image (the
+  numbers were always plain text), fixed by centering `.step` and
+  `.inbox-steps .step` instead of top-aligning them.
+- Inbox cards simplified to icon + remaining-time only — 받는사람/
+  보내는사람/편지 제목 no longer show on the list, so registering a
+  letter doesn't spoil who it's from/for before it unlocks.
+- The locked/countdown screen now ends with a short prompt and link to
+  the inbox ("이 편지, 나중에 다시 보고 싶다면? 내 편지함에 등록해두세요
+  →"), closing the loop between "I got a letter link" and "I should
+  save it somewhere I'll remember."
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

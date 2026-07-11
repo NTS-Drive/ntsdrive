@@ -29,8 +29,13 @@ body.leaving { animation: pageOut .28s ease both; }
 .masthead .kicker { font-size: 11px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
 .masthead h1 { font-family: var(--font-serif); font-weight: 700; font-size: 40px; letter-spacing: -0.01em; margin-bottom: 12px; }
 .masthead .sub { font-family: var(--font-serif); font-style: italic; font-size: 15px; color: var(--ink-muted); }
-.inbox-link { display: inline-block; margin-top: 18px; font-size: 12.5px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; }
-.inbox-link:hover { color: var(--accent); }
+.inbox-fab {
+  position: fixed; right: 22px; bottom: 26px; z-index: 55;
+  background: var(--ink); color: #fff; text-decoration: none;
+  padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  box-shadow: 0 8px 20px rgba(23,20,15,0.25); cursor: pointer; transition: background .15s, transform .15s;
+}
+.inbox-fab:hover { background: var(--accent); transform: translateY(-2px); }
 
 /* ===== Template picker ===== */
 .tpl-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 40px; }
@@ -138,6 +143,8 @@ body.leaving { animation: pageOut .28s ease both; }
 .envelope-stage h2 { font-family: var(--font-serif); font-size: 20px; margin-bottom: 10px; }
 .envelope-stage .countdown { font-family: var(--font-serif); font-size: 28px; color: var(--accent); margin-bottom: 10px; letter-spacing: 0.02em; }
 .envelope-stage .unlock-date { font-size: 12.5px; color: var(--ink-muted); }
+.locked-inbox-note { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-muted); line-height: 1.8; }
+.locked-inbox-note a { color: var(--accent); text-decoration: underline; cursor: pointer; }
 
 /* ===== Letter reveal ===== */
 .compose-paper {
@@ -198,17 +205,18 @@ body.leaving { animation: pageOut .28s ease both; }
   .bottom-nav a .bicon { font-size: 19px; line-height: 1; display: flex; align-items: center; justify-content: center; }
   .bottom-nav a .bicon svg { width: 20px; height: 20px; }
   .bottom-nav a.active { color: var(--accent); }
+  .inbox-fab { bottom: 92px; right: 16px; padding: 10px 16px; font-size: 12px; }
 }
 
 
 /* ===== Inbox page ===== */
 .inbox-steps { margin-bottom: 30px; }
-.inbox-steps .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+.inbox-steps .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: center; }
 .inbox-steps .num {
   width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
-  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1;
 }
-.inbox-steps p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; padding-top: 2px; }
+.inbox-steps p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin: 0; }
 
 .inbox-add-row { display: flex; gap: 8px; margin-bottom: 16px; }
 .inbox-add-row input {
@@ -241,3 +249,11 @@ body.leaving { animation: pageOut .28s ease both; }
 .inbox-card-status.unlocked { color: #2f7a4f; }
 .inbox-card-remove { font-size: 11px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; flex-shrink: 0; }
 .inbox-card-remove:hover { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .inbox-add-row { flex-direction: column; }
+  .inbox-add-row .ghost-btn { width: 100%; }
+  .notify-status { flex-direction: column; align-items: flex-start; }
+  .notify-status .ghost-btn { width: 100%; }
+  .inbox-card { padding: 14px 14px; gap: 10px; }
+}

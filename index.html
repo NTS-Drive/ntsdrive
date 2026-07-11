@@ -20,8 +20,8 @@
     <div class="brand"><div class="mark"></div>NTS Drive</div>
     <div class="links">
       <span onclick="navigate('post/index.html')">Post</span>
-      <span onclick="navigate('arcade/index.html')">Arcade</span>
-      <span onclick="navigate('fortune/index.html')">Fortune</span>
+      <span onclick="navigate('log/index.html')">Log</span>
+      <span onclick="navigate('play/index.html')">Play</span>
       <span onclick="navigate('academy/index.html')">Academy</span>
     </div>
     <div class="right">
@@ -32,17 +32,17 @@
 
 <section class="hero">
   <div class="eyebrow">NTS DRIVE</div>
-  <h1><span class="h1-lead">커뮤니티, 미니게임, 교육이 있는</span><br>직장인을 위한 드라이브</h1>
-  <p class="subtext">일하다 지칠 때 열어보는 폴더</p>
+  <h1><span class="h1-lead">소소한 재미를 원하는</span><br>우리를 위한 드라이브</h1>
+  <p class="subtext">기분 전환이 필요할 때 열어보는 폴더</p>
 
-  <div class="stage">
-    <div class="floater" id="floater">
-      <div class="card c1"><span class="tag">Academy</span></div>
-      <div class="card c2" onclick="navigate('post/index.html')">
-        <span class="tag">Post</span>
-        <span class="cta-sub">▶ 마음을 담은 편지 쓰러가기</span>
-      </div>
-      <div class="card c3"><span class="tag">Arcade</span></div>
+  <div class="envelope-hero" id="envelopeHero" onclick="navigate('post/index.html')">
+    <div class="env-letter-peek" id="envPeek"></div>
+    <div class="env-body"></div>
+    <div class="env-flap" id="envFlap"></div>
+    <span class="env-seal" id="envSeal"></span>
+    <div class="env-label">
+      <span class="tag">Post</span>
+      <span class="cta-sub">▶ 마음을 담은 편지 쓰러가기</span>
     </div>
   </div>
 </section>
@@ -61,24 +61,31 @@
     </a>
     <a class="best-card" href="arcade/formula-firewall/index.html">
       <div class="rank">02</div>
-      <div class="info"><h4>Formula Firewall</h4><p>Arcade · 타워디펜스</p></div>
+      <div class="info"><h4>Formula Firewall</h4><p>Play · 타워디펜스</p></div>
     </a>
     <a class="best-card" href="fortune/tarot-pick/index.html">
       <div class="rank">03</div>
-      <div class="info"><h4>Tarot Pick</h4><p>Fortune · 타로운세</p></div>
+      <div class="info"><h4>Tarot Pick</h4><p>Play · 타로운세</p></div>
     </a>
   </div>
 </section>
 
-<footer>© 2026 NTS Drive · 직장인을 위한 작은 쉼표</footer>
+<footer>
+  <div class="footer-links">
+    <a onclick="navigate('privacy/index.html')">개인정보처리방침</a>
+    <a onclick="navigate('terms/index.html')">이용약관</a>
+    <a onclick="navigate('contact/index.html')">문의하기</a>
+  </div>
+  <div class="footer-copyright">© 2026 NTS Drive</div>
+</footer>
 
 <div class="overlay" id="onboard">
   <div class="modal">
     <span class="close" onclick="document.getElementById('onboard').classList.remove('show')">✕</span>
-    <h3>NTS Drive 처음이시라면</h3>
-    <div class="step"><div class="num">1</div><p><b>여기서 뭘 할 수 있냐면,</b> 마음을 담은 편지 쓰기, 업무 스타일 미니게임, 학습 콘텐츠가 한 곳에 모여있어요.</p></div>
-    <div class="step"><div class="num">2</div><p><b>가장 빠른 시작은 주변 사람들에게 마음을 담은 편지를 써 보는 거예요.</b></p></div>
-    <div class="step"><div class="num">3</div><p><b>로그인 없이 바로 시작</b> 가능해요. 부담 없이 눌러보세요.</p></div>
+    <h3>NTS Drive가 처음이시라면 확인해 주세요</h3>
+    <div class="step"><div class="num">1</div><p>NTS에서는 일상이 풍족해지는 콘텐츠를 즐길 수 있어요.</p></div>
+    <div class="step"><div class="num">2</div><p>가장 먼저 해보면 좋은 콘텐츠는 주변 사람들에게 나의 마음을 전하는 편지를 써 보는 거예요.</p></div>
+    <div class="step"><div class="num">3</div><p>로그인 없이 바로 시작 가능하니 부담없이 즐겨보세요.</p></div>
     <button class="btn-primary" onclick="navigate('post/index.html')">Post로 이동하기</button>
   </div>
 </div>
@@ -86,8 +93,8 @@
 <nav class="bottom-nav">
   <a class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
   <a onclick="navigate('post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
-  <a onclick="navigate('arcade/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Arcade</a>
-  <a onclick="navigate('fortune/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span>Fortune</a>
+  <a onclick="navigate('log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>Play</a>
   <a onclick="navigate('academy/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg></span>Academy</a>
 </nav>
 
@@ -96,29 +103,16 @@
     document.body.classList.add('leaving');
     setTimeout(()=>{ window.location.href = url; }, 280);
   }
-
-  // Fix: the browser can restore this exact page from its back/forward
-  // cache (bfcache) mid-fade — still carrying the .leaving class from
-  // when we navigated away, which left the page stuck at opacity:0. If
-  // that happens, drop the class so the normal pageIn animation plays.
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) document.body.classList.remove('leaving');
   });
 
-  // 3D floater hero interaction
-  const stage = document.querySelector('.stage');
-  const floater = document.getElementById('floater');
-  stage.addEventListener('mousemove', (e)=>{
-    const r = stage.getBoundingClientRect();
-    const x = (e.clientX - r.left)/r.width - 0.5;
-    const y = (e.clientY - r.top)/r.height - 0.5;
-    floater.style.transform = `rotateY(${x*14}deg) rotateX(${-y*14}deg)`;
-  });
-  stage.addEventListener('mouseleave', ()=>{ floater.style.transform = 'rotateY(0) rotateX(0)'; });
-
-  // 배경 블롭 패럴랙스 + Arcade 박스 좌우 이동
+  // ---- 봉투 히어로: 스크롤에 따라 플랩이 열리고 편지가 살짝 나오는 인터랙션 ----
+  const envHero = document.getElementById('envelopeHero');
+  const envFlap = document.getElementById('envFlap');
+  const envPeek = document.getElementById('envPeek');
+  const envSeal = document.getElementById('envSeal');
   const blobs = document.querySelectorAll('.blob');
-  const arcadeBox = document.querySelector('.floater .c2');
   let ticking = false;
   window.addEventListener('scroll', ()=>{
     if(!ticking){
@@ -127,12 +121,12 @@
         blobs[0].style.transform = `translateY(${y*0.12}px)`;
         blobs[1] && (blobs[1].style.transform = `translateY(${-y*0.08}px)`);
         blobs[2] && (blobs[2].style.transform = `translateY(${y*0.06}px)`);
-        const sc = 1 + Math.min(y, 150) * 0.000433;
-        const t = (sc - 1) / 0.065;
-        if(arcadeBox){
-          arcadeBox.style.setProperty('--sc', sc.toFixed(3));
-          arcadeBox.style.boxShadow = `0 ${10+8*t}px ${18+14*t}px rgba(15,17,21,${(0.18+0.24*t).toFixed(2)})`;
-        }
+
+        const t = Math.min(y, 220) / 220; // 0 -> 1
+        if (envFlap) { envFlap.style.transform = `translateY(${-t*44}px)`; envFlap.style.opacity = 1 - t*0.75; }
+        if (envPeek) { envPeek.style.transform = `translate(-50%, ${-t*32}px)`; }
+        if (envSeal) { envSeal.style.opacity = 1 - t; }
+        if (envHero) { envHero.style.transform = `scale(${1 + t*0.07})`; }
         ticking = false;
       });
       ticking = true;
@@ -142,18 +136,15 @@
   // ---- 폴더 그리드: categories.json + 각 itemsSource 를 함께 불러와 동적 렌더링 ----
   const ICONS = {
     post: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>',
-    arcade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg>',
-    fortune: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
-    academy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg>',
-    community: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="1.5"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="16.5" x2="12" y2="20"/></svg>'
+    log: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg>',
+    academy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.9-1.3-4.2-1.8-6.8-1.6v12.6c2.6-.2 4.9.3 6.8 1.6 1.9-1.3 4.2-1.8 6.8-1.6V4.9c-2.6-.2-4.9.3-6.8 1.6z"/><line x1="12" y1="6.5" x2="12" y2="19.1"/></svg>'
   };
   const FOLDER_STYLE = {
-    post:      { icon: ICONS.post,      cls: 'f-post',      featured: true,  unit: null },
-    arcade:    { icon: ICONS.arcade,    cls: 'f-arcade',    featured: false, unit: '개 운영중' },
-    fortune:   { icon: ICONS.fortune,   cls: 'f-fortune',   featured: false, unit: '개 운영중' },
-    academy:   { icon: ICONS.academy,   cls: 'f-academy',   featured: false, unit: '개 테마 완성' },
-    community: { icon: ICONS.community, cls: 'f-community', featured: false, unit: null },
-    store:     { icon: ICONS.community, cls: 'f-store',     featured: false, unit: null }
+    post:    { icon: ICONS.post,    cls: 'f-post',    unit: null },
+    log:     { icon: ICONS.log,     cls: 'f-log',      unit: null },
+    play:    { icon: ICONS.play,    cls: 'f-play',     unit: '개 운영중' },
+    academy: { icon: ICONS.academy, cls: 'f-academy',  unit: '개 테마 완성' }
   };
 
   async function loadFolders() {
@@ -164,14 +155,23 @@
       label.textContent = `${categories.length}개 영역`;
 
       const cards = await Promise.all(categories.map(async cat => {
-        const style = FOLDER_STYLE[cat.id] || { icon: ICONS.community, cls: '', featured: false, unit: '개 운영중' };
+        const style = FOLDER_STYLE[cat.id] || { icon: ICONS.log, cls: '', unit: '개 운영중' };
         let badgeText = '준비중';
         let soonClass = ' soon';
 
         if (cat.status === 'Live') {
           soonClass = '';
           let count = null;
-          if (cat.itemsSource) {
+          if (cat.id === 'play') {
+            // Play merges Arcade(Mini Game) + Fortune content — no single itemsSource file.
+            try {
+              const [arcadeItems, fortuneItems] = await Promise.all([
+                (await fetch('arcade/titles.json', { cache: 'no-store' })).json(),
+                (await fetch('fortune/items.json', { cache: 'no-store' })).json()
+              ]);
+              count = arcadeItems.filter(i => i.status === 'Live').length + fortuneItems.filter(i => i.status === 'Live').length;
+            } catch (e) { count = null; }
+          } else if (cat.itemsSource) {
             try {
               const items = await (await fetch(cat.itemsSource, { cache: 'no-store' })).json();
               count = items.filter(i => i.status === 'Live').length;
@@ -180,9 +180,8 @@
           badgeText = count != null ? `${count}${style.unit || '개 운영중'}` : 'Live';
         }
 
-        const featuredClass = style.featured ? ' featured' : '';
         return `
-          <div class="folder${featuredClass}${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="navigate('${cat.path}')"` : ''}>
+          <div class="folder${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="navigate('${cat.path}')"` : ''}>
             <div class="ficon"><span class="glyph">${style.icon}</span></div>
             <h3>${cat.name}</h3>
             <p>${cat.description}</p>
@@ -199,6 +198,5 @@
   }
   loadFolders();
 </script>
-<script src="feedback-widget.js" defer></script>
 </body>
 </html>

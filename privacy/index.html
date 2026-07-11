@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 | NTS Drive</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="../analytics.js"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" onclick="navigate('../index.html')"><div class="mark"></div>NTS Drive</a>
+      <div class="links">
+        <span onclick="navigate('../post/index.html')">Post</span>
+        <span onclick="navigate('../log/index.html')">Log</span>
+        <span onclick="navigate('../play/index.html')">Play</span>
+        <span onclick="navigate('../academy/index.html')">Academy</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>개인정보처리방침</b></div>
+    <div class="page-head">
+      <h1>개인정보처리방침</h1>
+      <p>내용을 준비 중입니다. 곧 업데이트될 예정이에요.</p>
+    </div>
+    <div class="empty">🚧 준비 중이에요.</div>
+  </main>
+</div>
+
+<script>
+  function navigate(url){
+    document.body.classList.add('leaving');
+    setTimeout(()=>{ window.location.href = url; }, 280);
+  }
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('leaving');
+  });
+</script>
+</body>
+</html>

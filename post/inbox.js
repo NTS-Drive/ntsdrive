@@ -169,13 +169,11 @@ function renderInboxList() {
     const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
     const unlocked = Date.now() >= letter.unlock;
     const url = `index.html?d=${item.d}`;
-    const who = [letter.to && `${letter.to}에게`, letter.from && `${letter.from}가`].filter(Boolean).join(' · ');
     return `
       <div class="inbox-card">
         <div class="inbox-card-icon">${tpl.emoji}</div>
         <a class="inbox-card-body" href="${url}">
-          <div class="inbox-card-title">${escapeHtml(letter.title || tpl.label)}</div>
-          ${who ? `<div class="inbox-card-who">${escapeHtml(who)}</div>` : ''}
+          <div class="inbox-card-title">${tpl.label}</div>
           <div class="inbox-card-status ${unlocked ? 'unlocked' : ''}" data-unlock="${letter.unlock}">
             ${unlocked ? '지금 열람 가능' : countdownText(letter.unlock)}
           </div>

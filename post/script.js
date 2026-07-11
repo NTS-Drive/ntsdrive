@@ -47,7 +47,6 @@ function renderCompose() {
       <div class="kicker">Post</div>
       <h1>지금 나의 마음을,<br>미래의 너에게</h1>
       <div class="sub">시간이 지나야 열리는, 온전한 마음을 담는 편지</div>
-      <a class="inbox-link" onclick="navigate('inbox.html')">📮 내 편지함 보기</a>
     </div>
 
     <div class="tpl-row">${tplRow}</div>
@@ -326,6 +325,7 @@ function renderLocked(letter) {
       <h2>아직 열 수 없는 편지예요</h2>
       <div class="countdown" id="countdown">--:--:--</div>
       <div class="unlock-date">${formatUnlockDate(letter.unlock)}에 열려요</div>
+      <div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html')">내 편지함에 등록해두세요 →</a></div>
     </div>
   `;
   updateCountdown(letter);
