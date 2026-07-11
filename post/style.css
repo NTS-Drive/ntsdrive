@@ -12,6 +12,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 14px; min-height: 100vh; }
 body { animation: pageIn .4s ease both; }
+body.anim-settled { animation: none; }
 @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 body.leaving { animation: pageOut .28s ease both; }
 @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }

@@ -76,6 +76,11 @@
     if (e.persisted) document.body.classList.remove('leaving');
   });
 
+  // Fix: body's pageIn animation animates `transform`, and with fill-mode:both that computed transform lingers after the animation completes — which makes body a containing block for any position:fixed descendant (bottom nav, floating buttons), anchoring them to the full page height instead of the viewport. Strip the animation once it's done so body goes back to a normal (untransformed) containing block.
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+
   function sendInquiry(){
     const title = document.getElementById('cTitle').value.trim();
     const body = document.getElementById('cBody').value.trim();

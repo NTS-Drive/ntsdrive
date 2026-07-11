@@ -1513,6 +1513,90 @@ Post, sitewide IA, Academy, the onboarding modal, and the home page.
   →"), closing the loop between "I got a letter link" and "I should
   save it somewhere I'll remember."
 
+## Home hero: envelope → live analog clock widget (2026-07-11, v3.18)
+
+Replaced the burgundy envelope hero (and its "Post" tag / "▶ 마음을 담은
+편지 쓰러가기" CTA text, both removed per direct request) with a
+**genuinely functioning analog clock** — modeled after a Dribbble
+reference (gradient glass card, thick hour/minute hands + thin second
+hand, bold digital time in the corner, day-of-week label) — meant to
+foreground the site's "quick snack content" positioning rather than
+point at any one specific section.
+
+- All three hands compute their rotation from the real current time
+  (`((h%12)+m/60)*30` for the hour hand, `(m+s/60)*6` for the minute
+  hand, `s*6` for the second hand) and update every second via
+  `setInterval`; the digital hour/minute readout and the day-of-week
+  label update in the same tick. Verified the angle math with a Node
+  simulation across several reference times (00:00, 12:00, 03:30,
+  08:54, 23:59:59) — all matched expected clock positions exactly.
+- Visual construction is pure CSS: a radial-gradient purple/blue blob
+  fading into white for the card background, a `feTurbulence` SVG
+  data-URI overlay (blended with `mix-blend-mode:overlay`) for the
+  grain texture visible in the reference, a faint 1px ring for the
+  clock face, 4 tick marks + 2 accent dots, and a soft blurred glow
+  behind the white center pivot.
+- No longer a CTA — clicking does nothing on its own (previously the
+  envelope always linked to Post). The scroll-linked interaction was
+  simplified to match: a gentle scale-up as the user scrolls past the
+  hero, replacing the old flap-opening/letter-peek animation.
+- Mobile gets a proportionally scaled-down version (250×250 vs 300×300)
+  with matching hand lengths and tick positions.
+
+## Real bug: position:fixed elements anchored to full page instead of viewport (2026-07-11, v3.19)
+
+Found while investigating why Post's "내 편지함" floating button didn't
+reliably track the viewport while scrolling. Root cause, and it's
+site-wide: `body`'s `pageIn` entrance animation animates `transform`,
+and with `animation-fill-mode: both`, that computed transform value
+(`translateY(0)` — a real transform, not `none`) **persists indefinitely
+after the animation completes**. Per the CSS spec, any element with a
+non-`none` transform becomes a containing block for its
+`position:fixed` descendants — so `body` was silently overriding every
+fixed-position element on the page (bottom nav, Post's floating inbox
+button) to anchor against the *entire document's* height instead of the
+actual browser viewport. Fixed by listening for the `animationend`
+event on `pageIn` and adding a class that sets `animation:none`,
+returning `body` to a normal (untransformed) containing block once the
+entrance animation has actually finished — applied to both the shared
+`styles.css`/site-wide pages and Post's own `post/style.css`, plus the
+matching `animationend` listener added next to the existing
+`pageshow`/bfcache fix on 8 pages (`index.html`, `academy/index.html`,
+`play/index.html`, `log/index.html`, `privacy/index.html`,
+`terms/index.html`, `contact/index.html`, `post/shared.js` — the last
+one covers both `post/index.html` and `post/inbox.html` since they both
+load it). Care was taken with CSS source order so `body.leaving`'s
+exit animation still overrides the new "settled" class when the two are
+both present (equal specificity, later rule wins).
+
+## Play page: filter-click layout shift (2026-07-11, v3.19)
+
+Clicking the Fortune filter (2 items) after 전체 (7 items) shortened the
+page enough to remove the vertical scrollbar, which shifted all centered
+content a few pixels right — the classic scrollbar-width layout jump.
+Fixed by reserving scrollbar space unconditionally
+(`overflow-y:scroll` + `scrollbar-gutter:stable` on `html`), so the
+available content width never changes based on whether a given filter's
+result list needs to scroll.
+
+## Play icon → joystick everywhere (2026-07-11, v3.19)
+
+The "Play" folder/nav icon (a play-button-in-a-circle, chosen when Arcade
+was renamed) is now the original joystick icon Arcade used — updated in
+the home folder grid and every page's bottom nav (6 files, 7 total
+occurrences).
+
+## Privacy policy & terms of service published (2026-07-11, v3.19)
+
+`privacy/index.html` and `terms/index.html` replaced their "준비 중"
+stub content with the finalized policy text — Log-related clauses
+removed (feature not built yet), notes added for Post's client-side
+letter encoding, the "내 편지함" `localStorage` usage, and the
+mailto-based contact form, 담당자 성명 확정(한동민), 시행일자 2026년 8월
+1일. Added shared `.legal-content`/`.legal-table` styling for readable
+numbered-clause legal text. The top-of-document notice recommending
+legal review before real publication was intentionally left in place.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
