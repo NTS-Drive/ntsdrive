@@ -95,7 +95,7 @@
       id: 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
       date: entry.date || todayStr(),
       mood: entry.mood,
-      causes: Array.isArray(entry.causes) ? entry.causes.slice(0, 3) : [],
+      causes: Array.isArray(entry.causes) ? entry.causes.slice(0, 4) : [],
       text, createdAt: Date.now(), v: 1
     };
     const entries = readAll();

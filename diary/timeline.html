@@ -31,14 +31,16 @@
 
   <div id="weeklyCard"></div>
 
+  <div class="diary-subhead">캘린더</div>
   <div id="calendarView"></div>
 
+  <div class="diary-subhead">타임라인</div>
   <div id="timelineView"></div>
 
-  <div class="reset-note">🗓 감정 기록은 매년 1월 1일 00:00에 새로 초기화돼요</div>
+  <div class="reset-note">🗓 감정 기록은 매년 1월 1일 00:00에 새로 초기화돼요<br>이 목록은 지금 사용 중인 브라우저에만 저장돼요.<br>놓치지 않고 보려면 <a onclick="handleCreateShortcut()" style="color:var(--accent); text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
 </div>
 
-<a class="diary-fab" onclick="navigate('index.html')">✍️ 오늘 감정 기록하기</a>
+<a class="diary-fab" onclick="navigate('index.html')">✍️ 지금 감정 기록하기</a>
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
@@ -132,11 +134,15 @@
     const list = entries.length
       ? `<div class="timeline-list">${entries.map(e => {
           const m = NTSDiary.getMood(e.mood);
-          const dow = WEEKDAY_KR[new Date(e.date + 'T00:00:00').getDay()];
+          const d = new Date(e.date + 'T00:00:00');
+          const dow = WEEKDAY_KR[d.getDay()];
+          const created = new Date(e.createdAt);
+          const hh = String(created.getHours()).padStart(2,'0');
+          const mm = String(created.getMinutes()).padStart(2,'0');
           return `<div class="timeline-item">
             <span class="ticon" style="background:${m.color}">${m.emoji}</span>
             <div class="tbody">
-              <div class="tdate">${e.date} (${dow}) · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
+              <div class="tdate">${e.date} (${dow}) ${hh}:${mm} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
               ${e.text ? `<div class="ttext">${e.text}</div>` : ''}
             </div>
           </div>`;
@@ -170,6 +176,24 @@
   renderWeeklyCard();
   renderCalendar();
   renderTimeline();
+
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; });
+  function handleCreateShortcut() {
+    trackEvent('shortcut_button_click', { from: 'diary_timeline' });
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.finally(() => { deferredInstallPrompt = null; });
+      return;
+    }
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    if (isIOS) {
+      alert('이 기기에서는 자동으로 만들 수 없어요.\n\nSafari 하단의 공유 버튼(⬆️)을 누르고,\n"홈 화면에 추가"를 선택해주세요.');
+    } else {
+      alert('브라우저 메뉴에서 "홈 화면에 추가" 또는 "앱 설치"를 선택해주세요.\n(브라우저 우측 상단 메뉴 또는 주소창 아이콘에서 찾으실 수 있어요.)');
+    }
+  }
 </script>
 </body>
 </html>

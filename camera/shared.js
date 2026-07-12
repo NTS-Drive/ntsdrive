@@ -241,7 +241,7 @@ function applyFilmFilter(sourceCanvas) {
 
   // orange date/time stamp, bottom-right — like an old date-back film camera
   const now = new Date();
-  const stampText = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+  const stampText = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
   const fontSize = Math.round(w * 0.032);
   ctx.font = `700 ${fontSize}px 'Courier New', monospace`;
   ctx.fillStyle = '#FF8A1E';

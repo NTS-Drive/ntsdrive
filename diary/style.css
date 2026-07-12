@@ -30,6 +30,9 @@ body.leaving { animation: pageOut .28s ease both; }
 /* ---- STEP 공통 ---- */
 .diary-step-label{font-size:12px; font-weight:600; color:var(--ink-muted); letter-spacing:.04em; margin-bottom:8px;}
 .diary-title{font-family:var(--font-serif); font-size:22px; font-weight:700; margin-bottom:20px;}
+.diary-page-title{margin-bottom:28px;}
+.diary-subhead{font-size:13px; font-weight:700; color:var(--ink); margin:0 0 12px; letter-spacing:.02em;}
+.cause-limit{font-weight:400; color:var(--ink-muted); font-size:11.5px;}
 .diary-section{margin-bottom:36px; padding-bottom:32px; border-bottom:1px solid var(--line);}
 .diary-section:last-of-type{border-bottom:none;}
 

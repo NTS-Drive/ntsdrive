@@ -27,24 +27,24 @@
 
 <div class="stage">
 
+  <div class="diary-title diary-page-title">마음을 기록해볼까요</div>
+
   <!-- STEP 1: 감정 선택 -->
   <div class="diary-section">
     <div class="diary-step-label">STEP 1 · 지금 기분이 어떤가요?</div>
-    <div class="diary-title">마음을 기록해볼까요</div>
     <div class="mood-grid" id="moodGrid"></div>
   </div>
 
   <!-- STEP 2: 원인 선택 -->
   <div class="diary-section">
-    <div class="diary-step-label">STEP 2 · 왜 그런 기분이 들었나요? (선택)</div>
+    <div class="diary-step-label">STEP 2 · 왜 그런 기분이 들었나요? (선택, 그룹별 최대 2개)</div>
     <div id="causeGroups"></div>
   </div>
 
   <!-- STEP 3: 짧은 메모 -->
   <div class="diary-section">
-    <div class="diary-step-label">STEP 3 · 한 줄로 남겨볼까요 (선택, 최대 20자)</div>
-    <div class="diary-title">한 줄로 표현하면</div>
-    <textarea class="diary-text-input" id="textInput" rows="3" maxlength="20" placeholder="예: 오늘은 그냥 무난했다"></textarea>
+    <div class="diary-step-label">STEP 3 · 한 줄로 표현하면 (선택, 최대 20자)</div>
+    <textarea class="diary-text-input" id="textInput" rows="3" maxlength="20" placeholder="예: 지금 먹고 있는 페퍼로니 피자, 너무 너무 맛있다."></textarea>
     <div class="char-count"><span id="charCount">0</span>/20</div>
   </div>
 
@@ -54,7 +54,7 @@
 
 <a class="diary-fab" onclick="navigate('timeline.html')">📔 내 다이어리</a>
 
-<div class="toast" id="toast">오늘의 감정이 저장됐어요 🤍</div>
+<div class="toast" id="toast">지금의 감정이 저장됐어요 🤍</div>
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
@@ -97,23 +97,31 @@
   }
 
   const causeGroups = document.getElementById('causeGroups');
+  const selectedCausesByGroup = {};
+  Object.keys(NTSDiary.CAUSES).forEach(g => { selectedCausesByGroup[g] = []; });
+
   Object.entries(NTSDiary.CAUSES).forEach(([groupName, tags]) => {
     const group = document.createElement('div');
     group.className = 'cause-group';
-    group.innerHTML = `<h4>${groupName}</h4><div class="cause-tags">${tags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
+    group.dataset.group = groupName;
+    group.innerHTML = `<h4>${groupName} <span class="cause-limit">(최대 2개)</span></h4><div class="cause-tags">${tags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
     causeGroups.appendChild(group);
   });
   causeGroups.addEventListener('click', (e) => {
     const tag = e.target.closest('.cause-tag');
     if (!tag) return;
+    const groupEl = tag.closest('.cause-group');
+    const groupName = groupEl.dataset.group;
     const val = tag.dataset.tag;
-    if (selectedCauses.includes(val)) {
-      selectedCauses = selectedCauses.filter(c => c !== val);
+    const list = selectedCausesByGroup[groupName];
+    if (list.includes(val)) {
+      selectedCausesByGroup[groupName] = list.filter(c => c !== val);
       tag.classList.remove('selected');
-    } else if (selectedCauses.length < 3) {
-      selectedCauses.push(val);
+    } else if (list.length < 2) {
+      list.push(val);
       tag.classList.add('selected');
     }
+    selectedCauses = Object.values(selectedCausesByGroup).flat();
   });
 
   const textInput = document.getElementById('textInput');
