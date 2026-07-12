@@ -6,55 +6,55 @@
 <title>Diary | NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="../analytics.js"></script>
 <script src="shared.js"></script>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-in">
-    <a class="brand" onclick="navigate('../index.html')"><img class="mark" src="../favicon.svg" alt="NTS Drive" width="26" height="26">NTS Drive</a>
-    <div class="links">
-      <span onclick="navigate('../post/index.html')">Post</span>
-      <span onclick="navigate('../log/index.html')">Log</span>
-      <span class="active-link">Diary</span>
-      <span onclick="navigate('../snap/index.html')">Snap</span>
-      <span onclick="navigate('../film/index.html')">Film</span>
-    </div>
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('../log/index.html')">Log</span>
+    <span class="active">Diary</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
   </div>
-</nav>
+</div>
 
-<div class="diary-wrap">
+<div class="stage">
 
   <!-- STEP 1: 감정 선택 -->
-  <div id="step1">
-    <div class="diary-step-label">STEP 1 · 오늘 기분이 어떤가요?</div>
-    <div class="diary-title">지금 마음을 기록해볼까요</div>
+  <div class="diary-section">
+    <div class="diary-step-label">STEP 1 · 지금 기분이 어떤가요?</div>
+    <div class="diary-title">마음을 기록해볼까요</div>
     <div class="mood-grid" id="moodGrid"></div>
   </div>
 
   <!-- STEP 2: 원인 선택 -->
-  <div id="step2" style="display:none;">
+  <div class="diary-section">
     <div class="diary-step-label">STEP 2 · 왜 그런 기분이 들었나요? (선택)</div>
-    <div class="diary-title" id="step2Title"></div>
     <div id="causeGroups"></div>
   </div>
 
   <!-- STEP 3: 짧은 메모 -->
-  <div id="step3" style="display:none;">
+  <div class="diary-section">
     <div class="diary-step-label">STEP 3 · 한 줄로 남겨볼까요 (선택, 최대 20자)</div>
-    <div class="diary-title">오늘을 한 줄로 표현하면</div>
+    <div class="diary-title">한 줄로 표현하면</div>
     <textarea class="diary-text-input" id="textInput" rows="3" maxlength="20" placeholder="예: 오늘은 그냥 무난했다"></textarea>
     <div class="char-count"><span id="charCount">0</span>/20</div>
-    <button class="diary-save-btn" id="saveBtn">기록 저장하기</button>
   </div>
+
+  <button class="diary-save-btn" id="saveBtn" disabled>기록 저장하기</button>
 
 </div>
 
-<div class="diary-toast" id="toast">오늘의 감정이 저장됐어요 🤍</div>
+<a class="diary-fab" onclick="navigate('timeline.html')">📔 내 다이어리</a>
+
+<div class="toast" id="toast">오늘의 감정이 저장됐어요 🤍</div>
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
@@ -62,23 +62,28 @@
   <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
   <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
-  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/></svg></span>Film</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
 <script>
   function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 280); }
   function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 
+  // body의 pageIn 애니메이션이 끝난 뒤 transform 잔재를 제거해
+  // position:fixed 하단 GNB가 뷰포트가 아닌 body 전체 높이에 붙는 문제를 방지
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+
   let selectedMood = null;
   let selectedCauses = [];
 
-  // ---- STEP 1: 감정 그리드 렌더 ----
   const moodGrid = document.getElementById('moodGrid');
   NTSDiary.MOODS.forEach(m => {
     const cell = document.createElement('div');
     cell.className = 'mood-cell';
     cell.style.setProperty('--mood-color', m.color);
-    cell.innerHTML = m.icon + `<span>${m.label}</span>`;
+    cell.innerHTML = `<span class="memoji">${m.emoji}</span><span class="mlabel">${m.label}</span>`;
     cell.onclick = () => selectMood(m, cell);
     moodGrid.appendChild(cell);
   });
@@ -88,11 +93,9 @@
     trackEvent('diary_mood_selected', { mood: mood.id });
     [...moodGrid.children].forEach(c => c.classList.remove('selected'));
     cellEl.classList.add('selected');
-    document.getElementById('step2Title').textContent = `${mood.label}, 어떤 이유였을까요?`;
-    setTimeout(() => goToStep(2), 220);
+    updateSaveState();
   }
 
-  // ---- STEP 2: 원인 태그 렌더 ----
   const causeGroups = document.getElementById('causeGroups');
   Object.entries(NTSDiary.CAUSES).forEach(([groupName, tags]) => {
     const group = document.createElement('div');
@@ -113,33 +116,20 @@
     }
   });
 
-  // step2 -> step3 (다음 버튼 대신, 살짝 아래 스크롤 후 넘어가는 넥스트 버튼 추가)
-  const nextBtn = document.createElement('button');
-  nextBtn.className = 'diary-save-btn';
-  nextBtn.textContent = '다음';
-  nextBtn.onclick = () => goToStep(3);
-  document.getElementById('step2').appendChild(nextBtn);
-
-  // ---- STEP 3: 텍스트 입력 ----
   const textInput = document.getElementById('textInput');
   const charCount = document.getElementById('charCount');
   textInput.addEventListener('input', () => { charCount.textContent = textInput.value.length; });
 
-  document.getElementById('saveBtn').onclick = () => {
-    const record = NTSDiary.addEntry({
-      mood: selectedMood,
-      causes: selectedCauses,
-      text: textInput.value.trim()
-    });
+  const saveBtn = document.getElementById('saveBtn');
+  function updateSaveState() { saveBtn.disabled = !selectedMood; }
+
+  saveBtn.onclick = () => {
+    if (!selectedMood) return;
+    const record = NTSDiary.addEntry({ mood: selectedMood, causes: selectedCauses, text: textInput.value.trim() });
     trackEvent('diary_entry_created', { mood: record.mood, has_text: !!record.text, cause_count: record.causes.length });
     showToast();
     setTimeout(() => navigate('timeline.html'), 900);
   };
-
-  function goToStep(n) {
-    [1, 2, 3].forEach(i => { document.getElementById('step' + i).style.display = (i === n) ? 'block' : 'none'; });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
 
   function showToast() {
     const toast = document.getElementById('toast');

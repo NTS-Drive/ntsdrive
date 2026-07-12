@@ -3,44 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>모아보기 | Diary | NTS Drive</title>
+<title>나의 감정 기록들 | Diary | NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="../analytics.js"></script>
 <script src="shared.js"></script>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-in">
-    <a class="brand" onclick="navigate('../index.html')"><img class="mark" src="../favicon.svg" alt="NTS Drive" width="26" height="26">NTS Drive</a>
-    <div class="links">
-      <span onclick="navigate('../post/index.html')">Post</span>
-      <span onclick="navigate('../log/index.html')">Log</span>
-      <span class="active-link">Diary</span>
-      <span onclick="navigate('../snap/index.html')">Snap</span>
-      <span onclick="navigate('../film/index.html')">Film</span>
-    </div>
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('../log/index.html')">Log</span>
+    <span class="active">Diary</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
   </div>
-</nav>
+</div>
 
-<div class="diary-wrap">
-  <div class="diary-step-label">DIARY · 모아보기</div>
-  <div class="diary-title">그동안의 기록들</div>
+<div class="stage">
+  <div class="diary-step-label">DIARY</div>
+  <div class="diary-title">나의 감정 기록들</div>
 
   <div id="weeklyCard"></div>
 
-  <div class="view-toggle">
-    <button id="btnCalendar" class="active">캘린더</button>
-    <button id="btnTimeline">타임라인</button>
-  </div>
-
   <div id="calendarView"></div>
-  <div id="timelineView" style="display:none;"></div>
+
+  <div id="timelineView"></div>
+
+  <div class="reset-note">🗓 감정 기록은 매년 1월 1일 00:00에 새로 초기화돼요</div>
 </div>
+
+<a class="diary-fab" onclick="navigate('index.html')">✍️ 오늘 감정 기록하기</a>
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
@@ -48,7 +46,7 @@
   <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
   <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
-  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/></svg></span>Film</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
 <script>
@@ -56,46 +54,32 @@
   function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
   trackEvent('diary_timeline_opened');
 
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+
+  const WEEKDAY_KR = ['일', '월', '화', '수', '목', '금', '토'];
+
   /* ---------------- 주간 리포트 카드 ---------------- */
   function renderWeeklyCard() {
     const r = NTSDiary.getWeeklyReport();
     const bar = r.ratios.map(x => `<span style="width:${x.percent}%; background:${x.color}"></span>`).join('');
-    const legend = r.ratios.map(x => `<span class="item"><span class="dot" style="background:${x.color}"></span>${x.label} ${x.percent}%</span>`).join('');
+    const legend = r.ratios.map(x => `<span class="item"><span class="dot" style="background:${x.color}"></span>${x.emoji} ${x.label} ${x.percent}%</span>`).join('');
     const guide = r.actionGuide
-      ? `<div class="weekly-guide"><b>이럴 땐 이런 건 어떨까요?</b><br>${r.actionGuide.map(g => '· ' + g).join('<br>')}</div>`
+      ? `<div class="weekly-guide">💡 <b>이럴 땐 이런 건 어떨까요?</b><br>${r.actionGuide.map(g => '· ' + g).join('<br>')}</div>`
       : '';
 
     document.getElementById('weeklyCard').innerHTML = `
       <div class="weekly-card">
         <div class="range">${r.weekStart} ~ ${r.weekEnd} · 이번 주 기록 ${r.total}개</div>
         ${r.total ? `<div class="weekly-bar">${bar}</div><div class="weekly-legend">${legend}</div>` : ''}
-        <div class="weekly-encourage">${r.encourage}</div>
+        <div class="weekly-encourage">💌 ${r.encourage}</div>
         ${guide}
       </div>`;
   }
 
-  /* ---------------- 타임라인(리스트) ---------------- */
-  function renderTimeline() {
-    const entries = NTSDiary.getEntries();
-    const el = document.getElementById('timelineView');
-    if (!entries.length) {
-      el.innerHTML = `<div class="timeline-empty">아직 기록이 없어요.<br>오늘의 감정을 남겨보세요.</div>`;
-      return;
-    }
-    el.innerHTML = `<div class="timeline-list">${entries.map(e => {
-      const m = NTSDiary.getMood(e.mood);
-      return `<div class="timeline-item">
-        <span class="ticon" style="background:${m.color}">${m.icon}</span>
-        <div class="tbody">
-          <div class="tdate">${e.date} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
-          ${e.text ? `<div class="ttext">${e.text}</div>` : ''}
-        </div>
-      </div>`;
-    }).join('')}</div>`;
-  }
-
-  /* ---------------- 캘린더 ---------------- */
-  let calYear, calMonth; // 0-indexed month
+  /* ---------------- 캘린더 (월요일 시작) ---------------- */
+  let calYear, calMonth;
   function renderCalendar() {
     const el = document.getElementById('calendarView');
     const entries = NTSDiary.getEntries();
@@ -103,7 +87,7 @@
     entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
 
     const first = new Date(calYear, calMonth, 1);
-    const startDow = first.getDay(); // 0=일
+    const startDow = (first.getDay() + 6) % 7; // 0=월 ... 6=일
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
     const todayStr = NTSDiary.todayStr();
 
@@ -126,7 +110,7 @@
         <button id="calNext">›</button>
       </div>
       <div class="cal-grid">
-        ${['일','월','화','수','목','금','토'].map(d => `<div class="cal-dow">${d}</div>`).join('')}
+        ${['월','화','수','목','금','토','일'].map(d => `<div class="cal-dow">${d}</div>`).join('')}
         ${cells}
       </div>`;
 
@@ -134,27 +118,58 @@
     document.getElementById('calNext').onclick = () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); };
   }
 
-  /* ---------------- 초기화 & 토글 ---------------- */
+  /* ---------------- 타임라인: 주 단위 페이징 ---------------- */
+  let tlWeekMonday; // YYYY-MM-DD (월요일)
+  function renderTimeline() {
+    const el = document.getElementById('timelineView');
+    const monday = tlWeekMonday;
+    const mondayDate = new Date(monday + 'T00:00:00');
+    const sundayDate = new Date(mondayDate); sundayDate.setDate(sundayDate.getDate() + 6);
+    const sunday = NTSDiary.todayStr(sundayDate);
+
+    const entries = NTSDiary.getEntries().filter(e => e.date >= monday && e.date <= sunday);
+
+    const list = entries.length
+      ? `<div class="timeline-list">${entries.map(e => {
+          const m = NTSDiary.getMood(e.mood);
+          const dow = WEEKDAY_KR[new Date(e.date + 'T00:00:00').getDay()];
+          return `<div class="timeline-item">
+            <span class="ticon" style="background:${m.color}">${m.emoji}</span>
+            <div class="tbody">
+              <div class="tdate">${e.date} (${dow}) · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
+              ${e.text ? `<div class="ttext">${e.text}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}</div>`
+      : `<div class="timeline-empty">이 주에는 기록이 없어요.</div>`;
+
+    el.innerHTML = `
+      <div class="tl-head">
+        <button id="tlPrev">‹</button>
+        <h3>${monday} ~ ${sunday}</h3>
+        <button id="tlNext">›</button>
+      </div>
+      ${list}`;
+
+    document.getElementById('tlPrev').onclick = () => { shiftWeek(-7); };
+    document.getElementById('tlNext').onclick = () => { shiftWeek(7); };
+  }
+  function shiftWeek(days) {
+    const d = new Date(tlWeekMonday + 'T00:00:00');
+    d.setDate(d.getDate() + days);
+    tlWeekMonday = NTSDiary.todayStr(d);
+    renderTimeline();
+  }
+
+  /* ---------------- 초기화 ---------------- */
   const now = new Date();
   calYear = now.getFullYear();
   calMonth = now.getMonth();
+  tlWeekMonday = NTSDiary.getMondayOf(NTSDiary.todayStr());
 
   renderWeeklyCard();
   renderCalendar();
   renderTimeline();
-
-  document.getElementById('btnCalendar').onclick = () => {
-    document.getElementById('btnCalendar').classList.add('active');
-    document.getElementById('btnTimeline').classList.remove('active');
-    document.getElementById('calendarView').style.display = 'block';
-    document.getElementById('timelineView').style.display = 'none';
-  };
-  document.getElementById('btnTimeline').onclick = () => {
-    document.getElementById('btnTimeline').classList.add('active');
-    document.getElementById('btnCalendar').classList.remove('active');
-    document.getElementById('timelineView').style.display = 'block';
-    document.getElementById('calendarView').style.display = 'none';
-  };
 </script>
 </body>
 </html>

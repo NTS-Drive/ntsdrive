@@ -94,8 +94,8 @@ body.leaving{animation:pageOut .3s ease both;}
 .folder.soon .badge{background:#EDEDF0; color:#9A9DA8;}
 
 .ficon{width:72px; height:56px; position:relative; margin-bottom:18px;}
-.ficon:before{content:''; position:absolute; left:0; top:-9px; width:42%; height:11px; border-radius:6px 6px 0 0; background:var(--tabc);}
-.ficon:after{content:''; position:absolute; inset:0; border-radius:3px 12px 12px 12px; background:linear-gradient(160deg, var(--bodyl), var(--bodyc));}
+.ficon:before{content:''; position:absolute; left:0; top:-9px; width:42%; height:11px; border-radius:6px 6px 0 0; background:linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%), var(--tabc); border:1px solid rgba(255,255,255,0.35); border-bottom:none;}
+.ficon:after{content:''; position:absolute; inset:0; border-radius:3px 12px 12px 12px; background:linear-gradient(135deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0) 55%), linear-gradient(160deg, var(--bodyl), var(--bodyc)); box-shadow:0 10px 22px rgba(15,17,21,0.14), inset 0 1px 0 rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.4);}
 .ficon .glyph{position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; padding-top:6px; color:#fff;}
 .ficon .glyph svg{width:26px; height:26px;}
 
@@ -105,11 +105,16 @@ body.leaving{animation:pageOut .3s ease both;}
 .f-academy{--tabc:#0E9E88; --bodyl:#5FE0C7; --bodyc:#14B8A6;}
 .f-snap{--tabc:#C9531F; --bodyl:#FFB088; --bodyc:#FF8F5B;}
 .f-film{--tabc:#5A6B4C; --bodyl:#A9C09B; --bodyc:#7C9268;}
-.f-diary{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
+.f-diary{--tabc:#0A63D6; --bodyl:#3E8CFF; --bodyc:#0071E3;}
 .f-community{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
 .f-store{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
 .f-log{--tabc:#9A5F1E; --bodyl:#E0A857; --bodyc:#C17F2A;}
 .f-play{--tabc:#0A63D6; --bodyl:#3E8CFF; --bodyc:#0071E3;}
+.f-firewall{--tabc:#C94A34; --bodyl:#FF8F72; --bodyc:#FF6F59;}
+.f-numstreak{--tabc:#6B3FBF; --bodyl:#AB8CF0; --bodyc:#8B5CF6;}
+.f-cardmem{--tabc:#0E8F79; --bodyl:#4FD6BE; --bodyc:#14B8A6;}
+.f-tarot{--tabc:#C2830E; --bodyl:#FFC968; --bodyc:#F5A524;}
+.mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 .folder.soon .ficon .glyph{opacity:0.7;}
 
 .folder h3{font-family:'Space Grotesk'; font-size:16px; margin-bottom:6px;}
@@ -118,7 +123,6 @@ body.leaving{animation:pageOut .3s ease both;}
 
 /* ---- BEST 3 (root) ---- */
 .best-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;}
-.play-mini-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
 .best-card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 18px; position:relative; transition:transform .18s, box-shadow .18s; display:flex; align-items:center; gap:14px; cursor:pointer; text-decoration:none; color:inherit; min-width:0;}
 .best-card:hover{transform:translateY(-3px); box-shadow:0 14px 26px rgba(15,17,21,0.08);}
 .rank{font-family:'Space Grotesk'; font-size:20px; font-weight:700; color:var(--line); flex-shrink:0; width:28px;}
@@ -204,7 +208,6 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .folder.soon{grid-column:span 1;}
   .ficon{width:60px; height:46px;}
   .best-grid{grid-template-columns:1fr;}
-  .play-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .clock-widget{width:250px; height:250px; margin:20px auto 50px;}
   .clock-widget::after{width:206px; height:206px;}
   .tick-12{top:18px;} .tick-6{bottom:18px;} .tick-3{right:18px;} .tick-9{left:18px;}
