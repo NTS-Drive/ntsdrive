@@ -239,17 +239,20 @@ function applyFilmFilter(sourceCanvas) {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
-  // thin dark mount frame — a small nod to a film negative/slide mount,
-  // subtler than Snap's thick white Instax border on purpose
-  const frameW = Math.round(w * 0.035);
-  const framed = document.createElement('canvas');
-  framed.width = w + frameW * 2;
-  framed.height = h + frameW * 2;
-  const fctx = framed.getContext('2d');
-  fctx.fillStyle = '#15130F';
-  fctx.fillRect(0, 0, framed.width, framed.height);
-  fctx.drawImage(sourceCanvas, frameW, frameW);
-  return framed;
+  // orange date/time stamp, bottom-right — like an old date-back film camera
+  const now = new Date();
+  const stampText = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+  const fontSize = Math.round(w * 0.032);
+  ctx.font = `700 ${fontSize}px 'Courier New', monospace`;
+  ctx.fillStyle = '#FF8A1E';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  ctx.shadowColor = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = 2;
+  ctx.fillText(stampText, w - w * 0.03, h - h * 0.03);
+  ctx.shadowBlur = 0;
+
+  return sourceCanvas;
 }
 function clamp(v) { return Math.max(0, Math.min(255, v)); }
 
@@ -262,4 +265,37 @@ function trackEvent(name, params) {
   try {
     if (typeof gtag === 'function') gtag('event', name, params || {});
   } catch (e) { /* no-op */ }
+}
+
+/* ===== Share (native file share) with a download fallback for browsers
+   that don't support sharing image files. Never silently does nothing —
+   always either shares, downloads, or explains why via an alert. ===== */
+function dataUrlToFile(dataUrl, filename) {
+  const [meta, b64] = dataUrl.split(',');
+  const mime = /data:(.*?);base64/.exec(meta)[1];
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new File([bytes], filename, { type: mime });
+}
+
+function downloadDataUrl(dataUrl, filename) {
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = dataUrl;
+  link.click();
+}
+
+function sharePhoto(dataUrl, filename, shareTitle) {
+  const file = dataUrlToFile(dataUrl, filename);
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: shareTitle || 'NTS Drive' })
+      .then(() => trackEvent('camera_photo_shared'))
+      .catch(() => { /* user cancelled — not an error */ });
+    return;
+  }
+  // Older/unsupported browser: fall back to a plain download, and say so.
+  alert('이 브라우저는 사진 공유를 지원하지 않아요. 대신 다운로드로 저장해드릴게요.');
+  downloadDataUrl(dataUrl, filename);
+  trackEvent('camera_photo_downloaded_fallback');
 }

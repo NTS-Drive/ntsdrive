@@ -30,6 +30,8 @@ body.leaving{animation:pageOut .3s ease both;}
 .nav .right{display:flex; align-items:center; gap:12px;}
 .first-btn{font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--panel); cursor:pointer; color:var(--ink);}
 .first-btn:hover{border-color:var(--blue); color:var(--blue);}
+.ad-slot{max-width:1180px; margin:0 auto 40px; padding:0 28px;}
+.ad-slot span{display:flex; align-items:center; justify-content:center; height:90px; border:1px dashed var(--line); border-radius:10px; font-size:11px; color:var(--sub); letter-spacing:0.05em;}
 .shortcut-btn{font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:99px; border:1px solid var(--blue); background:var(--blue); color:#fff; cursor:pointer;}
 .shortcut-btn:hover{background:#0A63D6;}
 
@@ -193,6 +195,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 @media (max-width:760px){
   .nav .links{display:none;}
   body{padding-bottom:78px;}
+  .first-btn, .shortcut-btn{font-size:10.5px; padding:6px 10px;}
   .blob1{width:280px; height:280px; top:-80px; right:-60px;}
   .blob2{width:220px; height:220px; left:-60px;}
   .blob3{width:200px; height:200px; right:-50px;}
@@ -206,8 +209,8 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .hour-hand{height:54px;} .minute-hand{height:82px;} .second-hand{height:96px;}
   .pivot-glow{width:80px; height:80px;} .pivot{width:15px; height:15px;}
   .clock-digital{right:20px; top:20px;}
-  .clock-digital .digital-hour{font-size:30px;}
-  .clock-digital .digital-min{font-size:22px;}
+  .clock-digital .digital-hour{font-size:26px;}
+  .clock-digital .digital-min{font-size:26px;}
   .clock-day{bottom:42px; font-size:10px;}
   .folder, .best-card{transition:transform .1s;}
   .folder:active, .best-card:active{transform:scale(0.97); box-shadow:none;}

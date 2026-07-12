@@ -1856,6 +1856,88 @@ group) — on top of Log's existing 3 events, giving a full
 creation-through-share funnel across every major feature for the
 content-prioritization decisions mentioned as the goal.
 
+## Camera/Log polish round 2 + AdSense slots (2026-07-12, v3.23)
+
+### Real bug fixed: Snap caption was rendering off-canvas
+The handwriting-caption code computed the bottom white margin's center as
+`canvas.height - img.height`, but `canvas.height` had just been set FROM
+`img.height` on the line above — always zero, so the caption text landed
+exactly on the bottom pixel edge with half of it clipped off. Fixed by
+reverse-deriving the frame proportions (5% border, 32% bottom margin,
+both relative to the original square capture) from the final framed
+image's own width, verified with a Node check that the computed
+position falls inside the actual margin band.
+
+### Share/download pattern, applied everywhere a saved photo is shown
+New `sharePhoto()` / `dataUrlToFile()` / `downloadDataUrl()` helpers in
+`camera/shared.js`: tries `navigator.share({files:[...]})` first (native
+share sheet — the photo leaves as an actual file, not a link), and if
+`canShare` says the browser can't handle image files, falls back to a
+plain download **and explicitly alerts the user why**, rather than
+silently doing one or the other. Wired into Snap's "저장됐어요" screen
+and the album lightbox (which already only opens for Film once
+`unlockAt` has passed, so gating "developing" photos out of shareability
+came for free from that existing guard — no separate check needed).
+
+### Film: viewfinder shrunk further, frame removed, date stamp added
+- `.viewfinder.peek` went from 33% to 26.4% width (another 20% off the
+  already-small preview) — deliberately hard to tell what you're
+  framing.
+- The hint text now states the real capture size plainly (600×400,
+  matching `CAPTURE_WIDTH=600` at the 3:2 ratio) instead of just saying
+  "it's small so you won't know."
+- The thin dark mount frame around developed Film photos is gone
+  (dead code left behind after an earlier edit was also cleaned up —
+  the function had unreachable statements after its `return`).
+- Every Film photo now gets an orange date/time stamp burned into the
+  bottom-right corner at capture time, mimicking an old date-back film
+  camera.
+
+### Front/back camera toggle icon
+Replaced the 🔄 emoji on both Snap and Film with a line-art circular-
+arrows SVG matching the rest of the site's icon language.
+
+### Log: room-creation flow simplified
+- The room's dashboard link is no longer surfaced to the user at all —
+  **the room auto-registers into "내 로그함" the instant it's created**
+  (pure `localStorage` write, no permission prompt needed, unlike the
+  clipboard auto-copy that was floated and dropped for being unreliable
+  across browsers). Verified with 3 Node scenarios: fresh registration,
+  duplicate-prevention on the same room, and correct handling of a
+  second distinct room.
+- `mylogs.html`'s manual "paste a dashboard link" input is gone — nothing
+  to paste anymore now that registration is automatic.
+- The share screen now shows the friend-link in a plain `<input readonly>`
+  box (matching Post's pattern) above the copy/share buttons, plus a
+  highlighted how-to box explaining "내 로그함 → 내가 만든 방 → 받은
+  링크 붙여넣기" for when a friend's letter comes back.
+- `write.html`: button renamed 편지 링크 만들기 → 편지 봉인하기; the
+  "나도 방 만들어보기" link was already functional (`onclick` was
+  present) but styled to look like a separate bold black button,
+  disconnected from the surrounding paragraph — folded it into the
+  paragraph's own flow with matching font/size and only an underline
+  added, per feedback that it didn't read as part of the same sentence.
+- New `log/og-image.png` (a stack-of-envelopes motif in Log's own amber
+  palette) plus `og:*`/`twitter:*` meta tags on `write.html` and
+  `index.html`, so links shared to KakaoTalk get a proper preview card —
+  Log had none at all before this.
+
+### Site-wide
+- The GNB's (Post,Log)/(Snap,Film)/(Play) visual grouping (wider gaps)
+  was removed per feedback — all 5 items now sit at equal spacing again,
+  across all 12 files that had it.
+- Film's icon replaced everywhere (13 files, including the home folder
+  grid's separate icon definition which turned out to still be an even
+  older filmstrip-with-circles design nobody had caught) with a proper
+  single-frame filmstrip (one rectangle + perforation holes on both
+  edges) rather than the canister shape used previously.
+- Two placeholder `.ad-slot` regions added — one between the home page's
+  folder grid and "이번 주 BEST" sections, one after the 3rd item in
+  Play's content list (only when there are more than 3 items to avoid
+  an ad sitting right at the end of a short list) — dashed-border
+  placeholders sized like a small banner, ready to swap in real AdSense
+  `<ins>` tags once the account is approved.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot
