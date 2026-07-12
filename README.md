@@ -1938,6 +1938,101 @@ arrows SVG matching the rest of the site's icon language.
   placeholders sized like a small banner, ready to swap in real AdSense
   `<ins>` tags once the account is approved.
 
+## Camera/Log polish round 3 (2026-07-12, v3.24)
+
+### Real bug: Snap captions double-compressed into visible artifacts
+`handleSave()` was reloading the ALREADY-JPEG-compressed preview image as
+an `<img>`, drawing the caption on top of that, then re-exporting to
+JPEG a second time — compounding compression artifacts, worst around
+thin handwriting-font strokes, which read as "broken" text. Fixed by
+keeping a reference to the original uncompressed `framedCanvas` from
+`renderPreview` and drawing the caption directly onto a copy of that,
+so the photo only ever goes through JPEG encoding once.
+
+### Real bug: Log reveal cards clipped long messages
+`.reveal-card-face` uses `position:absolute; inset:0` on both flip
+faces (required for the 3D flip effect), which means the card's box
+never grows to fit its content — it was stuck at a fixed
+`min-height:90px` regardless of message length. Fixed by measuring each
+letter's actual rendered height via an offscreen clone (same width,
+font, padding as the real card) right after render, and applying that
+as each card's `min-height` before the flip animation plays.
+
+### Log: room-creation flow
+- **One active room at a time (soft, browser-local limit)**: before
+  navigating to `create.html`, the intro screen now checks "내 로그함"
+  for any room that hasn't hit its dday or goal yet, and blocks with an
+  alert ("지금 진행 중인 Log가 있습니다. 완료되면 새로 만들어주세요.")
+  if one exists. Deleting a room from 내 로그함 immediately frees up
+  slot — deletion is treated as "I'm done tracking this," not as
+  proof the room actually ended. Explicitly a per-browser limit only,
+  since there's no backend to enforce it across devices.
+- Added the same 내 로그함 floating button to the intro screen (it was
+  already on the dashboard/gauge screen).
+- `shareLink()`'s silent fallback-to-copy (when `navigator.share` isn't
+  supported) now explicitly alerts why, instead of just doing something
+  different from what the button label promised with no explanation —
+  same pattern already used for photo sharing.
+- "나도 방 만들어보기" on the letter-share screen moved below the
+  copy/share buttons, matching the reveal screen's layout.
+
+### Log: reveal screen overhaul
+- Buttons are now 저장하기 + 공유하기 (no more "나도 방 만들어보기"
+  here — that stays on the empty-room path, renamed to "다른 주제로
+  방 다시 만들기" for that specific case).
+- **New: a shareable link for the finished room.** Previously "공유"
+  only ever pointed at empty templates (room-creation or letter-writing
+  links) — there was no way to let friends actually see a completed
+  room's contents. `공유하기` now encodes the title + every letter's
+  text/sender into a `?reveal=` link; opening it renders the same
+  flip-card grid read-only, no registration or `localStorage` state
+  needed on the visitor's end. Verified the encode/decode round-trip
+  with Node.
+- 저장하기 already captured title + participant count + total chars +
+  every message into one image (via `html2canvas`, forcing all cards
+  face-up first) — confirmed this still holds after the layout changes.
+
+### Camera (Snap/Film)
+- Front/back toggle button moved to the shutter's right side (was on
+  the left) on both Snap and Film.
+- Snap's "저장됐어요" screen: "내 사진첩 보기" moved to its own row
+  below "한 장 더 찍기"/"공유하기".
+- Album lightbox: share/download buttons now use distinct line-art SVG
+  icons (a 3-dot share icon, a tray-arrow download icon) instead of two
+  different-but-similar-looking emoji.
+
+### Home
+- Subtext and mobile onboarding-modal title tweaked (shorter font-size
+  on mobile so the modal title reliably stays on one line across device
+  widths).
+
+## Splash screen + cloud-symbol app icons (2026-07-12, v3.25)
+
+### iOS splash: real photo, with the platform limitation explained
+Added `<link rel="apple-touch-startup-image">` tags (5 device-size
+variants: 750×1334, 1170×2532, 1179×2556, 1284×2778, 1536×2048,
+each center-cropped from the source photo to exactly fill that canvas)
+pointing at the user-supplied vintage-Mac "hello" photo, so opening the
+installed shortcut on iOS shows that image while the app loads.
+**Android/Chrome can't do this** — its PWA splash is always just the
+manifest icon centered on `background_color`, with no way to specify an
+arbitrary full-bleed image; this is a platform constraint, not
+something fixable in this codebase. Only iOS gets the custom photo;
+Android gets the new cloud icon + a matching background color instead.
+
+### App icons redesigned around a cloud symbol
+Replaced the clock-based icon set with a cloud silhouette (built from a
+handful of overlapping ellipses — a flattened base ellipse plus 3
+overlapping circles for the puffy top, lightly blurred for a soft
+edge) on the same warm-tan-to-blue-gray gradient rounded square as the
+reference image. Regenerated the full set (`favicon.svg` +
+`icons/icon-{16,32,48,180,192,512}.png` + a maskable 512) at 4x
+supersampling before downscaling, same anti-blur approach as before.
+The home page's own interactive clock widget is unchanged — this only
+affects the favicon/home-screen-shortcut identity, which called for a
+"드라이브"-appropriate cloud rather than the clock motif used inside
+the product itself.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

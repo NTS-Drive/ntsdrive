@@ -51,9 +51,9 @@ function renderViewfinder() {
     <div class="cam-sub">찍은 사진은 1~12시간 사이, 랜덤한 시간이 지나야 볼 수 있어요<br>뷰파인더는 작지만, 실제 사진은 600×400입니다</div>
     <div class="viewfinder ratio-32 peek"><video id="video" autoplay playsinline muted></video></div>
     <div class="shutter-row">
-      <button class="cam-flip-btn" onclick="toggleFacing()" title="카메라 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3 3-3 3"/><path d="M20 6H9a5 5 0 0 0-5 5"/><path d="M7 21l-3-3 3-3"/><path d="M4 18h11a5 5 0 0 0 5-5"/></svg></button>
-      <button class="shutter-btn" onclick="handleShutter()"></button>
       <span style="width:44px;"></span>
+      <button class="shutter-btn" onclick="handleShutter()"></button>
+      <button class="cam-flip-btn" onclick="toggleFacing()" title="카메라 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3 3-3 3"/><path d="M20 6H9a5 5 0 0 0-5 5"/><path d="M7 21l-3-3 3-3"/><path d="M4 18h11a5 5 0 0 0 5-5"/></svg></button>
     </div>
     <div class="cam-notice">
       사진은 이 브라우저에만 저장돼요. 저장 공간에 따라 최대 2주·24컷보다 일찍 삭제될 수 있으니,

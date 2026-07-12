@@ -117,12 +117,13 @@ function renderShareResult(url) {
     <div class="share-result">
       <div class="env-icon">✉️</div>
       <h2>편지가 준비됐어요</h2>
-      <p>이 링크를 ${escapeHtml(room.title)}에게 전달해주세요.<br>방 주인이 등록하면 글자 수가 반영돼요.<br><a onclick="navigate('create.html')" class="inline-link">나도 방 만들어보기</a></p>
+      <p>이 링크를 ${escapeHtml(room.title)}에게 전달해주세요.<br>방 주인이 등록하면 글자 수가 반영돼요.</p>
       <div class="link-box"><input type="text" id="shareUrl" readonly value="${url}"></div>
       <div class="share-actions">
         <button class="ghost-btn" style="flex:1;" onclick="copyLink('${url}')">링크 복사</button>
         <button class="ghost-btn" style="flex:1;" onclick="shareLink('${url}')">공유하기</button>
       </div>
+      <p style="margin-top:16px; margin-bottom:0;"><a onclick="navigate('create.html')" class="inline-link">나도 방 만들어보기</a></p>
     </div>
   `;
 }
@@ -133,6 +134,7 @@ function shareLink(url) {
   if (navigator.share) {
     navigator.share({ title: 'Log — 편지가 준비됐어요', url }).catch(() => {});
   } else {
+    alert('이 브라우저는 공유하기를 지원하지 않아요. 대신 링크를 복사해드릴게요.');
     copyLink(url);
   }
 }

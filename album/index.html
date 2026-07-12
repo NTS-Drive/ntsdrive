@@ -122,8 +122,8 @@ function openLightbox(id) {
     <div class="lightbox-box">
       <img src="${photo.dataUrl}">
       <div class="lightbox-actions">
-        <button class="cam-btn" onclick="handleShare('${photo.id}')">📤 공유하기</button>
-        <button class="cam-btn" onclick="downloadPhoto('${photo.id}')">📥 다운로드</button>
+        <button class="cam-btn" onclick="handleShare('${photo.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align:-3px; margin-right:4px;"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg>공유하기</button>
+        <button class="cam-btn" onclick="downloadPhoto('${photo.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align:-3px; margin-right:4px;"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>다운로드</button>
         <button class="cam-btn" onclick="handleDelete('${photo.id}')">삭제</button>
       </div>
     </div>

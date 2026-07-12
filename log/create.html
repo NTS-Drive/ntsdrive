@@ -135,6 +135,7 @@ function shareLink(url) {
   if (navigator.share) {
     navigator.share({ title: 'Log — 마음을 모으는 방', url }).catch(() => {});
   } else {
+    alert('이 브라우저는 공유하기를 지원하지 않아요. 대신 링크를 복사해드릴게요.');
     copyLink(url);
   }
 }

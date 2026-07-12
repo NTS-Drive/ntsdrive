@@ -71,6 +71,15 @@ function saveLetters(re, list) {
 function init() {
   const params = new URLSearchParams(window.location.search);
 
+  if (params.has('reveal')) {
+    try {
+      renderRevealShared(decodeData(params.get('reveal')));
+    } catch (e) {
+      stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>링크를 읽을 수 없어요</h2><p>링크가 손상되었을 수 있어요.</p></div>`;
+    }
+    return;
+  }
+
   if (!params.has('room') && !params.has('add')) {
     renderIntro();
     return;
@@ -124,8 +133,37 @@ function renderIntro() {
       <div class="step"><div class="num">2</div><p>친구용 링크를 전달하면, 친구들이 각자 짧은 편지를 써요.</p></div>
       <div class="step"><div class="num">3</div><p>받은 편지 링크를 내 방에 등록하면 글자 수가 쌓여요. 목표를 채우거나 디데이가 되면 한 번에 열려요.</p></div>
     </div>
-    <button class="seal-btn" onclick="navigate('create.html')">방 만들기</button>
+    <button class="seal-btn" onclick="handleCreateClick()">방 만들기</button>
   `;
+  if (!document.querySelector('.inbox-fab')) {
+    const fab = document.createElement('a');
+    fab.className = 'inbox-fab';
+    fab.textContent = '📚 내 로그함';
+    fab.onclick = () => navigate('mylogs.html');
+    document.body.appendChild(fab);
+  }
+}
+
+function findUnfinishedRoom() {
+  try {
+    const raw = localStorage.getItem('log_mylogs_v1');
+    const list = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) return null;
+    const now = Date.now();
+    return list.find(r => {
+      const total = loadLetters(r.roomEncoded).reduce((s, l) => s + l.text.length, 0);
+      return now < r.dday && total < r.goal;
+    }) || null;
+  } catch (e) { return null; }
+}
+
+function handleCreateClick() {
+  const unfinished = findUnfinishedRoom();
+  if (unfinished) {
+    alert('지금 진행 중인 Log가 있습니다. 완료되면 새로 만들어주세요.');
+    return;
+  }
+  navigate('create.html');
 }
 
 /* ===== Dashboard ===== */
@@ -266,7 +304,7 @@ function renderReveal(letters, total) {
       </div>
       <div class="disclaimer" style="margin-bottom:22px;">다른 주제로 한 번 더 해볼까요?</div>
       <div class="share-actions">
-        <button class="seal-btn" style="width:auto; flex:1;" onclick="navigate('create.html')">나도 방 만들어보기</button>
+        <button class="seal-btn" style="width:auto; flex:1;" onclick="navigate('create.html')">다른 주제로 방 다시 만들기</button>
       </div>
     `;
     return;
@@ -293,14 +331,86 @@ function renderReveal(letters, total) {
     </div>
     <div class="share-actions" style="margin-top:26px;">
       <button class="ghost-btn" style="flex:1;" onclick="saveRoomImage()">저장하기</button>
+      <button class="ghost-btn" style="flex:1;" onclick="shareRevealedRoom()">공유하기</button>
+    </div>
+  `;
+
+  // Each card's front face is absolutely positioned (required for the 3D
+  // flip), which means the card's box doesn't naturally grow to fit long
+  // messages — it was clipping at a fixed min-height. Measure each
+  // message's real rendered height via an offscreen clone at the card's
+  // actual width, then size the card to fit before the flip plays.
+  letters.forEach((l, i) => {
+    const card = document.getElementById(`rcard${i}`);
+    const inner = card.querySelector('.reveal-card-inner');
+    const h = measureLetterCardHeight(card.offsetWidth, l.text, l.from);
+    inner.style.minHeight = h + 'px';
+    setTimeout(() => card.classList.add('flipped'), 300 + i * 220);
+  });
+}
+
+function measureLetterCardHeight(width, text, from) {
+  const clone = document.createElement('div');
+  clone.style.cssText = `position:absolute; left:-9999px; top:0; visibility:hidden; width:${width}px;
+    box-sizing:border-box; padding:18px 20px; font-family:var(--font-serif); font-size:14.5px; line-height:1.7;`;
+  const textDiv = document.createElement('div');
+  textDiv.textContent = text;
+  clone.appendChild(textDiv);
+  const metaDiv = document.createElement('div');
+  metaDiv.style.cssText = 'font-size:10.5px; margin-top:4px;';
+  metaDiv.textContent = from || '익명';
+  clone.appendChild(metaDiv);
+  document.body.appendChild(clone);
+  const h = clone.offsetHeight;
+  document.body.removeChild(clone);
+  return Math.max(90, h);
+}
+
+function shareRevealedRoom() {
+  const letters = loadLetters(roomEncoded);
+  const payload = {
+    title: currentRoom.title,
+    letters: letters.map(l => ({ text: l.text, from: l.from || '' }))
+  };
+  const encoded = encodeData(payload);
+  const url = `${window.location.origin}${window.location.pathname}?reveal=${encoded}`;
+  if (navigator.share) {
+    navigator.share({ title: `Log — ${currentRoom.title}`, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => toast('공개된 방을 볼 수 있는 링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+  }
+}
+
+function renderRevealShared(payload) {
+  const letters = payload.letters;
+  const total = letters.reduce((s, l) => s + l.text.length, 0);
+  stage.innerHTML = `
+    <div class="reveal-burst" id="revealCapture">
+      <div class="burst-icon">🎉</div>
+      <h2>${escapeHtml(payload.title)}</h2>
+      <p>${letters.length}명이 보낸 ${total}자의 마음이 도착했어요</p>
+    </div>
+    <div class="reveal-grid" id="revealGrid">
+      ${letters.map((l, i) => `
+        <div class="reveal-card flipped" id="rcard${i}">
+          <div class="reveal-card-inner">
+            <div class="reveal-card-face reveal-card-back">✉️</div>
+            <div class="reveal-card-face reveal-card-front">
+              <div class="letter-text">${escapeHtml(l.text)}</div>
+              <div class="letter-meta">${l.from ? escapeHtml(l.from) : '익명'}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="share-actions" style="margin-top:26px;">
       <button class="ghost-btn" style="flex:1;" onclick="navigate('create.html')">나도 방 만들어보기</button>
     </div>
   `;
   letters.forEach((l, i) => {
-    setTimeout(() => {
-      const card = document.getElementById(`rcard${i}`);
-      if (card) card.classList.add('flipped');
-    }, 300 + i * 220);
+    const card = document.getElementById(`rcard${i}`);
+    const inner = card.querySelector('.reveal-card-inner');
+    inner.style.minHeight = measureLetterCardHeight(card.offsetWidth, l.text, l.from) + 'px';
   });
 }
 

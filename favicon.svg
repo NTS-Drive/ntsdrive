@@ -1,25 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="g1" cx="30%" cy="25%" r="60%">
-      <stop offset="0%" stop-color="#9378FF" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#9378FF" stop-opacity="0"/>
+    <radialGradient id="g1" cx="20%" cy="15%" r="65%">
+      <stop offset="0%" stop-color="#D6BA96" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#D6BA96" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="g2" cx="20%" cy="85%" r="55%">
-      <stop offset="0%" stop-color="#60C6FF" stop-opacity="0.45"/>
-      <stop offset="100%" stop-color="#60C6FF" stop-opacity="0"/>
+    <radialGradient id="g2" cx="80%" cy="85%" r="65%">
+      <stop offset="0%" stop-color="#7892A8" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#7892A8" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect x="0" y="0" width="64" height="64" rx="14" fill="#EEECFF"/>
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#FAF6EE"/>
   <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#g1)"/>
   <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#g2)"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="1.4"/>
-  <line x1="32" y1="9" x2="32" y2="13" stroke="#3C326E" stroke-opacity="0.55" stroke-width="1.6"/>
-  <line x1="32" y1="51" x2="32" y2="55" stroke="#3C326E" stroke-opacity="0.55" stroke-width="1.6"/>
-  <line x1="9" y1="32" x2="13" y2="32" stroke="#3C326E" stroke-opacity="0.55" stroke-width="1.6"/>
-  <line x1="51" y1="32" x2="55" y2="32" stroke="#3C326E" stroke-opacity="0.55" stroke-width="1.6"/>
-  <!-- 10:10 hands -->
-  <line x1="32" y1="32" x2="21.6" y2="21.6" stroke="#5B8DEF" stroke-width="3" stroke-linecap="round"/>
-  <line x1="32" y1="32" x2="47.4" y2="23.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
-  <circle cx="32" cy="32" r="4.5" fill="#FFFFFF" fill-opacity="0.5"/>
-  <circle cx="32" cy="32" r="2.6" fill="#FFFFFF"/>
+  <g fill="#FFFFFF">
+    <ellipse cx="32" cy="38" rx="16" ry="7"/>
+    <ellipse cx="21" cy="29" rx="8" ry="8.5"/>
+    <ellipse cx="31" cy="25.5" rx="9.5" ry="10"/>
+    <ellipse cx="41.5" cy="30" rx="7.5" ry="8"/>
+  </g>
 </svg>

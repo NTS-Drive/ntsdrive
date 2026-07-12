@@ -196,6 +196,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .nav .links{display:none;}
   body{padding-bottom:78px;}
   .first-btn, .shortcut-btn{font-size:10.5px; padding:6px 10px;}
+  .modal h3{font-size:16px;}
   .blob1{width:280px; height:280px; top:-80px; right:-60px;}
   .blob2{width:220px; height:220px; left:-60px;}
   .blob3{width:200px; height:200px; right:-50px;}

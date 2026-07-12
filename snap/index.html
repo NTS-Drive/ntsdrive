@@ -52,9 +52,9 @@ function renderViewfinder() {
     <div class="cam-sub">찍자마자 바로 볼 수 있어요 · 흰 테두리에 짧은 글도 남길 수 있어요</div>
     <div class="viewfinder ratio-square"><video id="video" autoplay playsinline muted></video></div>
     <div class="shutter-row">
-      <button class="cam-flip-btn" onclick="toggleFacing()" title="카메라 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3 3-3 3"/><path d="M20 6H9a5 5 0 0 0-5 5"/><path d="M7 21l-3-3 3-3"/><path d="M4 18h11a5 5 0 0 0 5-5"/></svg></button>
-      <button class="shutter-btn" onclick="handleShutter()"></button>
       <span style="width:44px;"></span>
+      <button class="shutter-btn" onclick="handleShutter()"></button>
+      <button class="cam-flip-btn" onclick="toggleFacing()" title="카메라 전환"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3 3-3 3"/><path d="M20 6H9a5 5 0 0 0-5 5"/><path d="M7 21l-3-3 3-3"/><path d="M4 18h11a5 5 0 0 0 5-5"/></svg></button>
     </div>
     <div class="cam-notice">
       사진은 이 브라우저에만 저장돼요. 저장 공간에 따라 최대 2주·24컷보다 일찍 삭제될 수 있으니,
@@ -82,8 +82,10 @@ function handleShutter() {
 }
 
 let previewDataUrl = null;
+let previewCanvas = null;
 
 function renderPreview(framedCanvas) {
+  previewCanvas = framedCanvas;
   previewDataUrl = framedCanvas.toDataURL('image/jpeg', JPEG_QUALITY);
   stage.innerHTML = `
     <div class="cam-kicker snap">Snap</div>
@@ -108,40 +110,34 @@ function handleSave() {
     finalizeSave(previewDataUrl, caption);
     return;
   }
-  // Draw the caption straight onto the photo's white bottom border, in a
-  // handwriting-style font, so it travels with the image (including on
-  // download) instead of being a separate UI-only overlay.
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width; canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    document.fonts.load('700 40px Gaegu').then(() => {
-      // Reverse-engineer applySnapFilter's frame math (border=5% of the
-      // original square capture, bottomBorder=32% of it) from the final
-      // framed image's own width, to find the bottom white strip's exact
-      // vertical center — the previous version computed this against
-      // canvas.height, which was itself set FROM img.height, always
-      // yielding a zero-height margin and clipping the caption off-canvas.
-      const capturedSize = img.width / 1.10;
-      const border = capturedSize * 0.05;
-      const bottomBorder = capturedSize * 0.32;
-      const capY = border + capturedSize + bottomBorder / 2;
-      const fontSize = Math.round(canvas.width * 0.062);
-      ctx.font = `700 ${fontSize}px Gaegu, sans-serif`;
-      ctx.fillStyle = '#3A342A';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.save();
-      ctx.translate(canvas.width / 2, capY);
-      ctx.rotate(-0.02);
-      ctx.fillText(caption, 0, 0);
-      ctx.restore();
-      finalizeSave(canvas.toDataURL('image/jpeg', JPEG_QUALITY), caption);
-    });
-  };
-  img.src = previewDataUrl;
+  // Draw the caption directly onto the ORIGINAL (uncompressed) framed
+  // canvas — not onto a reloaded copy of the already-JPEG-compressed
+  // preview. Re-encoding a JPEG a second time compounds compression
+  // artifacts especially badly around thin handwriting-font strokes,
+  // which is what was making the caption look "broken"/glitchy. Drawing
+  // on the untouched canvas and exporting to JPEG exactly once avoids
+  // that entirely.
+  const canvas = document.createElement('canvas');
+  canvas.width = previewCanvas.width; canvas.height = previewCanvas.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(previewCanvas, 0, 0);
+  document.fonts.load('700 40px Gaegu').then(() => {
+    const capturedSize = canvas.width / 1.10;
+    const border = capturedSize * 0.05;
+    const bottomBorder = capturedSize * 0.32;
+    const capY = border + capturedSize + bottomBorder / 2;
+    const fontSize = Math.round(canvas.width * 0.062);
+    ctx.font = `700 ${fontSize}px Gaegu, sans-serif`;
+    ctx.fillStyle = '#3A342A';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.save();
+    ctx.translate(canvas.width / 2, capY);
+    ctx.rotate(-0.02);
+    ctx.fillText(caption, 0, 0);
+    ctx.restore();
+    finalizeSave(canvas.toDataURL('image/jpeg', JPEG_QUALITY), caption);
+  });
 }
 
 let savedDataUrl = null;
@@ -163,6 +159,8 @@ function renderSaved() {
     <div class="cam-result-actions">
       <button class="cam-btn" onclick="renderViewfinder()">한 장 더 찍기</button>
       <button class="cam-btn" onclick="sharePhoto(savedDataUrl, 'snap_'+Date.now()+'.jpg', 'Snap')">공유하기</button>
+    </div>
+    <div class="cam-result-actions" style="margin-top:10px;">
       <button class="cam-btn primary" onclick="navigate('../album/index.html')">내 사진첩 보기</button>
     </div>
   `;
