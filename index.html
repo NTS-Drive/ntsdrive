@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#EEECFF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -20,21 +24,22 @@
     <div class="brand"><div class="mark"></div>NTS Drive</div>
     <div class="links">
       <span onclick="navigate('post/index.html')">Post</span>
-      <span onclick="navigate('log/index.html')">Log</span>
-      <span onclick="navigate('play/index.html')">Play</span>
+      <span onclick="navigate('log/index.html')" style="margin-right:20px;">Log</span>
       <span onclick="navigate('snap/index.html')">Snap</span>
-      <span onclick="navigate('film/index.html')">Film</span>
+      <span onclick="navigate('film/index.html')" style="margin-right:20px;">Film</span>
+      <span onclick="navigate('play/index.html')">Play</span>
     </div>
     <div class="right">
       <button class="first-btn" onclick="document.getElementById('onboard').classList.add('show')">처음이신가요?</button>
+      <button class="shortcut-btn" id="shortcutBtn" onclick="handleCreateShortcut()">바로가기 생성</button>
     </div>
   </div>
 </nav>
 
 <section class="hero">
   <div class="eyebrow">NTS DRIVE</div>
-  <h1><span class="h1-lead">지금 이 순간</span><br>내 마음 기록 드라이브</h1>
-  <p class="subtext">미래를 기대하고, 과거를 추억하는 시간</p>
+  <h1><span class="h1-lead">지금 순간의</span><br>마음까지 남는 드라이브</h1>
+  <p class="subtext">미래를 기대하고, 과거를 추억하는 파일</p>
 
   <div class="clock-widget" id="clockWidget">
     <span class="tick tick-12"></span>
@@ -68,13 +73,13 @@
       <div class="rank">01</div>
       <div class="info"><h4>Post</h4><p>마음을 담은 편지</p></div>
     </a>
-    <a class="best-card" href="arcade/formula-firewall/index.html">
+    <a class="best-card" href="snap/index.html">
       <div class="rank">02</div>
-      <div class="info"><h4>Formula Firewall</h4><p>Play · 타워디펜스</p></div>
+      <div class="info"><h4>Snap</h4><p>지금 이 순간의 즉석사진</p></div>
     </a>
-    <a class="best-card" href="fortune/tarot-pick/index.html">
+    <a class="best-card" href="arcade/formula-firewall/index.html">
       <div class="rank">03</div>
-      <div class="info"><h4>Tarot Pick</h4><p>Play · 타로운세</p></div>
+      <div class="info"><h4>Formula Firewall</h4><p>Play · 타워디펜스</p></div>
     </a>
   </div>
 </section>
@@ -100,12 +105,12 @@
 </div>
 
 <nav class="bottom-nav">
-  <a class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
   <a onclick="navigate('post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
-  <a onclick="navigate('log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
-  <a onclick="navigate('play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
+  <a onclick="navigate('log/index.html')" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a onclick="navigate('snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
-  <a onclick="navigate('film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg></span>Film</a>
+  <a onclick="navigate('film/index.html')" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="12" rx="1.3"/><line x1="3" y1="9" x2="10" y2="9" stroke-width="1"/><line x1="3" y1="12" x2="10" y2="12" stroke-width="1"/><line x1="3" y1="15" x2="10" y2="15" stroke-width="1"/><path d="M10 8.5l4-1v9l-4-1z"/><rect x="14.5" y="8.7" width="1.8" height="1.4" rx="0.3"/><rect x="17.3" y="8.7" width="1.8" height="1.4" rx="0.3"/><rect x="14.5" y="13.9" width="1.8" height="1.4" rx="0.3"/><rect x="17.3" y="13.9" width="1.8" height="1.4" rx="0.3"/></svg></span>Film</a>
+  <a onclick="navigate('play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
 </nav>
 
 <script>
@@ -150,8 +155,7 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ---- 배경 블롭 패럴랙스 + 시계 위젯 스크롤 시 살짝 확대 ----
-  const clockWidget = document.getElementById('clockWidget');
+  // ---- 배경 블롭 패럴랙스 ----
   const blobs = document.querySelectorAll('.blob');
   let ticking = false;
   window.addEventListener('scroll', ()=>{
@@ -161,14 +165,37 @@
         blobs[0].style.transform = `translateY(${y*0.12}px)`;
         blobs[1] && (blobs[1].style.transform = `translateY(${-y*0.08}px)`);
         blobs[2] && (blobs[2].style.transform = `translateY(${y*0.06}px)`);
-
-        const t = Math.min(y, 220) / 220; // 0 -> 1
-        if (clockWidget) { clockWidget.style.transform = `scale(${1 + t*0.05})`; }
         ticking = false;
       });
       ticking = true;
     }
   });
+
+  // ---- 바로가기 생성 (PWA 설치) ----
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+  function trackEvent(name, params) {
+    try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {}
+  }
+
+  function handleCreateShortcut() {
+    trackEvent('shortcut_button_click');
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(choice => trackEvent('shortcut_created', { outcome: choice.outcome })).finally(() => { deferredInstallPrompt = null; });
+      return;
+    }
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    if (isIOS) {
+      alert('이 기기에서는 자동으로 만들 수 없어요.\n\nSafari 하단의 공유 버튼(⬆️)을 누르고,\n"홈 화면에 추가"를 선택해주세요.');
+    } else {
+      alert('브라우저 메뉴에서 "홈 화면에 추가" 또는 "앱 설치"를 선택해주세요.\n(브라우저 우측 상단 메뉴 또는 주소창 아이콘에서 찾으실 수 있어요.)');
+    }
+  }
 
   // ---- 폴더 그리드: categories.json + 각 itemsSource 를 함께 불러와 동적 렌더링 ----
   const ICONS = {
@@ -176,14 +203,16 @@
     log: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg>',
     snap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg>',
-    film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>'
+    film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>',
+    diary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>'
   };
   const FOLDER_STYLE = {
     post:    { icon: ICONS.post,    cls: 'f-post',    unit: null },
     log:     { icon: ICONS.log,     cls: 'f-log',      unit: null },
-    play:    { icon: ICONS.play,    cls: 'f-play',     unit: '개 운영중' },
     snap:    { icon: ICONS.snap,    cls: 'f-snap',     unit: null },
-    film:    { icon: ICONS.film,    cls: 'f-film',     unit: null }
+    film:    { icon: ICONS.film,    cls: 'f-film',     unit: null },
+    play:    { icon: ICONS.play,    cls: 'f-play',     unit: '개 운영중' },
+    diary:   { icon: ICONS.diary,   cls: 'f-diary',    unit: null }
   };
 
   async function loadFolders() {
@@ -220,7 +249,7 @@
         }
 
         return `
-          <div class="folder${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="navigate('${cat.path}')"` : ''}>
+          <div class="folder${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="trackEvent('folder_card_click', {folder_id:'${cat.id}'}); navigate('${cat.path}')"` : ''}>
             <div class="ficon"><span class="glyph">${style.icon}</span></div>
             <h3>${cat.name}</h3>
             <p>${cat.description}</p>

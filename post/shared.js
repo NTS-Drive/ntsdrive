@@ -179,3 +179,10 @@ function escapeHtml(str) {
   div.textContent = str;
   return div.innerHTML;
 }
+
+/* ===== GA4 helper (fails silently if gtag isn't loaded) ===== */
+function trackEvent(name, params) {
+  try {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  } catch (e) { /* no-op */ }
+}

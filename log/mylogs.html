@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 로그함 | Log</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="../analytics.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('index.html')" style="margin-right:20px;">Log</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')" style="margin-right:20px;">Film</span>
+    <span onclick="navigate('../play/index.html')">Play</span>
+  </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a class="active" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')" style="margin-right:14px;"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="12" rx="1.3"/><line x1="3" y1="9" x2="10" y2="9" stroke-width="1"/><line x1="3" y1="12" x2="10" y2="12" stroke-width="1"/><line x1="3" y1="15" x2="10" y2="15" stroke-width="1"/><path d="M10 8.5l4-1v9l-4-1z"/><rect x="14.5" y="8.7" width="1.8" height="1.4" rx="0.3"/><rect x="17.3" y="8.7" width="1.8" height="1.4" rx="0.3"/><rect x="14.5" y="13.9" width="1.8" height="1.4" rx="0.3"/><rect x="17.3" y="13.9" width="1.8" height="1.4" rx="0.3"/></svg></span>Film</a>
+  <a onclick="navigate('../play/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg></span>Play</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+const MYLOGS_KEY = 'log_mylogs_v1';
+let checkTimerId = null;
+
+function loadMylogs() {
+  try {
+    const raw = localStorage.getItem(MYLOGS_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function saveMylogs(list) {
+  try { localStorage.setItem(MYLOGS_KEY, JSON.stringify(list)); }
+  catch (e) { toast('저장 공간이 부족해서 저장하지 못했어요.'); }
+}
+
+function extractRoomParam(input) {
+  const trimmed = (input || '').trim();
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed);
+    return url.searchParams.get('room') || null;
+  } catch (e) {
+    const m = trimmed.match(/[?&]room=([^&]+)/);
+    if (m) return m[1];
+    return trimmed.length > 20 ? trimmed : null;
+  }
+}
+
+function addRoom() {
+  const input = document.getElementById('roomInput');
+  const encoded = extractRoomParam(input.value);
+  if (!encoded) { toast('올바른 방 대시보드 링크가 아니에요.'); return; }
+  let room;
+  try { room = decodeData(encoded); } catch (e) { toast('링크를 읽을 수 없어요.'); return; }
+
+  const list = loadMylogs();
+  if (list.some(r => r.roomEncoded === encoded)) { toast('이미 등록된 방이에요.'); input.value = ''; return; }
+  list.unshift({ roomEncoded: encoded, title: room.title, dday: room.dday, goal: room.goal, addedAt: Date.now(), notified: false });
+  saveMylogs(list);
+  input.value = '';
+  toast('내 로그함에 등록됐어요.');
+  render();
+}
+
+function removeRoom(encoded) {
+  saveMylogs(loadMylogs().filter(r => r.roomEncoded !== encoded));
+  render();
+}
+
+function requestNotifyPermission() {
+  if (!('Notification' in window)) { toast('이 브라우저는 알림을 지원하지 않아요.'); return; }
+  Notification.requestPermission().then(() => render());
+}
+
+function render() {
+  stage.innerHTML = `
+    <div class="masthead">
+      <div class="kicker">Log</div>
+      <h1>내 로그함</h1>
+      <div class="sub">내가 만든 방들을 모아두고,<br>열리는 순간을 놓치지 마세요</div>
+    </div>
+    <div class="inbox-add-row">
+      <input type="text" id="roomInput" placeholder="내 방 대시보드 링크를 붙여넣으세요">
+      <button class="ghost-btn" onclick="addRoom()">등록</button>
+    </div>
+    <div id="notifyRow"></div>
+    <div id="roomList"></div>
+    <div class="disclaimer">이 목록은 지금 사용 중인 브라우저에만 저장돼요.<br>알림은 이 탭을 열어둔 상태에서만 울려요.</div>
+  `;
+  renderNotifyRow();
+  renderRoomList();
+}
+
+function renderNotifyRow() {
+  const row = document.getElementById('notifyRow');
+  if (!row) return;
+  if (!('Notification' in window)) { row.innerHTML = ''; return; }
+  if (Notification.permission === 'granted') {
+    row.innerHTML = `<div class="disclaimer">🔔 알림이 켜져 있어요.</div>`;
+  } else if (Notification.permission !== 'denied') {
+    row.innerHTML = `<div class="share-actions"><button class="ghost-btn" style="flex:1;" onclick="requestNotifyPermission()">알림 켜기</button></div>`;
+  }
+}
+
+function renderRoomList() {
+  const container = document.getElementById('roomList');
+  const list = loadMylogs();
+  if (list.length === 0) {
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 방이 없어요.<br>방을 만든 뒤 대시보드 링크를 등록해보세요.</div>`;
+    return;
+  }
+  container.innerHTML = list.map(r => {
+    const letters = loadLettersFor(r.roomEncoded);
+    const total = letters.reduce((s, l) => s + l.text.length, 0);
+    const done = Date.now() >= r.dday || total >= r.goal;
+    const url = `index.html?room=${r.roomEncoded}`;
+    return `
+      <div class="inbox-card">
+        <div class="inbox-card-icon">📖</div>
+        <a class="inbox-card-body" href="${url}">
+          <div class="inbox-card-title">${escapeHtml(r.title)}</div>
+          <div class="inbox-card-len">${done ? '지금 열람 가능' : `${total} / ${r.goal}자 · ${formatDday(r.dday)}에 열림`}</div>
+        </a>
+        <span class="inbox-card-remove" onclick="removeRoom('${r.roomEncoded}')">삭제</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function loadLettersFor(roomEncoded) {
+  try {
+    const raw = localStorage.getItem(`log_room:${roomEncoded}`);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+
+function checkRooms() {
+  const list = loadMylogs();
+  let changed = false;
+  list.forEach(r => {
+    if (r.notified) return;
+    const letters = loadLettersFor(r.roomEncoded);
+    const total = letters.reduce((s, l) => s + l.text.length, 0);
+    if (Date.now() >= r.dday || total >= r.goal) {
+      r.notified = true;
+      changed = true;
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('방이 열렸어요 📖', { body: r.title, tag: r.roomEncoded.slice(0, 20) });
+      }
+    }
+  });
+  if (changed) { saveMylogs(list); renderRoomList(); }
+}
+
+render();
+checkTimerId = setInterval(checkRooms, 15000);
+</script>
+</body>
+</html>

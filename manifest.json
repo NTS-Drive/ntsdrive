@@ -1,0 +1,15 @@
+{
+  "name": "NTS Drive",
+  "short_name": "NTS Drive",
+  "description": "지금 순간의 마음까지 남는 드라이브",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FBFBFD",
+  "theme_color": "#EEECFF",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

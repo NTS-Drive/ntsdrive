@@ -1750,6 +1750,112 @@ color classes. Academy intentionally remains reachable only by direct
 URL (its own internal nav was still updated to the new 5-item set for
 outbound navigation, just no longer a destination from anywhere else).
 
+## Pre-launch polish round + PWA shortcut + GA4 funnel (2026-07-12, v3.22)
+
+A large batch of minor fixes and additions ahead of the AdSense launch.
+
+### Real bug found: clock hands double-centered
+`.hour-hand`/`.minute-hand`/`.second-hand` had a static CSS `margin-left`
+for horizontal centering, but the JS also applied
+`transform: translateX(-50%)` on every tick — both centering mechanisms
+were active simultaneously, doubling the offset. Thin (2px) elements
+like the second hand hid the ~1px error; the thick hour (10px) and
+minute (9px) hands showed a visible ~5-10px off-center droop, matching
+exactly what was reported from the screenshot. Fixed by removing the
+CSS `margin-left` and letting the JS-driven `translateX(-50%)` be the
+only centering mechanism. Also: digital hour/minute now share the same
+font-size (was 38px/28px), the day-of-week label moved up
+(`bottom:34px → 52px`) so it clears the static 6-o'clock tick and pivot
+glow (hands sweeping past it periodically is expected/fine per the
+request), and the scroll-linked scale interaction was removed entirely.
+
+### PWA install ("바로가기 생성")
+New `manifest.json` + a full icon set (`icons/icon-{16,32,48,180,192,512}.png`
+plus a maskable 512) generated via Pillow at 4x supersampling then
+downscaled, so nothing is ever upscaled from a blurry source. A
+"바로가기 생성" button next to "처음이신가요?" listens for
+`beforeinstallprompt` (Chrome/Edge on both desktop and Android) and
+calls `.prompt()` when available; falls back to a plain-language alert
+with manual instructions for iOS Safari and any browser that doesn't
+support the programmatic install flow, since that's a genuine platform
+limitation — no browser lets a site silently install itself.
+
+### New favicon (clock face, no numbers/day, fixed at 10:10)
+Both `favicon.svg` and the icon set were redrawn from scratch to match
+the home page's clock widget's palette (soft purple/blue gradient,
+white hands) with the digital readout and day label deliberately
+omitted per spec, hands fixed at the classic 10:10 "watch ad" pose.
+
+### Home page
+- Headline → "지금 순간의 / 마음까지 남는 드라이브"; subtext → "...파일".
+- Folder grid reordered to Post/Log/Snap/Film/Play + a new **Diary**
+  placeholder (status `Planned`, own icon/color) to fill the 2×3 grid's
+  6th slot — explicitly a stub for a future "일자별 감정 기록" feature,
+  not built yet.
+- "이번 주 BEST" → Post / Snap / Formula Firewall.
+
+### Site-wide GNB
+Reordered to Post/Log/Snap/Film/Play everywhere (11 files: all of
+Post/Log/Play/Academy's pages plus Snap/Film/Album), with the 3 logical
+clusters — (Post,Log) / (Snap,Film) / (Play) — visually separated by a
+wider gap after Log and after Film, on both the desktop top nav and the
+mobile bottom nav. Film's icon changed from a plain filmstrip to a film
+canister + strip, matching the reference image.
+
+### Log (8 changes)
+- New **`log/mylogs.html`** ("내 로그함") — mirrors Post's inbox pattern
+  but for *rooms the user created* rather than letters received: paste a
+  room dashboard link to register it, see each room's live gauge/status,
+  get a browser notification (tab-open only, consistent with every other
+  "notify" feature on this site) when a room's reveal condition is met.
+- `create.html`'s success screen restructured: 친구용 링크 복사 +
+  공유하기 as one equal-width pair, 내 방 대시보드 링크 복사 + 내 방
+  대시보드 열기 as a second equal-width pair below it — both pairs sum
+  to the same total width. Added the 내 로그함 floating button here and
+  on the dashboard's pre-reveal (gauge) screen.
+- `write.html`'s success screen gained a 공유하기 button and a plain
+  black "나도 방 만들어보기" text link.
+- Reveal screen gained a "저장하기" button (`html2canvas`, forces every
+  card face-up first so the exported image shows actual letters, not an
+  unflipped state) sitting next to "나도 방 만들어보기".
+- **Empty-room edge case**: if a room's reveal condition triggers with
+  zero registered letters, it now shows a distinct "아직 아무도 마음을
+  보태지 않은 채 방이 닫혔어요 / 다른 주제로 한 번 더 해볼까요?" screen
+  instead of an empty reveal grid.
+
+### Snap / Film
+- Both gained a front/back camera toggle (`openCamera` now takes a
+  `facingMode` argument; toggling stops the current stream and reopens
+  with the other facing mode).
+- Snap's caption cap dropped 40 → 20 characters, and — the more
+  substantial change — **the caption is now baked directly onto the
+  photo's white Instax border** in a handwriting-style Google Font
+  (Gaegu), via `document.fonts.load()` to guarantee the web font is
+  actually ready before `canvas.fillText` runs (a common source of
+  fallback-font bugs otherwise). This makes the caption travel with the
+  photo on download instead of living only in the album's UI — the
+  album's separate caption `<div>` (grid + lightbox) was removed since
+  it's now redundant.
+- Film's viewfinder shrinks to 33% width (`.viewfinder.peek`) — a
+  deliberate "you can't quite see what you're framing" constraint for
+  suspense; the actual capture still reads the video element's full
+  native resolution, only the on-screen preview shrinks.
+- Film's random develop delay changed from `[6,12,15,18,21,24]` to
+  `[1..12]` in 1-hour steps — verified with a 500-draw simulation that
+  all 12 values appear and none fall outside range.
+
+### GA4 funnel instrumentation
+Added a `trackEvent()` helper (same pattern already used by Log) to
+`post/shared.js`, `camera/shared.js`, and inline on `index.html`/
+`play/index.html`. Wired up: `shortcut_button_click` /
+`shortcut_created` (with install outcome), `folder_card_click` (home,
+tagged by folder id), `post_letter_sealed` / `post_link_copied` /
+`post_link_shared`, `snap_photo_saved`, `film_photo_captured`,
+`play_filter_click`, `play_content_click` (tagged by content id +
+group) — on top of Log's existing 3 events, giving a full
+creation-through-share funnel across every major feature for the
+content-prioritization decisions mentioned as the goal.
+
 ## Ad placement
 
 `.ad-slot-vert` in the sidebar (root and arcade pages) is the reserved spot

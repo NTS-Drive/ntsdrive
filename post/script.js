@@ -281,6 +281,7 @@ function handleSeal() {
 
   const encoded = encodeLetter(letter);
   const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
+  trackEvent('post_letter_sealed', { template: TEMPLATES[composeState.tpl].id, has_photo: !!composeState.photoIndices, body_length: body.length });
   renderShareResult(url);
 }
 
@@ -305,11 +306,11 @@ function copyShareLink(url) {
   // Copies the raw link only (no explanatory text prepended) — combining
   // text + URL previously caused some paste targets (e.g. an address bar)
   // to treat the whole thing as a search query instead of a link.
-  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+  navigator.clipboard.writeText(url).then(() => { toast('링크가 복사됐어요.'); trackEvent('post_link_copied'); }).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ title: 'Post — 시간이 닿아야 열리는 편지', url }).catch(() => {});
+    navigator.share({ title: 'Post — 시간이 닿아야 열리는 편지', url }).then(() => trackEvent('post_link_shared')).catch(() => {});
   } else {
     copyShareLink(url);
   }

@@ -16,7 +16,7 @@ const RETENTION_DAYS = 14;
 const MAX_PHOTOS = 24;
 const CAPTURE_WIDTH = 600; // px — 24컷 기준으로 예산 여유가 생겨 소폭 상향
 const JPEG_QUALITY = 0.68;
-const FILM_DELAY_HOURS = [6, 12, 15, 18, 21, 24];
+const FILM_DELAY_HOURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // localStorage on this origin is shared with Post's inbox and Log's room
 // data (both lightweight text). The safest cross-browser assumption is a
@@ -137,13 +137,14 @@ function makeId() {
 }
 
 /* ===== Camera access ===== */
-function openCamera(videoEl, onError) {
+function openCamera(videoEl, facingMode, onError) {
+  facingMode = facingMode || 'environment';
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     alert('이 브라우저에서는 카메라를 사용할 수 없어요.');
     if (onError) onError();
     return;
   }
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facingMode } }, audio: false })
     .then(stream => {
       videoEl.srcObject = stream;
       videoEl.play();
@@ -254,4 +255,11 @@ function clamp(v) { return Math.max(0, Math.min(255, v)); }
 
 function pickFilmDelayHours() {
   return FILM_DELAY_HOURS[Math.floor(Math.random() * FILM_DELAY_HOURS.length)];
+}
+
+/* ===== GA4 helper (fails silently if gtag isn't loaded) ===== */
+function trackEvent(name, params) {
+  try {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  } catch (e) { /* no-op */ }
 }

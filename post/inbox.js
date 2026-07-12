@@ -112,7 +112,7 @@ function render() {
     <div class="masthead">
       <div class="kicker">Post</div>
       <h1>내 편지함</h1>
-      <div class="sub">받은 편지를 모아두고, 열리는 순간을 놓치지 마세요</div>
+      <div class="sub">받은 편지를 모아두고,<br>열리는 순간을 놓치지 마세요</div>
     </div>
 
     <div class="inbox-steps">
@@ -130,7 +130,7 @@ function render() {
 
     <div id="inboxList"></div>
 
-    <div class="disclaimer">이 목록은 지금 사용 중인 브라우저에만 저장돼요. 다른 기기·브라우저에서는 다시 등록해야 해요.<br>알림은 이 탭을 열어둔 상태에서만 울려요 — 탭을 닫으면 알림도 함께 꺼져요.</div>
+    <div class="disclaimer">이 목록은 지금 사용 중인 브라우저에만 저장돼요.<br>다른 기기·브라우저에서는 다시 등록해야 해요.<br>알림은 이 탭을 열어둔 상태에서만 울려요 — 탭을 닫으면 알림도 함께 꺼져요.</div>
   `;
   renderNotifyRow();
   renderInboxList();
