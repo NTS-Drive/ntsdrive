@@ -51,7 +51,7 @@ function renderCompose() {
 
     <div class="inbox-steps" style="margin-bottom:28px;">
       <div class="step"><div class="num">1</div><p>받는 사람과 잠금이 풀리는 시간을 정해 편지를 써요.</p></div>
-      <div class="step"><div class="num">2</div><p>링크로 전달하거나, 내 편지함에 저장해서 보관해요.</p></div>
+      <div class="step"><div class="num">2</div><p>편지 링크를 받는 사람에게 공유해요.</p></div>
       <div class="step"><div class="num">3</div><p>정해진 시간이 되면, 편지가 자동으로 열려요.</p></div>
     </div>
 
