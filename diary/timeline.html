@@ -107,10 +107,20 @@
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${CUR_YEAR}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const dayEntries = byDate[dateStr] || [];
-      const dominant = NTSDiary.getDominantMood(dayEntries);
-      const bg = dominant ? `style="background:${dominant.color}"` : '';
-      cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}${dominant ? ' has-entry' : ''}" data-date="${dateStr}" ${bg}>
+      let layers = '';
+      if (dayEntries.length) {
+        const counts = {};
+        NTSDiary.MOODS.forEach(m => { counts[m.id] = 0; });
+        dayEntries.forEach(e => { counts[e.mood] = (counts[e.mood] || 0) + 1; });
+        const total = dayEntries.length;
+        layers = NTSDiary.MOODS.filter(m => counts[m.id] > 0).map(m => {
+          const pct = (counts[m.id] / total) * 100;
+          return `<span style="height:${pct}%; background:${m.color}"></span>`;
+        }).join('');
+      }
+      cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}${dayEntries.length ? ' has-entry' : ''}" data-date="${dateStr}">
         <span class="daynum">${d}</span>
+        ${layers ? `<div class="cal-layers">${layers}</div>` : ''}
       </div>`;
     }
 
@@ -154,26 +164,36 @@
   function buildEntryRow(e, opts) {
     opts = opts || {};
     const m = NTSDiary.getMood(e.mood);
-    let dateLabel = '';
+    const created = new Date(e.createdAt);
+    const hh = String(created.getHours()).padStart(2, '0');
+    const mm = String(created.getMinutes()).padStart(2, '0');
+
+    if (opts.mode === 'compact') {
+      // 캘린더 날짜 클릭 시 요약: 이모지 없이 한 줄 요약 + (있으면) 메모
+      const causesText = e.causes.length ? ' · ' + e.causes.join(', ') : '';
+      const quote = e.text ? `<div class="tquote">${e.text}</div>` : '';
+      return `<div class="day-summary-row">
+        <div class="tdate">${hh}:${mm} · ${m.label}${causesText}</div>
+        ${quote}
+      </div>`;
+    }
+
+    // 타임라인: 컬러+이모지 아바타가 있는 카드형
+    let dateLabel = `${hh}:${mm}`;
     if (opts.showDate) {
       const d = new Date(e.date + 'T00:00:00');
       const dow = WEEKDAY_KR[d.getDay()];
-      const created = new Date(e.createdAt);
-      const hh = String(created.getHours()).padStart(2, '0');
-      const mm = String(created.getMinutes()).padStart(2, '0');
       dateLabel = `${e.date} (${dow}) ${hh}:${mm}`;
-    } else {
-      const created = new Date(e.createdAt);
-      const hh = String(created.getHours()).padStart(2, '0');
-      const mm = String(created.getMinutes()).padStart(2, '0');
-      dateLabel = `${hh}:${mm}`;
     }
     const tags = e.causes.length ? `<div class="entry-tags">${e.causes.map(c => `<span class="entry-tag">${c}</span>`).join('')}</div>` : '';
     const quote = e.text ? `<div class="tquote">${e.text}</div>` : '';
     return `<div class="entry-row">
-      <div class="entry-head"><span class="entry-mood">${m.label}</span><span class="entry-time">${dateLabel}</span></div>
-      ${tags}
-      ${quote}
+      <span class="entry-avatar" style="background:${m.color}">${m.emoji}</span>
+      <div class="entry-content">
+        <div class="entry-head"><span class="entry-mood">${m.label}</span><span class="entry-time">${dateLabel}</span></div>
+        ${tags}
+        ${quote}
+      </div>
     </div>`;
   }
 
@@ -183,7 +203,7 @@
     const d = new Date(dateStr + 'T00:00:00');
     const dow = WEEKDAY_KR[d.getDay()];
     const rows = dayEntries.slice().sort((a, b) => b.createdAt - a.createdAt)
-      .map(e => buildEntryRow(e, { showDate: false })).join('');
+      .map(e => buildEntryRow(e, { mode: 'compact' })).join('');
     detailEl.innerHTML = `<div class="day-detail"><div class="day-detail-head">${dateStr} (${dow})</div>${rows}</div>`;
   }
 
@@ -221,7 +241,7 @@
     const entries = NTSDiary.getEntries().filter(e => e.date >= monday && e.date <= sunday);
 
     const list = entries.length
-      ? `<div class="timeline-list">${entries.map(e => buildEntryRow(e, { showDate: true })).join('')}</div>`
+      ? `<div class="timeline-list">${entries.map(e => buildEntryRow(e, { mode: 'card', showDate: true })).join('')}</div>`
       : `<div class="timeline-empty">이 주에는 기록이 없어요.</div>`;
 
     const idx = YEAR_MONDAYS.indexOf(monday);
