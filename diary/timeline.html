@@ -103,11 +103,12 @@
     for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
       const dateStr = `${CUR_YEAR}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const dayEntries = (byDate[dateStr] || []).slice(0, 4);
-      const layers = dayEntries.map(e => `<span style="background:${NTSDiary.getMood(e.mood).color}"></span>`).join('');
-      cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}">
+      const dayEntries = byDate[dateStr] || [];
+      const dominant = NTSDiary.getDominantMood(dayEntries);
+      const bg = dominant ? `style="background:${dominant.color}"` : '';
+      cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}${dominant ? ' has-entry' : ''}" data-date="${dateStr}" ${bg}>
         <span class="daynum">${d}</span>
-        <div class="layers">${layers}</div>
+        ${dominant ? `<span class="cal-emoji">${dominant.emoji}</span>` : ''}
       </div>`;
     }
 
@@ -124,12 +125,38 @@
       <div class="cal-grid">
         ${['월','화','수','목','금','토','일'].map(d => `<div class="cal-dow">${d}</div>`).join('')}
         ${cells}
-      </div>`;
+      </div>
+      <div id="calDayDetail"></div>`;
 
     document.getElementById('calPrev').onclick = () => { if (calMonth > 0) { calMonth--; renderCalendar(); } };
     document.getElementById('calNext').onclick = () => { if (calMonth < 11) { calMonth++; renderCalendar(); } };
     document.getElementById('calMonthSelect').onchange = (e) => { calMonth = parseInt(e.target.value, 10); renderCalendar(); };
     document.getElementById('calThisMonth').onclick = () => { calMonth = CUR_MONTH; renderCalendar(); };
+
+    el.querySelectorAll('.cal-cell.has-entry').forEach(cell => {
+      cell.onclick = () => renderDayDetail(cell.dataset.date, byDate[cell.dataset.date] || []);
+    });
+  }
+
+  function renderDayDetail(dateStr, dayEntries) {
+    const detailEl = document.getElementById('calDayDetail');
+    if (!detailEl) return;
+    const d = new Date(dateStr + 'T00:00:00');
+    const dow = WEEKDAY_KR[d.getDay()];
+    const rows = dayEntries.slice().sort((a, b) => b.createdAt - a.createdAt).map(e => {
+      const m = NTSDiary.getMood(e.mood);
+      const created = new Date(e.createdAt);
+      const hh = String(created.getHours()).padStart(2, '0');
+      const mm = String(created.getMinutes()).padStart(2, '0');
+      return `<div class="day-detail-row">
+        <span class="ticon" style="background:${m.color}">${m.emoji}</span>
+        <div class="tbody">
+          <div class="tdate">${hh}:${mm} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
+          ${e.text ? `<div class="tquote">${e.text}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    detailEl.innerHTML = `<div class="day-detail"><div class="day-detail-head">${dateStr} (${dow})</div>${rows}</div>`;
   }
 
   /* ---------------- 타임라인: 주 단위 페이징 (올해 주차 내에서만 이동) ---------------- */
@@ -177,7 +204,7 @@
             <span class="ticon" style="background:${m.color}">${m.emoji}</span>
             <div class="tbody">
               <div class="tdate">${e.date} (${dow}) ${hh}:${mm} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
-              ${e.text ? `<div class="ttext">${e.text}</div>` : ''}
+              ${e.text ? `<div class="tquote">${e.text}</div>` : ''}
             </div>
           </div>`;
         }).join('')}</div>`

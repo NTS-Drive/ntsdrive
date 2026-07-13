@@ -100,7 +100,7 @@ function renderCompose() {
     <div class="field">
       <label>잠금 해제 시간</label>
       <div class="preset-row" id="presetRow"></div>
-      <input type="datetime-local" id="unlockInput" value="${toDatetimeLocalValue(composeState.unlockMs)}">
+      <input type="datetime-local" id="unlockInput" value="${toDatetimeLocalValue(composeState.unlockMs)}" style="display:none;">
     </div>
 
     <button class="seal-btn" id="sealBtn" onclick="handleSeal()">편지 봉인하기</button>
@@ -123,7 +123,7 @@ function renderCompose() {
   });
   document.getElementById('unlockInput').addEventListener('change', e => {
     composeState.unlockMs = new Date(e.target.value).getTime();
-    composeState.selectedPreset = null;
+    composeState.selectedPreset = 'custom';
     renderPresetRow();
   });
 }
@@ -137,17 +137,28 @@ function selectTemplate(i) {
 function renderPresetRow() {
   const presets = [
     { key: '1h', label: '1시간 후' },
-    { key: 'midnight', label: '오늘 자정' },
+    { key: 'midnight', label: '오늘밤 12시' },
     { key: 'tomorrow9', label: '내일 아침 9시' },
-    { key: 'nextwork9', label: '다음 출근일 아침' }
+    { key: 'month1', label: '한 달 후' },
+    { key: 'day100', label: '100일 후' },
+    { key: 'custom', label: '직접입력' }
   ];
   document.getElementById('presetRow').innerHTML = presets.map(p => `
     <button type="button" class="preset-btn ${composeState.selectedPreset === p.key ? 'selected' : ''}" onclick="applyPreset('${p.key}')">${p.label}</button>
   `).join('');
+  const unlockInputEl = document.getElementById('unlockInput');
+  if (unlockInputEl) unlockInputEl.style.display = composeState.selectedPreset === 'custom' ? 'block' : 'none';
 }
 
 function applyPreset(key) {
   composeState.selectedPreset = key;
+  if (key === 'custom') {
+    // 직접입력: 프리셋 시간 계산 없이 날짜 피커만 노출 (기존 값 유지)
+    renderPresetRow();
+    const unlockInputEl = document.getElementById('unlockInput');
+    if (unlockInputEl) unlockInputEl.focus();
+    return;
+  }
   composeState.unlockMs = getPresetTime(key);
   document.getElementById('unlockInput').value = toDatetimeLocalValue(composeState.unlockMs);
   renderPresetRow();

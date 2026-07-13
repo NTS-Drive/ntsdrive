@@ -74,7 +74,8 @@ function getPresetTime(key) {
     case '1h': return Date.now() + 60 * 60 * 1000;
     case 'midnight': { const m = new Date(); m.setHours(24, 0, 0, 0); return m.getTime(); }
     case 'tomorrow9': { const m = new Date(); m.setDate(m.getDate() + 1); m.setHours(9, 0, 0, 0); return m.getTime(); }
-    case 'nextwork9': return nextWorkdayMorning();
+    case 'month1': { const m = new Date(); m.setMonth(m.getMonth() + 1); return m.getTime(); }
+    case 'day100': return Date.now() + 100 * 24 * 60 * 60 * 1000;
     default: return null;
   }
 }

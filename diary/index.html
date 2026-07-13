@@ -52,7 +52,7 @@
 
   <!-- STEP 2: 원인 선택 -->
   <div class="diary-section">
-    <div class="diary-step-label">STEP 2 · 왜 그런 기분이 들었나요? (선택, 그룹별 최대 2개)</div>
+    <div class="diary-step-label">STEP 2 · 왜 그런 기분이 들었나요? (선택, 최대 3개) <span id="causeCounter" class="cause-counter">0/3 선택</span></div>
     <div id="causeGroups"></div>
   </div>
 
@@ -112,32 +112,48 @@
   }
 
   const causeGroups = document.getElementById('causeGroups');
-  const selectedCausesByGroup = {};
-  Object.keys(NTSDiary.CAUSES).forEach(g => { selectedCausesByGroup[g] = []; });
+  selectedCauses = [];
 
-  Object.entries(NTSDiary.CAUSES).forEach(([groupName, tags]) => {
-    const group = document.createElement('div');
-    group.className = 'cause-group';
-    group.dataset.group = groupName;
-    group.innerHTML = `<h4>${groupName} <span class="cause-limit">(최대 2개)</span></h4><div class="cause-tags">${tags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
-    causeGroups.appendChild(group);
+  // ---- 자주 쓰는 태그 ----
+  const freqTags = NTSDiary.getFrequentTags(3);
+  const freqBlock = document.createElement('div');
+  freqBlock.className = 'cause-group cause-freq';
+  if (freqTags.length) {
+    freqBlock.innerHTML = `<h4>⭐ 자주 쓰는 태그</h4><div class="cause-tags">${freqTags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
+  } else {
+    freqBlock.innerHTML = `<h4>⭐ 자주 쓰는 태그</h4><p class="cause-freq-empty">아직 태그를 사용한 기록이 없어요. 기록이 쌓이면 자주 쓰는 태그가 여기 모여요.</p>`;
+  }
+  causeGroups.appendChild(freqBlock);
+
+  // ---- 4개 고정 카테고리 ----
+  NTSDiary.CAUSE_GROUPS.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'cause-group';
+    groupEl.style.setProperty('--group-color', group.color);
+    groupEl.innerHTML = `<h4>${group.label}</h4><div class="cause-tags">${group.tags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
+    causeGroups.appendChild(groupEl);
   });
+
+  const causeCounter = document.getElementById('causeCounter');
+  function refreshCauseTagStates() {
+    causeGroups.querySelectorAll('.cause-tag').forEach(tagEl => {
+      tagEl.classList.toggle('selected', selectedCauses.includes(tagEl.dataset.tag));
+      tagEl.classList.toggle('disabled', !selectedCauses.includes(tagEl.dataset.tag) && selectedCauses.length >= NTSDiary.MAX_CAUSES);
+    });
+    if (causeCounter) causeCounter.textContent = `${selectedCauses.length}/${NTSDiary.MAX_CAUSES} 선택`;
+  }
   causeGroups.addEventListener('click', (e) => {
     const tag = e.target.closest('.cause-tag');
     if (!tag) return;
-    const groupEl = tag.closest('.cause-group');
-    const groupName = groupEl.dataset.group;
     const val = tag.dataset.tag;
-    const list = selectedCausesByGroup[groupName];
-    if (list.includes(val)) {
-      selectedCausesByGroup[groupName] = list.filter(c => c !== val);
-      tag.classList.remove('selected');
-    } else if (list.length < 2) {
-      list.push(val);
-      tag.classList.add('selected');
+    if (selectedCauses.includes(val)) {
+      selectedCauses = selectedCauses.filter(c => c !== val);
+    } else if (selectedCauses.length < NTSDiary.MAX_CAUSES) {
+      selectedCauses.push(val);
     }
-    selectedCauses = Object.values(selectedCausesByGroup).flat();
+    refreshCauseTagStates();
   });
+  refreshCauseTagStates();
 
   const textInput = document.getElementById('textInput');
   const charCount = document.getElementById('charCount');
