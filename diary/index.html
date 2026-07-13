@@ -114,12 +114,18 @@
   const causeGroups = document.getElementById('causeGroups');
   selectedCauses = [];
 
-  // ---- 자주 쓰는 태그 ----
+  // 태그 → 카테고리 색상 매핑
+  const tagColorMap = {};
+  NTSDiary.CAUSE_GROUPS.forEach(group => {
+    group.tags.forEach(t => { tagColorMap[t] = group.color; });
+  });
+
+  // ---- 자주 쓰는 태그 (카테고리 블록과 시각적으로 구분) ----
   const freqTags = NTSDiary.getFrequentTags(3);
   const freqBlock = document.createElement('div');
   freqBlock.className = 'cause-group cause-freq';
   if (freqTags.length) {
-    freqBlock.innerHTML = `<h4>⭐ 자주 쓰는 태그</h4><div class="cause-tags">${freqTags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
+    freqBlock.innerHTML = `<h4>⭐ 자주 쓰는 태그</h4><div class="cause-tags">${freqTags.map(t => `<span class="cause-tag" data-tag="${t}" style="--tag-color:${tagColorMap[t] || 'var(--accent)'}">${t}</span>`).join('')}</div>`;
   } else {
     freqBlock.innerHTML = `<h4>⭐ 자주 쓰는 태그</h4><p class="cause-freq-empty">아직 태그를 사용한 기록이 없어요. 기록이 쌓이면 자주 쓰는 태그가 여기 모여요.</p>`;
   }
@@ -130,7 +136,7 @@
     const groupEl = document.createElement('div');
     groupEl.className = 'cause-group';
     groupEl.style.setProperty('--group-color', group.color);
-    groupEl.innerHTML = `<h4>${group.label}</h4><div class="cause-tags">${group.tags.map(t => `<span class="cause-tag" data-tag="${t}">${t}</span>`).join('')}</div>`;
+    groupEl.innerHTML = `<h4>${group.label}</h4><div class="cause-tags">${group.tags.map(t => `<span class="cause-tag" data-tag="${t}" style="--tag-color:${group.color}">${t}</span>`).join('')}</div>`;
     causeGroups.appendChild(groupEl);
   });
 

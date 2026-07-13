@@ -70,15 +70,17 @@
     const bar = r.ratios.map(x => `<span style="width:${x.percent}%; background:${x.color}"></span>`).join('');
     const legend = r.ratios.map(x => `<span class="item"><span class="dot" style="background:${x.color}"></span>${x.emoji} ${x.label} ${x.percent}%</span>`).join('');
     const guide = r.actionGuide
-      ? `<div class="weekly-guide">💡 <b>이럴 땐 이런 건 어떨까요?</b><br>${r.actionGuide.map(g => '· ' + g).join('<br>')}</div>`
+      ? `<div class="weekly-guide"><span class="msg-label">이럴 땐 이런 건 어떨까요</span>${r.actionGuide.map(g => '· ' + g).join('<br>')}</div>`
       : '';
 
     document.getElementById('weeklyCard').innerHTML = `
       <div class="weekly-card">
         <div class="range">${r.weekStart} ~ ${r.weekEnd} · 이번 주 기록 ${r.total}개</div>
         ${r.total ? `<div class="weekly-bar">${bar}</div><div class="weekly-legend">${legend}</div>` : ''}
-        <div class="weekly-encourage">💌 ${r.encourage}</div>
-        ${guide}
+        <div class="weekly-message">
+          <div class="weekly-encourage"><span class="msg-label">이번 주 한마디</span>${r.encourage}</div>
+          ${guide}
+        </div>
       </div>`;
   }
 
@@ -88,6 +90,7 @@
   const CUR_MONTH = NOW.getMonth();
   let calMonth = CUR_MONTH; // 0~11, calYear는 항상 CUR_YEAR로 고정 (연간 리셋 정책과 일치)
 
+  let openDayDetail = null;
   function renderCalendar() {
     const el = document.getElementById('calendarView');
     const entries = NTSDiary.getEntries();
@@ -108,7 +111,6 @@
       const bg = dominant ? `style="background:${dominant.color}"` : '';
       cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}${dominant ? ' has-entry' : ''}" data-date="${dateStr}" ${bg}>
         <span class="daynum">${d}</span>
-        ${dominant ? `<span class="cal-emoji">${dominant.emoji}</span>` : ''}
       </div>`;
     }
 
@@ -134,8 +136,45 @@
     document.getElementById('calThisMonth').onclick = () => { calMonth = CUR_MONTH; renderCalendar(); };
 
     el.querySelectorAll('.cal-cell.has-entry').forEach(cell => {
-      cell.onclick = () => renderDayDetail(cell.dataset.date, byDate[cell.dataset.date] || []);
+      cell.onclick = () => {
+        const date = cell.dataset.date;
+        if (openDayDetail === date) {
+          openDayDetail = null;
+          document.getElementById('calDayDetail').innerHTML = '';
+          el.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('active-day'));
+          return;
+        }
+        openDayDetail = date;
+        el.querySelectorAll('.cal-cell').forEach(c => c.classList.toggle('active-day', c.dataset.date === date));
+        renderDayDetail(date, byDate[date] || []);
+      };
     });
+  }
+
+  function buildEntryRow(e, opts) {
+    opts = opts || {};
+    const m = NTSDiary.getMood(e.mood);
+    let dateLabel = '';
+    if (opts.showDate) {
+      const d = new Date(e.date + 'T00:00:00');
+      const dow = WEEKDAY_KR[d.getDay()];
+      const created = new Date(e.createdAt);
+      const hh = String(created.getHours()).padStart(2, '0');
+      const mm = String(created.getMinutes()).padStart(2, '0');
+      dateLabel = `${e.date} (${dow}) ${hh}:${mm}`;
+    } else {
+      const created = new Date(e.createdAt);
+      const hh = String(created.getHours()).padStart(2, '0');
+      const mm = String(created.getMinutes()).padStart(2, '0');
+      dateLabel = `${hh}:${mm}`;
+    }
+    const tags = e.causes.length ? `<div class="entry-tags">${e.causes.map(c => `<span class="entry-tag">${c}</span>`).join('')}</div>` : '';
+    const quote = e.text ? `<div class="tquote">${e.text}</div>` : '';
+    return `<div class="entry-row">
+      <div class="entry-head"><span class="entry-mood">${m.label}</span><span class="entry-time">${dateLabel}</span></div>
+      ${tags}
+      ${quote}
+    </div>`;
   }
 
   function renderDayDetail(dateStr, dayEntries) {
@@ -143,19 +182,8 @@
     if (!detailEl) return;
     const d = new Date(dateStr + 'T00:00:00');
     const dow = WEEKDAY_KR[d.getDay()];
-    const rows = dayEntries.slice().sort((a, b) => b.createdAt - a.createdAt).map(e => {
-      const m = NTSDiary.getMood(e.mood);
-      const created = new Date(e.createdAt);
-      const hh = String(created.getHours()).padStart(2, '0');
-      const mm = String(created.getMinutes()).padStart(2, '0');
-      return `<div class="day-detail-row">
-        <span class="ticon" style="background:${m.color}">${m.emoji}</span>
-        <div class="tbody">
-          <div class="tdate">${hh}:${mm} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
-          ${e.text ? `<div class="tquote">${e.text}</div>` : ''}
-        </div>
-      </div>`;
-    }).join('');
+    const rows = dayEntries.slice().sort((a, b) => b.createdAt - a.createdAt)
+      .map(e => buildEntryRow(e, { showDate: false })).join('');
     detailEl.innerHTML = `<div class="day-detail"><div class="day-detail-head">${dateStr} (${dow})</div>${rows}</div>`;
   }
 
@@ -193,21 +221,7 @@
     const entries = NTSDiary.getEntries().filter(e => e.date >= monday && e.date <= sunday);
 
     const list = entries.length
-      ? `<div class="timeline-list">${entries.map(e => {
-          const m = NTSDiary.getMood(e.mood);
-          const d = new Date(e.date + 'T00:00:00');
-          const dow = WEEKDAY_KR[d.getDay()];
-          const created = new Date(e.createdAt);
-          const hh = String(created.getHours()).padStart(2,'0');
-          const mm = String(created.getMinutes()).padStart(2,'0');
-          return `<div class="timeline-item">
-            <span class="ticon" style="background:${m.color}">${m.emoji}</span>
-            <div class="tbody">
-              <div class="tdate">${e.date} (${dow}) ${hh}:${mm} · ${m.label}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</div>
-              ${e.text ? `<div class="tquote">${e.text}</div>` : ''}
-            </div>
-          </div>`;
-        }).join('')}</div>`
+      ? `<div class="timeline-list">${entries.map(e => buildEntryRow(e, { showDate: true })).join('')}</div>`
       : `<div class="timeline-empty">이 주에는 기록이 없어요.</div>`;
 
     const idx = YEAR_MONDAYS.indexOf(monday);

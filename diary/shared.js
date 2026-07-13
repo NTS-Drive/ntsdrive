@@ -17,7 +17,7 @@
     { id: 'excited',  label: '설렘',   emoji: '🥰', color: '#FFCAD4', tone: 'positive' },
     { id: 'proud',    label: '뿌듯함', emoji: '🥹', color: '#C9E4DE', tone: 'positive' },
     { id: 'embarrassed', label: '당황', emoji: '😳', color: '#FAEDCD', tone: 'neutral'  },
-    { id: 'bored',    label: '지루',   emoji: '🥱', color: '#F2E9E1', tone: 'neutral'  },
+    { id: 'bored',    label: '피곤',   emoji: '😪', color: '#F2E9E1', tone: 'neutral'  },
     { id: 'anger',    label: '분노',   emoji: '🔥', color: '#FBC4B6', tone: 'negative' },
     { id: 'annoyed',  label: '짜증',   emoji: '😤', color: '#DBCDF0', tone: 'negative' },
     { id: 'sad',      label: '슬픔',   emoji: '😢', color: '#C6DEF1', tone: 'negative' },
@@ -63,7 +63,7 @@
     anxious:     ['짧은 산책으로 생각 정리하기', '오늘 할 일을 하나만 정해서 끝내기', '좋아하는 향의 차 마시기'],
     annoyed:     ['좋아하는 음식 배달시키기', '잠깐이라도 낮잠 자기', '스트레칭으로 몸 풀어주기'],
     embarrassed: ['편한 사람과 수다 떨기', '재밌는 영상 하나 보기'],
-    bored:       ['가보지 않은 동네 산책하기', '새로운 플레이리스트 만들기']
+    bored:       ['잠깐이라도 눈 붙이기', '평소보다 일찍 잠자리에 들기', '따뜻한 물로 개운하게 씻기']
   };
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
