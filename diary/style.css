@@ -150,5 +150,5 @@ body.leaving { animation: pageOut .28s ease both; }
 .timeline-item .ticon{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:17px;}
 .timeline-item .tbody{min-width:0;}
 .timeline-item .tdate{font-size:11px; color:var(--ink-muted);}
-.timeline-item .ttext{font-size:13.5px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.timeline-item .ttext{font-family:'NanumSonDahaeng',sans-serif; font-size:15px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .timeline-empty{text-align:center; color:var(--ink-muted); font-size:13px; padding:40px 0;}

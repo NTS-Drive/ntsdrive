@@ -91,7 +91,7 @@ body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
   color: var(--cam-ink); padding: 12px 14px; font-size: 14px; outline: none; box-sizing: border-box;
 }
 .cam-field input:focus { border-color: var(--film-accent); }
-.date-check-row { display: flex; align-items: center; justify-content: flex-end; gap: 7px; font-size: 12.5px; line-height: 15px; text-transform: none; letter-spacing: 0; color: var(--cam-muted); cursor: pointer; margin-bottom: 10px; }
+.date-check-row { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 12.5px; line-height: 15px; text-transform: none; letter-spacing: 0; color: var(--cam-muted); cursor: pointer; margin-bottom: 10px; }
 .date-check-row input[type="checkbox"] { width: 15px; height: 15px; margin: 0; accent-color: var(--film-accent); cursor: pointer; }
 .char-count-row { text-align: right; font-size: 11px; color: var(--cam-muted); margin-top: 6px; }
 #capCharCount.limit { color: #E0674F; font-weight: 700; }

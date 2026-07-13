@@ -77,7 +77,7 @@ function renderCompose() {
 
       <div class="field" style="margin-bottom:0;">
         <label>편지 내용</label>
-        <textarea id="letterBody" maxlength="${MAX_CHARS}" placeholder="지금의 마음을 적어보세요"></textarea>
+        <textarea id="letterBody" maxlength="${MAX_CHARS}" placeholder="지금의 마음을 적어보세요" style="font-family:'NanumSonDahaeng',var(--font-serif);"></textarea>
         <div class="char-count" id="charCount">0 / ${MAX_CHARS}</div>
       </div>
     </div>

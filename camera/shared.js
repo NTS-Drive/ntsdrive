@@ -16,7 +16,6 @@ const RETENTION_DAYS = 14;
 const MAX_PHOTOS = 24;
 const CAPTURE_WIDTH = 600; // px — 24컷 기준으로 예산 여유가 생겨 소폭 상향
 const JPEG_QUALITY = 0.68;
-const FILM_DELAY_HOURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 // localStorage on this origin is shared with Post's inbox and Log's room
 // data (both lightweight text). The safest cross-browser assumption is a
@@ -274,7 +273,18 @@ function applyFilmFilter(sourceCanvas) {
 function clamp(v) { return Math.max(0, Math.min(255, v)); }
 
 function pickFilmDelayHours() {
-  return FILM_DELAY_HOURS[Math.floor(Math.random() * FILM_DELAY_HOURS.length)];
+  // 구간별 확률: 1~3시간 50%, 4~6시간 30%, 6~12시간 20%
+  // 각 구간 내부에서는 균등 랜덤으로 시간을 뽑는다.
+  const r = Math.random();
+  let bucket;
+  if (r < 0.5) {
+    bucket = [1, 2, 3];
+  } else if (r < 0.8) {
+    bucket = [4, 5, 6];
+  } else {
+    bucket = [6, 7, 8, 9, 10, 11, 12];
+  }
+  return bucket[Math.floor(Math.random() * bucket.length)];
 }
 
 /* ===== GA4 helper (fails silently if gtag isn't loaded) ===== */

@@ -104,7 +104,7 @@ function renderPreview(framedCanvas) {
     <div class="cam-field">
       <label class="date-check-row">날짜 넣기 <input type="checkbox" id="dateCheck"></label>
       <label>한 줄 메모 (선택, 최대 20자)</label>
-      <input type="text" id="captionInput" maxlength="20" placeholder="이 순간을 짧게 남겨보세요" style="font-family:'NanumSonDahaeng','BrownCookies',sans-serif; font-size:16px;">
+      <input type="text" id="captionInput" maxlength="20" placeholder="이 순간을 짧게 남겨보세요" style="font-family:'NanumSonDahaeng',sans-serif; font-size:16px;">
       <div class="char-count-row"><span id="capCharCount">0</span>/20</div>
     </div>
     <div class="cam-result-actions">
@@ -141,23 +141,6 @@ function renderPreview(framedCanvas) {
     if (isComposing) { capCount.textContent = capInput.value.length; return; }
     enforceCaptionLimit();
   });
-}
-
-function splitByScript(str) {
-  const parts = [];
-  let current = '', currentIsKorean = null;
-  for (const ch of str) {
-    const isKorean = /[\uAC00-\uD7A3\u3131-\u318E]/.test(ch);
-    if (currentIsKorean === null || isKorean === currentIsKorean) {
-      current += ch;
-      currentIsKorean = isKorean;
-    } else {
-      parts.push({ text: current, korean: currentIsKorean });
-      current = ch; currentIsKorean = isKorean;
-    }
-  }
-  if (current) parts.push({ text: current, korean: currentIsKorean });
-  return parts;
 }
 
 function handleSave() {
@@ -201,34 +184,17 @@ function handleSave() {
     return;
   }
 
-  Promise.all([
-    document.fonts.load('400 40px NanumSonDahaeng'),
-    document.fonts.load('400 40px BrownCookies')
-  ]).then(() => {
+  document.fonts.load('400 40px NanumSonDahaeng').then(() => {
     const fontSize = Math.round(canvas.width * 0.062);
-    const korFont = `400 ${fontSize}px NanumSonDahaeng, sans-serif`;
-    const engFont = `400 ${fontSize}px BrownCookies, sans-serif`;
-    const segments = splitByScript(caption);
-
+    ctx.font = `400 ${fontSize}px NanumSonDahaeng, sans-serif`;
     ctx.fillStyle = '#3A342A';
     ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-
-    let totalWidth = 0;
-    segments.forEach(seg => {
-      ctx.font = seg.korean ? korFont : engFont;
-      totalWidth += ctx.measureText(seg.text).width;
-    });
+    ctx.textAlign = 'center';
 
     ctx.save();
     ctx.translate(canvas.width / 2, capY);
     ctx.rotate(-0.02);
-    let x = -totalWidth / 2;
-    segments.forEach(seg => {
-      ctx.font = seg.korean ? korFont : engFont;
-      ctx.fillText(seg.text, x, 0);
-      x += ctx.measureText(seg.text).width;
-    });
+    ctx.fillText(caption, 0, 0);
     ctx.restore();
 
     drawDateIfNeeded();

@@ -265,6 +265,7 @@ function renderDashboard() {
 
   const remaining = Math.max(0, currentRoom.goal - total);
   const pct = Math.min(100, Math.round((total / currentRoom.goal) * 100));
+  const writeUrl = `${window.location.origin}${window.location.pathname.replace('index.html', 'write.html')}?room=${roomEncoded}`;
 
   stage.innerHTML = `
     <div class="masthead" style="margin-bottom:24px;">
@@ -272,6 +273,12 @@ function renderDashboard() {
     </div>
     <div class="room-title">${escapeHtml(currentRoom.title)}</div>
     <div class="room-dday">${formatDday(currentRoom.dday)}에 열리거나, 목표를 채우면 열려요</div>
+
+    <div class="link-box"><input type="text" readonly value="${writeUrl}"></div>
+    <div class="share-actions" style="margin-bottom:24px;">
+      <button class="ghost-btn" style="flex:1;" onclick="copyLink('${writeUrl}')">친구용 링크 복사</button>
+      <button class="ghost-btn" style="flex:1;" onclick="shareLink('${writeUrl}')">공유하기</button>
+    </div>
 
     <div class="gauge-wrap">
       <div class="gauge-count"><b>${total}</b> / ${currentRoom.goal}자</div>
