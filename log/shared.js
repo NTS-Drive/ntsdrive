@@ -1,4 +1,4 @@
-/* ===== Shared across log/create.html, log/write.html, log/index.html ===== */
+/* ===== Shared across log/write.html, log/index.html, log/mylogs.html ===== */
 
 function navigate(url) {
   document.body.classList.add('leaving');

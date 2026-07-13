@@ -35,6 +35,13 @@ body.leaving { animation: pageOut .28s ease both; }
 .masthead .kicker { font-size: 11px; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
 .masthead h1 { font-family: var(--font-serif); font-weight: 700; font-size: 34px; letter-spacing: -0.01em; margin-bottom: 12px; }
 .masthead .sub { font-family: var(--font-serif); font-style: italic; font-size: 14px; color: var(--ink-muted); }
+.howto-steps { margin-bottom: 34px; }
+.howto-steps .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: center; }
+.howto-steps .num {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1;
+}
+.howto-steps p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin: 0; }
 .diary-subhead{font-size:13px; font-weight:700; color:var(--ink); margin:36px 0 12px; letter-spacing:.02em;}
 .diary-subhead:first-of-type{margin-top:0;}
 .cause-limit{font-weight:400; color:var(--ink-muted); font-size:11.5px;}
