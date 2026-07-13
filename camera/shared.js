@@ -206,36 +206,53 @@ function applySnapFilter(sourceCanvas) {
 }
 
 function applyFilmFilter(sourceCanvas) {
-  // Desaturated, faded, grainy, vignetted — classic expired-film look.
+  // Warm, natural-saturation film look (Portra/golden-hour style) — inspired by real
+  // film-camera scans: warm highlights, faint cool shadows, gentle contrast, soft grain.
   const w = sourceCanvas.width, h = sourceCanvas.height;
   const ctx = sourceCanvas.getContext('2d');
   const data = ctx.getImageData(0, 0, w, h);
   const px = data.data;
   for (let i = 0; i < px.length; i += 4) {
-    const r = px[i], g = px[i + 1], b = px[i + 2];
+    let r = px[i], g = px[i + 1], b = px[i + 2];
+
+    // split-tone: warm highlights, faint cool shadows
+    const lum = (r * 0.3 + g * 0.59 + b * 0.11) / 255;
+    r = r + lum * 16 - (1 - lum) * 3;
+    g = g + lum * 5;
+    b = b - lum * 12 + (1 - lum) * 9;
+
+    // gentle S-curve contrast
+    r = (r - 128) * 1.07 + 128;
+    g = (g - 128) * 1.07 + 128;
+    b = (b - 128) * 1.07 + 128;
+
+    // slight saturation lift (keep skies/greens vivid, unlike faded/expired look)
     const gray = r * 0.3 + g * 0.59 + b * 0.11;
-    // desaturate toward gray, lift shadows (faded look), push a slight green/yellow cast
-    px[i] = clamp(r * 0.75 + gray * 0.25 + 14);
-    px[i + 1] = clamp(g * 0.78 + gray * 0.22 + 18);
-    px[i + 2] = clamp(b * 0.8 + gray * 0.2 - 6);
+    r = gray + (r - gray) * 1.12;
+    g = gray + (g - gray) * 1.12;
+    b = gray + (b - gray) * 1.08;
+
+    px[i] = clamp(r);
+    px[i + 1] = clamp(g);
+    px[i + 2] = clamp(b);
   }
   ctx.putImageData(data, 0, 0);
 
-  // grain
+  // grain (slightly softer than before)
   const grain = ctx.getImageData(0, 0, w, h);
   const gpx = grain.data;
   for (let i = 0; i < gpx.length; i += 4) {
-    const n = (Math.random() - 0.5) * 26;
+    const n = (Math.random() - 0.5) * 20;
     gpx[i] = clamp(gpx[i] + n);
     gpx[i + 1] = clamp(gpx[i + 1] + n);
     gpx[i + 2] = clamp(gpx[i + 2] + n);
   }
   ctx.putImageData(grain, 0, 0);
 
-  // vignette
-  const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.35, w / 2, h / 2, w * 0.72);
+  // warm-toned vignette (brownish, not flat black — matches sunlit film scans)
+  const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.4, w / 2, h / 2, w * 0.75);
   grad.addColorStop(0, 'rgba(0,0,0,0)');
-  grad.addColorStop(1, 'rgba(20,15,10,0.45)');
+  grad.addColorStop(1, 'rgba(35,22,12,0.38)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 

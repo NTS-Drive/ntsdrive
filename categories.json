@@ -2,7 +2,7 @@
   {
     "id": "post",
     "name": "Post",
-    "description": "마음을 담아 편지를 쓰고, 원하는 시간까지 잠가둘 수 있어요.",
+    "description": "마음을 담아 편지를 쓰고,<br class=\"mob-break\"> 원하는 시간까지 잠가둘 수 있어요.",
     "emoji": "✉️",
     "status": "Live",
     "path": "post/index.html",
@@ -11,7 +11,7 @@
   {
     "id": "log",
     "name": "Log",
-    "description": "여러 사람의 마음이 모여 쌓이는 공간이에요. 방을 만들어보세요.",
+    "description": "여러 사람의 마음이 모여 쌓이는 공간이에요.<span class=\"desc-desktop-only\"> 방을 만들어보세요.</span>",
     "emoji": "📖",
     "status": "Live",
     "path": "log/index.html",
@@ -20,7 +20,7 @@
   {
     "id": "diary",
     "name": "Diary",
-    "description": "일자별로 오늘의 감정을 기록하는 공간이에요.",
+    "description": "<span class=\"desc-desktop-only\">일자별로 오늘의 감정을 기록하는 공간이에요.</span><span class=\"desc-mobile-only\">지금의 감정을 기록하는 공간이에요.</span>",
     "emoji": "📔",
     "status": "Live",
     "path": "diary/index.html",

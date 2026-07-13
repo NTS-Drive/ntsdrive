@@ -27,7 +27,7 @@
 
 <div class="stage">
   <div class="diary-step-label">DIARY</div>
-  <div class="diary-title">나의 감정 기록들</div>
+  <div class="diary-title">내 감정 기록들</div>
 
   <div id="weeklyCard"></div>
 
@@ -37,7 +37,10 @@
   <div class="diary-subhead">타임라인</div>
   <div id="timelineView"></div>
 
-  <div class="reset-note">🗓 감정 기록은 매년 1월 1일 00:00에 새로 초기화돼요<br>이 목록은 지금 사용 중인 브라우저에만 저장돼요.<br>놓치지 않고 보려면 <a onclick="handleCreateShortcut()" style="color:var(--accent); text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
+  <div class="reset-note">
+    <div>🗓 감정 기록은 매년 1월 1일 00시에 초기화 돼요.</div>
+    <div>💾 감정 기록은 지금 사용 중인 브라우저에만 저장되니, 놓치지 않으려면 <a onclick="handleCreateShortcut()" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
+  </div>
 </div>
 
 <a class="diary-fab" onclick="navigate('index.html')">✍️ 지금 감정 기록하기</a>
@@ -80,24 +83,28 @@
       </div>`;
   }
 
-  /* ---------------- 캘린더 (월요일 시작) ---------------- */
-  let calYear, calMonth;
+  /* ---------------- 캘린더 (월요일 시작, 올해 1~12월 내에서만 이동) ---------------- */
+  const NOW = new Date();
+  const CUR_YEAR = NOW.getFullYear();
+  const CUR_MONTH = NOW.getMonth();
+  let calMonth = CUR_MONTH; // 0~11, calYear는 항상 CUR_YEAR로 고정 (연간 리셋 정책과 일치)
+
   function renderCalendar() {
     const el = document.getElementById('calendarView');
     const entries = NTSDiary.getEntries();
     const byDate = {};
     entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
 
-    const first = new Date(calYear, calMonth, 1);
+    const first = new Date(CUR_YEAR, calMonth, 1);
     const startDow = (first.getDay() + 6) % 7; // 0=월 ... 6=일
-    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const daysInMonth = new Date(CUR_YEAR, calMonth + 1, 0).getDate();
     const todayStr = NTSDiary.todayStr();
 
     let cells = '';
     for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const dayEntries = byDate[dateStr] || [];
+      const dateStr = `${CUR_YEAR}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayEntries = (byDate[dateStr] || []).slice(0, 4);
       const layers = dayEntries.map(e => `<span style="background:${NTSDiary.getMood(e.mood).color}"></span>`).join('');
       cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}">
         <span class="daynum">${d}</span>
@@ -105,23 +112,51 @@
       </div>`;
     }
 
+    const monthOptions = Array.from({length: 12}, (_, i) =>
+      `<option value="${i}" ${i === calMonth ? 'selected' : ''}>${CUR_YEAR}년 ${i + 1}월</option>`).join('');
+
     el.innerHTML = `
       <div class="cal-head">
-        <button id="calPrev">‹</button>
-        <h3>${calYear}년 ${calMonth + 1}월</h3>
-        <button id="calNext">›</button>
+        <button id="calPrev" ${calMonth === 0 ? 'disabled' : ''}>‹</button>
+        <select id="calMonthSelect" class="picker-select">${monthOptions}</select>
+        <button id="calNext" ${calMonth === 11 ? 'disabled' : ''}>›</button>
+        <button id="calThisMonth" class="picker-jump">이번 달</button>
       </div>
       <div class="cal-grid">
         ${['월','화','수','목','금','토','일'].map(d => `<div class="cal-dow">${d}</div>`).join('')}
         ${cells}
       </div>`;
 
-    document.getElementById('calPrev').onclick = () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); };
-    document.getElementById('calNext').onclick = () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); };
+    document.getElementById('calPrev').onclick = () => { if (calMonth > 0) { calMonth--; renderCalendar(); } };
+    document.getElementById('calNext').onclick = () => { if (calMonth < 11) { calMonth++; renderCalendar(); } };
+    document.getElementById('calMonthSelect').onchange = (e) => { calMonth = parseInt(e.target.value, 10); renderCalendar(); };
+    document.getElementById('calThisMonth').onclick = () => { calMonth = CUR_MONTH; renderCalendar(); };
   }
 
-  /* ---------------- 타임라인: 주 단위 페이징 ---------------- */
-  let tlWeekMonday; // YYYY-MM-DD (월요일)
+  /* ---------------- 타임라인: 주 단위 페이징 (올해 주차 내에서만 이동) ---------------- */
+  const CUR_MONDAY = NTSDiary.getMondayOf(NTSDiary.todayStr());
+
+  // 올해에 속한 모든 월요일 목록 생성
+  function buildYearMondays(year) {
+    const list = [];
+    const d = new Date(year, 0, 1);
+    const firstDow = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - firstDow); // 그 주의 월요일로 이동 (전년도일 수 있음)
+    while (true) {
+      const monday = NTSDiary.todayStr(d);
+      // 그 주에 올해 날짜가 하나라도 포함되면 목록에 추가
+      const sun = new Date(d); sun.setDate(sun.getDate() + 6);
+      if (d.getFullYear() === year || sun.getFullYear() === year) {
+        list.push(monday);
+      }
+      d.setDate(d.getDate() + 7);
+      if (d.getFullYear() > year) break;
+    }
+    return list;
+  }
+  const YEAR_MONDAYS = buildYearMondays(CUR_YEAR);
+  let tlWeekMonday = CUR_MONDAY;
+
   function renderTimeline() {
     const el = document.getElementById('timelineView');
     const monday = tlWeekMonday;
@@ -149,51 +184,33 @@
         }).join('')}</div>`
       : `<div class="timeline-empty">이 주에는 기록이 없어요.</div>`;
 
+    const idx = YEAR_MONDAYS.indexOf(monday);
+    const weekOptions = YEAR_MONDAYS.map((mon, i) => {
+      const sd = new Date(mon + 'T00:00:00'); sd.setDate(sd.getDate() + 6);
+      const label = `${mon} ~ ${NTSDiary.todayStr(sd)}`;
+      return `<option value="${mon}" ${mon === monday ? 'selected' : ''}>${label}</option>`;
+    }).join('');
+
     el.innerHTML = `
       <div class="tl-head">
-        <button id="tlPrev">‹</button>
-        <h3>${monday} ~ ${sunday}</h3>
-        <button id="tlNext">›</button>
+        <button id="tlPrev" ${idx <= 0 ? 'disabled' : ''}>‹</button>
+        <select id="tlWeekSelect" class="picker-select">${weekOptions}</select>
+        <button id="tlNext" ${idx >= YEAR_MONDAYS.length - 1 ? 'disabled' : ''}>›</button>
+        <button id="tlThisWeek" class="picker-jump">이번 주</button>
       </div>
       ${list}`;
 
-    document.getElementById('tlPrev').onclick = () => { shiftWeek(-7); };
-    document.getElementById('tlNext').onclick = () => { shiftWeek(7); };
-  }
-  function shiftWeek(days) {
-    const d = new Date(tlWeekMonday + 'T00:00:00');
-    d.setDate(d.getDate() + days);
-    tlWeekMonday = NTSDiary.todayStr(d);
-    renderTimeline();
+    document.getElementById('tlPrev').onclick = () => { if (idx > 0) { tlWeekMonday = YEAR_MONDAYS[idx - 1]; renderTimeline(); } };
+    document.getElementById('tlNext').onclick = () => { if (idx < YEAR_MONDAYS.length - 1) { tlWeekMonday = YEAR_MONDAYS[idx + 1]; renderTimeline(); } };
+    document.getElementById('tlWeekSelect').onchange = (e) => { tlWeekMonday = e.target.value; renderTimeline(); };
+    document.getElementById('tlThisWeek').onclick = () => { tlWeekMonday = CUR_MONDAY; renderTimeline(); };
   }
 
   /* ---------------- 초기화 ---------------- */
-  const now = new Date();
-  calYear = now.getFullYear();
-  calMonth = now.getMonth();
-  tlWeekMonday = NTSDiary.getMondayOf(NTSDiary.todayStr());
-
   renderWeeklyCard();
   renderCalendar();
   renderTimeline();
-
-  let deferredInstallPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; });
-  function handleCreateShortcut() {
-    trackEvent('shortcut_button_click', { from: 'diary_timeline' });
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      deferredInstallPrompt.userChoice.finally(() => { deferredInstallPrompt = null; });
-      return;
-    }
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    if (isIOS) {
-      alert('이 기기에서는 자동으로 만들 수 없어요.\n\nSafari 하단의 공유 버튼(⬆️)을 누르고,\n"홈 화면에 추가"를 선택해주세요.');
-    } else {
-      alert('브라우저 메뉴에서 "홈 화면에 추가" 또는 "앱 설치"를 선택해주세요.\n(브라우저 우측 상단 메뉴 또는 주소창 아이콘에서 찾으실 수 있어요.)');
-    }
-  }
 </script>
+<script src="../install-shortcut.js"></script>
 </body>
 </html>

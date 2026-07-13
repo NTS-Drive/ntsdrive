@@ -94,19 +94,52 @@ function renderPreview(framedCanvas) {
       <img src="${previewDataUrl}" style="width:100%; height:100%; object-fit:contain; background:#000;">
     </div>
     <div class="cam-field">
+      <label class="date-check-row"><input type="checkbox" id="dateCheck"> 날짜 넣기</label>
       <label>한 줄 메모 (선택, 최대 20자)</label>
-      <input type="text" id="captionInput" maxlength="20" placeholder="이 순간을 짧게 남겨보세요">
+      <input type="text" id="captionInput" maxlength="20" placeholder="이 순간을 짧게 남겨보세요" style="font-family:'NanumSonDahaeng','BrownCookies',sans-serif; font-size:16px;">
+      <div class="char-count-row"><span id="capCharCount">0</span>/20</div>
     </div>
     <div class="cam-result-actions">
       <button class="cam-btn" onclick="renderViewfinder()">다시 찍기</button>
       <button class="cam-btn primary" onclick="handleSave()">저장하기</button>
     </div>
   `;
+  const capInput = document.getElementById('captionInput');
+  const capCount = document.getElementById('capCharCount');
+  let alerted = false;
+  capInput.addEventListener('input', () => {
+    capCount.textContent = capInput.value.length;
+    if (capInput.value.length >= 20) {
+      capCount.classList.add('limit');
+      if (!alerted) { alerted = true; toast('한 줄 메모는 최대 20자까지만 남길 수 있어요.'); }
+    } else {
+      capCount.classList.remove('limit');
+      alerted = false;
+    }
+  });
+}
+
+function splitByScript(str) {
+  const parts = [];
+  let current = '', currentIsKorean = null;
+  for (const ch of str) {
+    const isKorean = /[\uAC00-\uD7A3\u3131-\u318E]/.test(ch);
+    if (currentIsKorean === null || isKorean === currentIsKorean) {
+      current += ch;
+      currentIsKorean = isKorean;
+    } else {
+      parts.push({ text: current, korean: currentIsKorean });
+      current = ch; currentIsKorean = isKorean;
+    }
+  }
+  if (current) parts.push({ text: current, korean: currentIsKorean });
+  return parts;
 }
 
 function handleSave() {
   const caption = document.getElementById('captionInput').value.trim();
-  if (!caption) {
+  const wantsDate = document.getElementById('dateCheck').checked;
+  if (!caption && !wantsDate) {
     finalizeSave(previewDataUrl, caption);
     return;
   }
@@ -121,21 +154,60 @@ function handleSave() {
   canvas.width = previewCanvas.width; canvas.height = previewCanvas.height;
   const ctx = canvas.getContext('2d');
   ctx.drawImage(previewCanvas, 0, 0);
-  document.fonts.load('700 40px Gaegu').then(() => {
-    const capturedSize = canvas.width / 1.10;
-    const border = capturedSize * 0.05;
-    const bottomBorder = capturedSize * 0.32;
-    const capY = border + capturedSize + bottomBorder / 2;
+
+  const border = Math.round(canvas.width * 0.05);
+  const capturedSize = canvas.width / 1.10;
+  const bottomBorder = capturedSize * 0.32;
+  const capY = border + capturedSize + bottomBorder / 2;
+
+  function drawDateIfNeeded() {
+    if (!wantsDate) return;
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+    ctx.font = `500 ${Math.round(canvas.width * 0.028)}px Pretendard, sans-serif`;
+    ctx.fillStyle = '#948C7C';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(dateStr, canvas.width - border - canvas.width * 0.015, border + capturedSize + bottomBorder - bottomBorder * 0.14);
+  }
+
+  if (!caption) {
+    drawDateIfNeeded();
+    finalizeSave(canvas.toDataURL('image/jpeg', JPEG_QUALITY), caption);
+    return;
+  }
+
+  Promise.all([
+    document.fonts.load('400 40px NanumSonDahaeng'),
+    document.fonts.load('400 40px BrownCookies')
+  ]).then(() => {
     const fontSize = Math.round(canvas.width * 0.062);
-    ctx.font = `700 ${fontSize}px Gaegu, sans-serif`;
+    const korFont = `400 ${fontSize}px NanumSonDahaeng, sans-serif`;
+    const engFont = `400 ${fontSize}px BrownCookies, sans-serif`;
+    const segments = splitByScript(caption);
+
     ctx.fillStyle = '#3A342A';
-    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+
+    let totalWidth = 0;
+    segments.forEach(seg => {
+      ctx.font = seg.korean ? korFont : engFont;
+      totalWidth += ctx.measureText(seg.text).width;
+    });
+
     ctx.save();
     ctx.translate(canvas.width / 2, capY);
     ctx.rotate(-0.02);
-    ctx.fillText(caption, 0, 0);
+    let x = -totalWidth / 2;
+    segments.forEach(seg => {
+      ctx.font = seg.korean ? korFont : engFont;
+      ctx.fillText(seg.text, x, 0);
+      x += ctx.measureText(seg.text).width;
+    });
     ctx.restore();
+
+    drawDateIfNeeded();
     finalizeSave(canvas.toDataURL('image/jpeg', JPEG_QUALITY), caption);
   });
 }

@@ -36,25 +36,8 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="../install-shortcut.js"></script>
 <script src="shared.js"></script>
 <script src="inbox.js"></script>
-<script>
-  let deferredInstallPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; });
-  function handleCreateShortcut() {
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      deferredInstallPrompt.userChoice.finally(() => { deferredInstallPrompt = null; });
-      return;
-    }
-    const ua = navigator.userAgent || '';
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    if (isIOS) {
-      alert('이 기기에서는 자동으로 만들 수 없어요.\n\nSafari 하단의 공유 버튼(⬆️)을 누르고,\n"홈 화면에 추가"를 선택해주세요.');
-    } else {
-      alert('브라우저 메뉴에서 "홈 화면에 추가" 또는 "앱 설치"를 선택해주세요.\n(브라우저 우측 상단 메뉴 또는 주소창 아이콘에서 찾으실 수 있어요.)');
-    }
-  }
-</script>
 </body>
 </html>

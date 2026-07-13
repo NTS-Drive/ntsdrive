@@ -1,14 +1,5 @@
 [
   {
-    "id": "desk-fortune",
-    "title": "Desk Fortune Cookie",
-    "description": "하루 중 시간대에 따라 6번 바뀌는 포춘쿠키예요(출근길, 오전, 점심, 오후, 퇴근길, 귀가). 직업별 코멘트와 요일 보너스 문구도 함께 나오고, 시간대별로 하루 한 번씩 뽑을 수 있어요. 결과는 링크로 공유할 수 있어요.",
-    "type": "Fortune",
-    "status": "Live",
-    "emoji": "🥠",
-    "entryPath": "desk-fortune/index.html"
-  },
-  {
     "id": "tarot-pick",
     "title": "Tarot Pick",
     "description": "78장의 카드 중 한 장을 뽑아, 이직·연봉·상사와의 관계 등 10가지 직장인 라이프 카테고리로 운세를 확인해요.",

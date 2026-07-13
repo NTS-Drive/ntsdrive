@@ -130,7 +130,7 @@ function render() {
 
     <div id="inboxList"></div>
 
-    <div class="disclaimer">이 목록은 지금 사용 중인 브라우저에만 저장돼요.<br>다른 기기·브라우저에서는 다시 등록해야 해요.<br>알림은 이 탭을 열어둔 상태에서만 울려요 — 탭을 닫으면 알림도 함께 꺼져요.<br>놓치지 않고 보려면 <a onclick="handleCreateShortcut()" style="color:var(--accent); text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
+    <div class="disclaimer">알림은 이 탭을 열어둔 상태에서만 울려요.<br>편지는 지금 사용 중인 브라우저에만 저장되니, 놓치지 않으려면 <a onclick="handleCreateShortcut()" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
   `;
   renderNotifyRow();
   renderInboxList();
