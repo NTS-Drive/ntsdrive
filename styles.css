@@ -45,7 +45,7 @@ body.leaving{animation:pageOut .3s ease both;}
 
 /* ---- signature 3D hero visual ---- */
 .clock-widget{
-  width:300px; height:300px; margin:30px auto 60px; border-radius:32px; position:relative; overflow:hidden;
+  width:300px; height:300px; margin:30px auto 24px; border-radius:32px; position:relative; overflow:hidden;
   background:
     radial-gradient(circle at 14% 18%, rgba(147,120,255,0.55), transparent 55%),
     radial-gradient(circle at 10% 74%, rgba(96,198,255,0.42), transparent 52%),
@@ -156,6 +156,14 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 .footer-links a{color:var(--sub); text-decoration:underline; cursor:pointer; font-size:12px;}
 .footer-links a:hover{color:var(--ink);}
 .footer-copyright{color:var(--sub); font-size:12px;}
+.footer-backup-note{font-size:11px; color:var(--sub); margin-bottom:10px; line-height:1.6;}
+.footer-backup-note a{color:var(--sub); text-decoration:underline; cursor:pointer;}
+.moment-entry-btn{display:block; margin:0 auto 60px; font-size:13px; font-weight:600; color:var(--ink); background:var(--panel); border:1px solid var(--line); padding:10px 22px; border-radius:99px; cursor:pointer;}
+.moment-entry-btn:hover{border-color:var(--blue); color:var(--blue);}
+.backup-banner{display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; background:#FFF7E0; border-bottom:1px solid #F0E0B0; padding:10px 20px; font-size:12.5px; color:var(--ink);}
+.backup-banner-actions{display:flex; gap:8px;}
+.backup-banner-actions button{font-size:12px; padding:6px 14px; border-radius:99px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
+.backup-banner-actions button.ghost{background:transparent; border:1px solid var(--line); color:var(--sub);}
 
 /* ==== hub detail pages (arcade / fortune / academy) ==== */
 .shell{display:block; min-height:100vh;}
@@ -216,7 +224,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .folder.soon{grid-column:span 1;}
   .ficon{width:60px; height:46px;}
   .best-grid{grid-template-columns:1fr;}
-  .clock-widget{width:250px; height:250px; margin:20px auto 50px;}
+  .clock-widget{width:250px; height:250px; margin:20px auto 20px;}
   .clock-widget::after{width:206px; height:206px;}
   .tick-12{top:18px;} .tick-6{bottom:18px;} .tick-3{right:18px;} .tick-9{left:18px;}
   .hour-hand{height:54px;} .minute-hand{height:82px;} .second-hand{height:96px;}

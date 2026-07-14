@@ -35,6 +35,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="analytics.js"></script>
+<script src="settings/backup.js"></script>
 <script src="install-shortcut.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
@@ -60,12 +61,14 @@
   </div>
 </nav>
 
+<div id="backupReminderBanner"></div>
+
 <section class="hero">
   <div class="eyebrow">NTS DRIVE</div>
   <h1><span class="h1-lead">지금 이 순간을</span><br>기록하는 나만의 드라이브</h1>
   <p class="subtext">내일을 기대하고, 어제를 추억하는 파일이 있는 곳</p>
 
-  <div class="clock-widget" id="clockWidget" onclick="navigate('snap/index.html')" style="cursor:pointer;">
+  <div class="clock-widget" id="clockWidget" onclick="trackEvent('clock_widget_click'); navigate('moment/index.html')" style="cursor:pointer;">
     <span class="tick tick-12"></span>
     <span class="tick tick-3"></span>
     <span class="tick tick-6"></span>
@@ -83,6 +86,7 @@
     </div>
     <div class="clock-day" id="clockDay">MONDAY</div>
   </div>
+  <button class="moment-entry-btn" onclick="trackEvent('moment_button_click'); navigate('moment/index.html')">📖 그날의 기록 보기</button>
 </section>
 
 <section class="section" id="folders">
@@ -142,7 +146,9 @@
     <a onclick="navigate('privacy/index.html')">개인정보처리방침</a>
     <a onclick="navigate('terms/index.html')">이용약관</a>
     <a onclick="navigate('contact/index.html')">문의하기</a>
+    <a onclick="navigate('settings/index.html')">설정</a>
   </div>
+  <div class="footer-backup-note">브라우저에 저장된 내용은 언제든 지워질 수 있어요. <a onclick="navigate('settings/index.html')">주기적으로 백업</a>해두는 걸 추천해요.</div>
   <div class="footer-copyright">© 2026 NTS Drive</div>
 </footer>
 
@@ -227,6 +233,34 @@
   // ---- 바로가기 생성 (PWA 설치): install-shortcut.js 공용 로직 사용 ----
   function trackEvent(name, params) {
     try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {}
+  }
+
+  // ---- 자동 백업 리마인드 배너 ----
+  (function renderBackupReminder() {
+    if (typeof NTSBackup === 'undefined') return;
+    const due = NTSBackup.checkReminderDue();
+    if (!due) return;
+    const banner = document.getElementById('backupReminderBanner');
+    if (!banner) return;
+    banner.innerHTML = `
+      <div class="backup-banner">
+        <span>💾 ${due.days}일 지났어요, 지금 백업할까요?</span>
+        <div class="backup-banner-actions">
+          <button onclick="handleBannerBackup()">지금 백업하기</button>
+          <button class="ghost" onclick="handleBannerSnooze()">나중에</button>
+        </div>
+      </div>`;
+    trackEvent('backup_reminder_shown', { days_elapsed: due.days });
+  })();
+  function handleBannerBackup() {
+    NTSBackup.downloadBackup();
+    trackEvent('backup_reminder_action', { action: 'backup' });
+    document.getElementById('backupReminderBanner').innerHTML = '';
+  }
+  function handleBannerSnooze() {
+    NTSBackup.snoozeReminder();
+    trackEvent('backup_reminder_action', { action: 'snooze' });
+    document.getElementById('backupReminderBanner').innerHTML = '';
   }
 
   // ---- 폴더 그리드: categories.json + 각 itemsSource 를 함께 불러와 동적 렌더링 ----

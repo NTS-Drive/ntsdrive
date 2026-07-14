@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>그날의 기록 | NTS Drive</title>
+<meta name="description" content="특정 날짜에 기록한 감정과 찍은 사진을 한 화면에서 모아보세요.">
+<link rel="canonical" href="https://ntsdrive.com/moment/index.html">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../fonts.css">
+<script src="../analytics.js"></script>
+<script src="../diary/shared.js"></script>
+<script src="../camera/shared.js"></script>
+<style>
+  .moment-datebar{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;}
+  .moment-datebar button{background:none; border:none; font-size:20px; color:var(--sub); cursor:pointer; padding:6px 10px;}
+  .moment-date-label{font-family:'Space Grotesk'; font-size:20px; font-weight:700; cursor:pointer; text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:4px;}
+  .moment-dow{text-align:center; font-size:12px; color:var(--sub); margin-bottom:6px;}
+  #momentDateInput{position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;}
+  .moment-today-btn{display:block; margin:0 auto 28px; font-size:12px; color:var(--blue); background:none; border:none; cursor:pointer; text-decoration:underline;}
+  .moment-section{margin-bottom:32px;}
+  .moment-section h3{font-family:'Space Grotesk'; font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:6px;}
+  .moment-empty{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:28px 20px; text-align:center;}
+  .moment-empty p{font-size:13px; color:var(--sub); margin-bottom:14px;}
+  .moment-empty a.cta{display:inline-block; font-size:13px; font-weight:600; color:#fff; background:var(--ink); padding:10px 20px; border-radius:99px; cursor:pointer; text-decoration:none;}
+  .moment-diary-row{display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--panel); margin-bottom:10px;}
+  .moment-diary-row .memoji{font-size:22px; flex-shrink:0;}
+  .moment-diary-time{font-size:11px; color:var(--sub);}
+  .moment-diary-mood{font-size:13.5px; font-weight:700; margin-right:6px;}
+  .moment-diary-quote{font-family:'NanumSonDahaeng',sans-serif; font-size:15px; margin-top:6px; padding-left:10px; border-left:2px solid var(--line);}
+  .moment-photo-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px;}
+  .moment-photo{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:#111; cursor:pointer;}
+  .moment-photo img{width:100%; height:100%; object-fit:cover;}
+  .moment-photo.locked{display:flex; align-items:center; justify-content:center; text-align:center; padding:8px; background:#1a1a1a; color:#F4F4F2; font-size:11px; line-height:1.5;}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" onclick="navigate('../index.html')"><img class="mark" src="../favicon.svg" alt="NTS Drive" width="26" height="26">NTS Drive</a>
+      <div class="links">
+        <span onclick="navigate('../post/index.html')">Post</span>
+        <span onclick="navigate('../log/index.html')">Log</span>
+        <span onclick="navigate('../diary/index.html')">Diary</span>
+        <span onclick="navigate('../snap/index.html')">Snap</span>
+        <span onclick="navigate('../film/index.html')">Film</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>그날의 기록</b></div>
+    <div class="page-head" style="text-align:center;">
+      <h1>그날의 기록</h1>
+      <p>그날 남긴 감정과 사진을 한 화면에서 모아봐요</p>
+    </div>
+
+    <div class="moment-datebar">
+      <button onclick="shiftDay(-1)">‹</button>
+      <span class="moment-date-label" id="momentDateLabel" onclick="document.getElementById('momentDateInput').showPicker ? document.getElementById('momentDateInput').showPicker() : document.getElementById('momentDateInput').click()"></span>
+      <button onclick="shiftDay(1)">›</button>
+    </div>
+    <div class="moment-dow" id="momentDow"></div>
+    <input type="date" id="momentDateInput" onchange="jumpToDate(this.value)">
+    <button class="moment-today-btn" id="momentTodayBtn" onclick="jumpToToday()" style="display:none;">오늘로 돌아가기</button>
+
+    <div class="moment-section">
+      <h3>📔 다이어리</h3>
+      <div id="momentDiary"></div>
+    </div>
+
+    <div class="moment-section">
+      <h3>📸 Snap · 🎞️ Film</h3>
+      <div id="momentPhotos"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+
+const WEEKDAY_KR = ['일','월','화','수','목','금','토'];
+let currentDate = getInitialDate();
+
+function getInitialDate() {
+  const params = new URLSearchParams(window.location.search);
+  const d = params.get('date');
+  if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  return NTSDiary.todayStr();
+}
+
+function shiftDay(delta) {
+  const d = new Date(currentDate + 'T00:00:00');
+  d.setDate(d.getDate() + delta);
+  currentDate = NTSDiary.todayStr(d);
+  render();
+}
+function jumpToDate(value) {
+  if (!value) return;
+  currentDate = value;
+  render();
+}
+function jumpToToday() {
+  currentDate = NTSDiary.todayStr();
+  render();
+}
+
+function render() {
+  const today = NTSDiary.todayStr();
+  const d = new Date(currentDate + 'T00:00:00');
+  document.getElementById('momentDateLabel').textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  document.getElementById('momentDow').textContent = `${WEEKDAY_KR[d.getDay()]}요일`;
+  document.getElementById('momentDateInput').value = currentDate;
+  document.getElementById('momentTodayBtn').style.display = currentDate === today ? 'none' : 'block';
+
+  renderDiarySection();
+  renderPhotoSection();
+
+  const params = new URLSearchParams(window.location.search);
+  params.set('date', currentDate);
+  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+}
+
+function renderDiarySection() {
+  const el = document.getElementById('momentDiary');
+  const entries = NTSDiary.getEntriesByDate(currentDate).sort((a,b) => a.createdAt - b.createdAt);
+  if (!entries.length) {
+    el.innerHTML = `<div class="moment-empty"><p>이 날 남긴 감정 기록이 없어요.</p><a class="cta" onclick="navigate('../diary/index.html')">지금 기록해볼까요?</a></div>`;
+    return;
+  }
+  el.innerHTML = entries.map(e => {
+    const m = NTSDiary.getMood(e.mood);
+    const t = new Date(e.createdAt);
+    const hh = String(t.getHours()).padStart(2,'0'), mm = String(t.getMinutes()).padStart(2,'0');
+    return `<div class="moment-diary-row">
+      <span class="memoji">${m.emoji}</span>
+      <div>
+        <div><span class="moment-diary-mood">${m.label}</span><span class="moment-diary-time">${hh}:${mm}${e.causes.length ? ' · ' + e.causes.join(', ') : ''}</span></div>
+        ${e.text ? `<div class="moment-diary-quote">${e.text}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPhotoSection() {
+  const el = document.getElementById('momentPhotos');
+  const all = loadAlbum(); // camera/shared.js
+  const photos = all.filter(p => NTSDiary.todayStr(new Date(p.createdAt)) === currentDate)
+    .sort((a,b) => a.createdAt - b.createdAt);
+
+  if (!photos.length) {
+    el.innerHTML = `<div class="moment-empty"><p>이 날 찍은 사진이 없어요.</p><a class="cta" onclick="navigate('../snap/index.html')">지금 찍어볼까요?</a></div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="moment-photo-grid">${photos.map(p => {
+    if (p.type === 'film' && !p.revealed && Date.now() < p.unlockAt) {
+      const remainMs = p.unlockAt - Date.now();
+      const remainH = Math.max(1, Math.ceil(remainMs / (60*60*1000)));
+      return `<div class="moment-photo locked">🎞️ 필름 현상 중<br>(${remainH}시간 후 공개)</div>`;
+    }
+    return `<div class="moment-photo" onclick="navigate('../album/index.html')"><img src="${p.dataUrl}" alt=""></div>`;
+  }).join('')}</div>`;
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>설정 | NTS Drive</title>
+<meta name="description" content="Post, Log, Diary 데이터를 파일로 백업하고, 다른 기기에서 불러올 수 있어요.">
+<link rel="canonical" href="https://ntsdrive.com/settings/index.html">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="../analytics.js"></script>
+<script src="../install-shortcut.js"></script>
+<script src="backup.js"></script>
+<style>
+  .settings-card{max-width:520px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; margin-bottom:20px;}
+  .settings-card h2{font-family:'Space Grotesk'; font-size:16px; margin-bottom:8px;}
+  .settings-card p{font-size:12.5px; color:var(--sub); line-height:1.7; margin-bottom:16px;}
+  .settings-btn{width:100%; padding:14px; border-radius:10px; border:none; background:var(--ink); color:#fff; font-size:14px; font-weight:600; cursor:pointer; margin-bottom:10px;}
+  .settings-btn.secondary{background:transparent; border:1px solid var(--line); color:var(--ink);}
+  .settings-btn:last-child{margin-bottom:0;}
+  .settings-check-row{display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:var(--ink); margin-bottom:12px; cursor:pointer;}
+  .settings-check-row input{margin-top:2px;}
+  .settings-freq-row{display:flex; gap:8px; margin-bottom:16px; margin-left:24px;}
+  .settings-freq-btn{font-size:12px; padding:7px 12px; border-radius:99px; border:1px solid var(--line); background:var(--panel); cursor:pointer;}
+  .settings-freq-btn.selected{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .settings-result{font-size:12.5px; background:var(--panel2, #F5F5F7); border-radius:10px; padding:12px 14px; margin-top:14px; line-height:1.7; display:none;}
+  .settings-last{font-size:11.5px; color:var(--sub); margin-top:10px;}
+  #fileInput{display:none;}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="shell">
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" onclick="navigate('../index.html')"><img class="mark" src="../favicon.svg" alt="NTS Drive" width="26" height="26">NTS Drive</a>
+      <div class="links">
+        <span onclick="navigate('../post/index.html')">Post</span>
+        <span onclick="navigate('../log/index.html')">Log</span>
+        <span onclick="navigate('../diary/index.html')">Diary</span>
+        <span onclick="navigate('../snap/index.html')">Snap</span>
+        <span onclick="navigate('../film/index.html')">Film</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>설정</b></div>
+    <div class="page-head">
+      <h1>설정</h1>
+      <p>Post·Log·Diary 데이터는 이 브라우저에만 저장돼요. 파일로 백업해두면 다른 기기에서도 이어볼 수 있어요.</p>
+    </div>
+
+    <div class="settings-card">
+      <h2>📤 데이터 백업하기</h2>
+      <p>Post 편지함, Log 방·편지, Diary 감정 기록을 하나의 파일로 내보내요. (사진은 용량 문제로 포함되지 않아요 — 아끼는 사진은 내 사진첩에서 직접 다운로드해주세요.)</p>
+      <button class="settings-btn" onclick="handleBackup()">지금 백업 파일 받기</button>
+      <div class="settings-last" id="lastBackupText"></div>
+    </div>
+
+    <div class="settings-card">
+      <h2>📥 백업 파일 가져오기</h2>
+      <p>다른 기기에서 받은 백업 파일을 불러와요. 기존 기록은 지워지지 않고, 겹치지 않는 내용만 추가돼요.</p>
+      <button class="settings-btn secondary" onclick="document.getElementById('fileInput').click()">파일 선택해서 가져오기</button>
+      <input type="file" id="fileInput" accept="application/json,.json" onchange="handleFileSelected(event)">
+      <div class="settings-result" id="importResult"></div>
+    </div>
+
+    <div class="settings-card">
+      <h2>🔔 자동 백업 리마인드</h2>
+      <p>브라우저 데이터는 언제든 지워질 수 있어요. 주기적으로 백업하도록 알려드릴까요?</p>
+      <label class="settings-check-row">
+        <input type="checkbox" id="reminderEnabled" onchange="handleReminderToggle()">
+        정해둔 주기가 지나면 사이트 접속 시 알려주세요
+      </label>
+      <div class="settings-freq-row" id="freqRow">
+        <button type="button" class="settings-freq-btn" data-freq="daily" onclick="setReminderFreq('daily')">1일마다</button>
+        <button type="button" class="settings-freq-btn" data-freq="weekly" onclick="setReminderFreq('weekly')">1주일마다</button>
+        <button type="button" class="settings-freq-btn" data-freq="monthly" onclick="setReminderFreq('monthly')">1개월마다</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+
+function formatWhen(ts) {
+  if (!ts) return '아직 백업한 적 없어요.';
+  const d = new Date(ts);
+  return `마지막 백업: ${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function refreshLastBackupText() {
+  const pref = NTSBackup.getReminderPref();
+  document.getElementById('lastBackupText').textContent = formatWhen(pref.lastBackupAt);
+}
+
+function handleBackup() {
+  NTSBackup.downloadBackup();
+  trackEvent('backup_export');
+  refreshLastBackupText();
+}
+
+function handleFileSelected(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let payload;
+    try { payload = JSON.parse(reader.result); }
+    catch (err) { alert('파일을 읽을 수 없어요. 올바른 백업 파일인지 확인해주세요.'); return; }
+
+    const when = payload.exportedAt ? new Date(payload.exportedAt) : null;
+    const whenText = when
+      ? `${when.getFullYear()}년 ${when.getMonth()+1}월 ${when.getDate()}일 ${String(when.getHours()).padStart(2,'0')}:${String(when.getMinutes()).padStart(2,'0')}`
+      : '알 수 없는 시점';
+    if (!confirm(`이 백업은 ${whenText} 기준이에요. 가져올까요?\n(기존 기록은 지워지지 않고, 겹치지 않는 내용만 추가돼요)`)) return;
+
+    try {
+      const summary = NTSBackup.importBackup(payload);
+      trackEvent('backup_import', summary);
+      const resultEl = document.getElementById('importResult');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = `가져오기 완료 — Post ${summary.post}건, Log ${summary.log}건, Diary ${summary.diary}건이 새로 추가됐어요.`;
+    } catch (err) {
+      alert('가져오기에 실패했어요: ' + err.message);
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function handleReminderToggle() {
+  const enabled = document.getElementById('reminderEnabled').checked;
+  const pref = NTSBackup.getReminderPref();
+  pref.enabled = enabled;
+  if (enabled && !pref.lastBackupAt) pref.lastBackupAt = Date.now();
+  NTSBackup.saveReminderPref(pref);
+  trackEvent('backup_reminder_toggle', { enabled });
+  renderFreqRow();
+}
+function setReminderFreq(freq) {
+  const pref = NTSBackup.getReminderPref();
+  pref.freq = freq;
+  NTSBackup.saveReminderPref(pref);
+  renderFreqRow();
+}
+function renderFreqRow() {
+  const pref = NTSBackup.getReminderPref();
+  document.getElementById('reminderEnabled').checked = pref.enabled;
+  document.querySelectorAll('.settings-freq-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.freq === pref.freq);
+  });
+  document.getElementById('freqRow').style.opacity = pref.enabled ? '1' : '0.4';
+  document.getElementById('freqRow').style.pointerEvents = pref.enabled ? 'auto' : 'none';
+}
+
+renderFreqRow();
+refreshLastBackupText();
+</script>
+</body>
+</html>
