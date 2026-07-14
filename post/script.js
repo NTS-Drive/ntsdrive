@@ -325,7 +325,7 @@ function renderShareResult(url, encoded, unlockMs) {
       <div class="env-icon">✉️</div>
       <h2>편지가 봉인됐어요</h2>
       <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
-      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">📤 지금 바로 공유하기</button>
+      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
       <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
       <div class="link-box">
         <input type="text" id="shareUrl" readonly value="${url}">
@@ -355,15 +355,42 @@ function shareLink(url) {
 
 /* ===== Locked screen ===== */
 let lockedTimerId = null;
+function getMyInboxItem(encoded) {
+  try {
+    const raw = localStorage.getItem('post_inbox_v1');
+    const list = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) return null;
+    return list.find(item => item.d === encoded) || null;
+  } catch (e) { return null; }
+}
+
 function renderLocked(letter, encoded) {
   const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
+  const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
+  const myItem = getMyInboxItem(encoded);
+  const isMine = !!(myItem && myItem.sent);
+
+  // 본인이 봉인한 편지라면(같은 기기), 봉인 화면에서 안 보내고 넘어왔을 수
+  // 있으니 여기서도 링크를 다시 꺼낼 수 있게 한다. 받은 사람에게는 이
+  // 버튼을 보여주지 않는다(남의 편지를 또 퍼뜨리는 상황 방지).
+  const shareBlock = isMine ? `
+    <div class="locked-share-block">
+      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
+      <button class="ghost-btn" style="width:100%;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
+    </div>` : '';
+
+  const inboxNote = myItem
+    ? `<div class="locked-inbox-note">✓ 이미 편지함에 저장해뒀어요</div>`
+    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">내 편지함에 등록해두세요 →</a></div>`;
+
   stage.innerHTML = `
     <div class="envelope-stage">
       <div class="envelope"><span class="seal">${tpl.emoji}</span></div>
       <h2>아직 열 수 없는 편지예요</h2>
       <div class="countdown" id="countdown">--:--:--</div>
       <div class="unlock-date">${formatUnlockDate(letter.unlock)}에 열려요</div>
-      <div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">내 편지함에 등록해두세요 →</a></div>
+      ${shareBlock}
+      ${inboxNote}
     </div>
   `;
   updateCountdown(letter);
