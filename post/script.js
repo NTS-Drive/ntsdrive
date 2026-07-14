@@ -17,10 +17,11 @@ const stage = document.getElementById('stage');
 function render() {
   const params = new URLSearchParams(window.location.search);
   if (params.has('d')) {
+    const encoded = params.get('d');
     try {
-      const letter = decodeLetter(params.get('d'));
+      const letter = decodeLetter(encoded);
       if (Date.now() < letter.unlock) {
-        renderLocked(letter);
+        renderLocked(letter, encoded);
       } else {
         renderReveal(letter);
       }
@@ -299,25 +300,44 @@ function handleSeal() {
   const encoded = encodeLetter(letter);
   const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
   trackEvent('post_letter_sealed', { template: TEMPLATES[composeState.tpl].id, has_photo: !!composeState.photoIndices, body_length: body.length });
-  renderShareResult(url);
+  renderShareResult(url, encoded, letter.unlock);
 }
 
-function renderShareResult(url) {
+// post/inbox.js의 loadInbox()가 읽는 것과 동일한 저장 형식(post_inbox_v1)을
+// 그대로 따른다. 봉인 직후 바로 저장해두면, 편지함을 보려고 자기 링크를
+// 다시 열어야 하는 불필요한 왕복이 없어진다.
+function saveToMyInbox(encoded, unlockMs) {
+  const INBOX_KEY = 'post_inbox_v1';
+  try {
+    const raw = localStorage.getItem(INBOX_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    const safeList = Array.isArray(list) ? list : [];
+    if (safeList.some(item => item.d === encoded)) return;
+    safeList.unshift({ d: encoded, addedAt: Date.now(), notified: Date.now() >= unlockMs, sent: true });
+    localStorage.setItem(INBOX_KEY, JSON.stringify(safeList));
+  } catch (e) { /* 저장 공간 부족 등은 조용히 무시 — 공유 자체는 계속 진행 가능해야 함 */ }
+}
+
+function renderShareResult(url, encoded, unlockMs) {
+  saveToMyInbox(encoded, unlockMs);
   stage.innerHTML = `
     <div class="share-result">
       <div class="env-icon">✉️</div>
       <h2>편지가 봉인됐어요</h2>
       <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
+      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">📤 지금 바로 공유하기</button>
+      <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
       <div class="link-box">
         <input type="text" id="shareUrl" readonly value="${url}">
       </div>
-      <div class="share-actions">
-        <button class="ghost-btn" onclick="copyShareLink('${url}')">링크 복사</button>
-        <button class="ghost-btn" onclick="shareLink('${url}')">공유하기</button>
-      </div>
-      <div class="write-again"><a onclick="navigate(location.pathname)">편지 한 통 더 쓰기</a></div>
+      <p class="disclaimer" style="margin-top:16px;">내 편지함에도 자동으로 저장해뒀어요. 언제든 다시 확인할 수 있어요.</p>
     </div>
   `;
+  // 참여자/방 생성 화면과 동일한 패턴: 사용자 클릭 체인 안에서 동기적으로
+  // 호출해야 navigator.share()가 브라우저 정책에 막히지 않는다.
+  if (navigator.share) {
+    shareLink(url);
+  }
 }
 function copyShareLink(url) {
   // Copies the raw link only (no explanatory text prepended) — combining
@@ -335,7 +355,7 @@ function shareLink(url) {
 
 /* ===== Locked screen ===== */
 let lockedTimerId = null;
-function renderLocked(letter) {
+function renderLocked(letter, encoded) {
   const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
   stage.innerHTML = `
     <div class="envelope-stage">
@@ -343,7 +363,7 @@ function renderLocked(letter) {
       <h2>아직 열 수 없는 편지예요</h2>
       <div class="countdown" id="countdown">--:--:--</div>
       <div class="unlock-date">${formatUnlockDate(letter.unlock)}에 열려요</div>
-      <div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html')">내 편지함에 등록해두세요 →</a></div>
+      <div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">내 편지함에 등록해두세요 →</a></div>
     </div>
   `;
   updateCountdown(letter);

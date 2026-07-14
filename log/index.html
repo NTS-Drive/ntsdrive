@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=1784019294">
 <link rel="stylesheet" href="animation.css">
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -50,7 +50,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="shared.js"></script>
+<script src="shared.js?v=1784019294"></script>
 <script>
 const stage = document.getElementById('stage');
 let currentRoom = null;
@@ -145,10 +145,12 @@ function renderIntro() {
       </div>
       <div class="field">
         <label>디데이 (이 시간이 되면 자동으로 열려요)</label>
-        <input type="datetime-local" id="roomDday">
+        <div class="preset-row" id="ddayPresetRow"></div>
+        <input type="datetime-local" id="roomDday" style="display:none;">
       </div>
       <div class="field" style="margin-bottom:0;">
         <label>목표 글자 수 (100~1,000자)</label>
+        <div class="preset-row" id="goalPresetRow"></div>
         <input type="number" id="roomGoal" min="${GOAL_MIN}" max="${GOAL_MAX}" step="10" value="300">
         <div class="field-hint">친구들이 쓴 편지 글자 수가 이 목표에 닿으면, 디데이 전이라도 바로 열려요.</div>
       </div>
@@ -157,35 +159,79 @@ function renderIntro() {
     <button class="seal-btn" onclick="handleCreateClick()">방 만들기</button>
     <div class="disclaimer">방 정보는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요.<br>친구용 링크를 잃어버리면 그 방은 다시 만들 수 없다는 점, 참고해주세요.</div>
   `;
+  renderDdayPresetRow();
+  renderGoalPresetRow();
   if (!document.querySelector('.inbox-fab')) {
     const fab = document.createElement('a');
     fab.className = 'inbox-fab';
     fab.textContent = '📚 내 로그함';
     fab.onclick = () => navigate('mylogs.html');
     document.body.appendChild(fab);
+  } else {
+    document.querySelector('.inbox-fab').style.display = '';
   }
 }
 
-function findUnfinishedRoom() {
-  try {
-    const raw = localStorage.getItem('log_mylogs_v1');
-    const list = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(list)) return null;
-    const now = Date.now();
-    return list.find(r => {
-      const total = loadLetters(r.roomEncoded).reduce((s, l) => s + l.text.length, 0);
-      return now < r.dday && total < r.goal;
-    }) || null;
-  } catch (e) { return null; }
+let selectedDdayPreset = null;
+function renderDdayPresetRow() {
+  const presets = [
+    { key: 'midnight', label: '오늘 자정' },
+    { key: 'tomorrow6pm', label: '내일 저녁 6시' },
+    { key: 'week1', label: '1주일 후' },
+    { key: 'month1', label: '1개월 후' },
+    { key: 'custom', label: '직접입력' }
+  ];
+  document.getElementById('ddayPresetRow').innerHTML = presets.map(p => `
+    <button type="button" class="preset-btn ${selectedDdayPreset === p.key ? 'selected' : ''}" onclick="applyDdayPreset('${p.key}')">${p.label}</button>
+  `).join('');
+  const ddayInput = document.getElementById('roomDday');
+  if (ddayInput) ddayInput.style.display = selectedDdayPreset === 'custom' ? 'block' : 'none';
 }
-
-function handleCreateClick() {
-  const unfinished = findUnfinishedRoom();
-  if (unfinished) {
-    alert('지금 진행 중인 Log가 있습니다. 완료되면 새로 만들어주세요.');
+function getDdayPresetTime(key) {
+  const now = new Date();
+  switch (key) {
+    case 'midnight': { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
+    case 'tomorrow6pm': { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(18, 0, 0, 0); return d.getTime(); }
+    case 'week1': return now.getTime() + 7 * 24 * 60 * 60 * 1000;
+    case 'month1': { const d = new Date(); d.setMonth(d.getMonth() + 1); return d.getTime(); }
+    default: return null;
+  }
+}
+function applyDdayPreset(key) {
+  selectedDdayPreset = key;
+  if (key === 'custom') {
+    renderDdayPresetRow();
+    const ddayInput = document.getElementById('roomDday');
+    if (ddayInput) ddayInput.focus();
     return;
   }
+  const ms = getDdayPresetTime(key);
+  const d = new Date(ms);
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('roomDday').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  renderDdayPresetRow();
+}
+document.addEventListener('change', (e) => {
+  if (e.target && e.target.id === 'roomDday') { selectedDdayPreset = 'custom'; renderDdayPresetRow(); }
+});
 
+let selectedGoalPreset = 300;
+function renderGoalPresetRow() {
+  const presets = [100, 300, 500];
+  document.getElementById('goalPresetRow').innerHTML = presets.map(g => `
+    <button type="button" class="preset-btn ${selectedGoalPreset === g ? 'selected' : ''}" onclick="applyGoalPreset(${g})">${g}자</button>
+  `).join('') + `<button type="button" class="preset-btn ${selectedGoalPreset === 'custom' ? 'selected' : ''}" onclick="applyGoalPreset('custom')">직접입력</button>`;
+}
+function applyGoalPreset(val) {
+  selectedGoalPreset = val;
+  if (val !== 'custom') document.getElementById('roomGoal').value = val;
+  renderGoalPresetRow();
+  if (val === 'custom') document.getElementById('roomGoal').focus();
+}
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.id === 'roomGoal') { selectedGoalPreset = 'custom'; renderGoalPresetRow(); }
+});
+function handleCreateClick() {
   const title = document.getElementById('roomTitle').value.trim();
   const ddayVal = document.getElementById('roomDday').value;
   let goal = parseInt(document.getElementById('roomGoal').value, 10);
@@ -220,25 +266,31 @@ function autoRegisterToMylogs(re, room) {
 }
 
 function renderCreateShareResult(writeUrl) {
+  // 이 화면에서 마스터가 다음에 뭘 해야 할지 명확한 단일 경로(내 로그함)로
+  // 안내하기 위해, 같은 목적지로 가는 플로팅 버튼은 잠시 숨긴다.
+  const fab = document.querySelector('.inbox-fab');
+  if (fab) fab.style.display = 'none';
+
   stage.innerHTML = `
     <div class="share-result">
       <div class="env-icon">📖</div>
       <h2>방이 만들어졌어요</h2>
       <p>아래 링크를 친구들에게 전달해서 편지를 받아보세요.</p>
+      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${writeUrl}')">📤 지금 바로 공유하기</button>
+      <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyLink('${writeUrl}')">링크만 복사하기</button>
       <div class="link-box"><input type="text" readonly value="${writeUrl}"></div>
-      <div class="share-actions">
-        <button class="ghost-btn" style="flex:1;" onclick="copyLink('${writeUrl}')">친구용 링크 복사</button>
-        <button class="ghost-btn" style="flex:1;" onclick="shareLink('${writeUrl}')">공유하기</button>
-      </div>
       <div class="mylogs-howto">
         <div class="mylogs-howto-title">💡 친구가 쓴 편지 링크를 받으면?</div>
-        <div class="mylogs-howto-steps">
-          <span>📚 내 로그함</span><span>→</span><span>내가 만든 방</span><span>→</span><span>받은 링크 붙여넣기</span>
-        </div>
-        <p>이 방은 이미 <b>내 로그함</b>에 자동으로 등록해뒀어요. 우측 하단 버튼으로 언제든 찾아오실 수 있어요.</p>
+        <p>이 방은 이미 <b>내 로그함</b>에 자동으로 등록해뒀어요. 받은 링크를 내 로그함에서 붙여넣기만 하면, 어느 방인지 자동으로 알아서 등록돼요.</p>
       </div>
+      <button class="seal-btn" style="margin-top:20px;" onclick="navigate('mylogs.html')">✅ 확인했어요, 내 로그함으로 갈게요</button>
     </div>
   `;
+  // 참여자 화면과 동일한 패턴: 사용자 클릭 체인 안에서 동기적으로 호출해야
+  // navigator.share()가 브라우저 정책에 막히지 않는다.
+  if (navigator.share) {
+    shareLink(writeUrl);
+  }
 }
 function copyLink(url) {
   navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
@@ -287,10 +339,7 @@ function renderDashboard() {
       <div class="gauge-participants">지금까지 ${letters.length}명이 마음을 보탰어요</div>
     </div>
 
-    <div class="inbox-add-row">
-      <input type="text" id="letterInput" placeholder="받은 편지 링크를 붙여넣으세요">
-      <button class="ghost-btn" onclick="handleRegister()">등록</button>
-    </div>
+    <div class="disclaimer" style="margin-top:0; margin-bottom:24px;">받은 편지 링크는 <a onclick="navigate('mylogs.html')" class="inline-link">내 로그함</a>에서 등록해주세요.</div>
 
     <div id="letterList"></div>
 
@@ -332,14 +381,6 @@ function renderLetterList(letters) {
       </div>
     </div>
   `).join('');
-}
-
-function handleRegister() {
-  const input = document.getElementById('letterInput');
-  const encoded = extractParam(input.value, 'add');
-  if (!encoded) { toast('올바른 편지 링크가 아니에요.'); return; }
-  tryRegister(encoded, false);
-  input.value = '';
 }
 
 function tryRegister(encoded, silent) {

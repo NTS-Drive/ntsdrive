@@ -16,14 +16,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=1784019294">
 <link rel="stylesheet" href="../fonts.css">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
 <body>
 
-<div class="topbar">
+<div class="topbar" id="topbar">
   <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
   <div class="nav-links">
     <span onclick="navigate('../post/index.html')">Post</span>
@@ -36,7 +36,7 @@
 
 <div class="stage" id="stage"></div>
 
-<nav class="bottom-nav">
+<nav class="bottom-nav" id="bottomNav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
   <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
@@ -47,10 +47,11 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="shared.js"></script>
+<script src="shared.js?v=1784019294"></script>
 <script>
 const stage = document.getElementById('stage');
 let room = null;
+let roomEncodedRaw = null;
 
 function init() {
   const params = new URLSearchParams(window.location.search);
@@ -58,8 +59,9 @@ function init() {
     stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>방 링크가 필요해요</h2><p>친구에게 받은 링크로 다시 접속해주세요.</p></div>`;
     return;
   }
+  roomEncodedRaw = params.get('room');
   try {
-    room = decodeData(params.get('room'));
+    room = decodeData(roomEncodedRaw);
   } catch (e) {
     stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>링크를 읽을 수 없어요</h2><p>링크가 손상되었을 수 있어요.</p></div>`;
     return;
@@ -131,26 +133,41 @@ function handleWrite() {
 
   const letter = { title: room.title, dday: room.dday, goal: room.goal, text, from, createdAt: Date.now() };
   const encoded = encodeData(letter);
-  const url = `${window.location.origin}${window.location.pathname.replace('write.html','index.html')}?add=${encoded}`;
+  const url = `${window.location.origin}${window.location.pathname.replace('write.html','index.html')}?room=${roomEncodedRaw}&add=${encoded}`;
 
   trackEvent('log_letter_written', { room_title: room.title, letter_length: text.length });
   renderShareResult(url);
 }
 
 function renderShareResult(url) {
+  // 이 화면은 Log 전체에서 가장 중요한 전환 지점(여기서 이탈하면 편지가
+  // 마스터에게 영영 전달 안 됨)이라, 다른 곳으로 샐 수 있는 요소를 전부
+  // 숨기고 "보내기" 하나에만 집중하게 만든다.
+  const topbarEl = document.getElementById('topbar');
+  const bottomNavEl = document.getElementById('bottomNav');
+  if (topbarEl) topbarEl.style.display = 'none';
+  if (bottomNavEl) bottomNavEl.style.display = 'none';
+  document.body.style.paddingBottom = '0';
+
   stage.innerHTML = `
     <div class="share-result">
+      <div class="step-indicator">📮 마지막 한 단계 남았어요</div>
       <div class="env-icon">✉️</div>
-      <h2>편지가 준비됐어요</h2>
-      <p>이 링크를 ${escapeHtml(room.title)}에게 전달해주세요.<br>방 주인이 등록하면 글자 수가 반영돼요.</p>
+      <h2>아직 편지가 도착 안 했어요!</h2>
+      <p>지금 이 링크를 <b>${escapeHtml(room.title)}</b> 방주인에게 보내야<br>편지가 진짜로 전달돼요.<br>여기서 그냥 나가면 편지는 나만 가지고 있는 셈이에요.</p>
+      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">📤 지금 바로 보내기</button>
+      <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyLink('${url}')">링크만 복사하기</button>
       <div class="link-box"><input type="text" id="shareUrl" readonly value="${url}"></div>
-      <div class="share-actions">
-        <button class="ghost-btn" style="flex:1;" onclick="copyLink('${url}')">링크 복사</button>
-        <button class="ghost-btn" style="flex:1;" onclick="shareLink('${url}')">공유하기</button>
-      </div>
-      <p style="margin-top:16px; margin-bottom:0;"><a onclick="navigate('index.html')" class="inline-link">나도 방 만들어보기</a></p>
     </div>
   `;
+  // 편지 작성 직후 바로 공유 시트를 띄워서, 사용자가 버튼을 한 번 더
+  // 누르지 않아도 "보내는 행동"까지 이어지도록 유도한다. navigator.share()는
+  // 브라우저 정책상 사용자 제스처(클릭) 체인 안에서 동기적으로 호출되어야
+  // 동작하므로 setTimeout 없이 바로 호출한다. 지원 안 하는 환경(대부분의
+  // PC 브라우저)에서는 조용히 무시되고 버튼으로 대체된다.
+  if (navigator.share) {
+    shareLink(url);
+  }
 }
 function copyLink(url) {
   navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));

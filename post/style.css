@@ -244,7 +244,9 @@ body.leaving { animation: pageOut .28s ease both; }
 }
 .inbox-card-icon { font-size: 24px; flex-shrink: 0; }
 .inbox-card-body { flex: 1; min-width: 0; text-decoration: none; color: inherit; }
-.inbox-card-title { font-family: var(--font-serif); font-size: 15px; margin-bottom: 4px; }
+.inbox-card-title { font-family: var(--font-serif); font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.inbox-kind-tag { font-family: var(--font-body); font-size: 10.5px; font-weight: 600; color: var(--ink-muted); background: var(--line); padding: 2px 8px; border-radius: 99px; }
+.inbox-kind-tag.sent { color: #fff; background: var(--accent); }
 .inbox-card-who { font-size: 11.5px; color: var(--ink-muted); margin-bottom: 4px; }
 .inbox-card-status { font-size: 11.5px; color: var(--accent); font-weight: 600; }
 .inbox-card-status.unlocked { color: #2f7a4f; }

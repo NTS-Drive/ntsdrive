@@ -2,6 +2,25 @@ const INBOX_KEY = 'post_inbox_v1';
 const stage = document.getElementById('stage');
 let checkTimerId = null;
 
+// ?add=<encoded> 로 들어오면(잠금화면의 "내 편지함에 등록해두세요" 링크),
+// 붙여넣기 없이 자동으로 편지함에 등록한다.
+function autoAddFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('add')) return;
+  const encoded = params.get('add');
+  try {
+    const letter = decodeLetter(encoded);
+    const list = loadInbox();
+    if (!list.some(item => item.d === encoded)) {
+      list.push({ d: encoded, addedAt: Date.now(), notified: Date.now() >= letter.unlock });
+      saveInbox(list);
+      toast('편지함에 등록됐어요.');
+    }
+  } catch (e) { /* 손상된 링크면 조용히 무시 */ }
+  // 새로고침 시 중복 등록 시도를 막기 위해 URL을 정리한다.
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
 /* ===== Storage ===== */
 function loadInbox() {
   try {
@@ -128,11 +147,33 @@ function render() {
 
     <div class="inbox-notify-row" id="notifyRow"></div>
 
+    <div class="preset-row" id="inboxFilterRow"></div>
+
     <div id="inboxList"></div>
 
     <div class="disclaimer">알림은 이 탭을 열어둔 상태에서만 울려요.<br>편지는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a onclick="handleCreateShortcut()" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
   `;
   renderNotifyRow();
+  renderInboxFilterRow();
+  renderInboxList();
+}
+
+let inboxFilter = 'all'; // 'all' | 'sent' | 'received'
+function renderInboxFilterRow() {
+  const row = document.getElementById('inboxFilterRow');
+  if (!row) return;
+  const filters = [
+    { key: 'all', label: '전체' },
+    { key: 'sent', label: '내가 쓴 편지' },
+    { key: 'received', label: '받은 편지' }
+  ];
+  row.innerHTML = filters.map(f => `
+    <button type="button" class="preset-btn ${inboxFilter === f.key ? 'selected' : ''}" onclick="applyInboxFilter('${f.key}')">${f.label}</button>
+  `).join('');
+}
+function applyInboxFilter(key) {
+  inboxFilter = key;
+  renderInboxFilterRow();
   renderInboxList();
 }
 
@@ -152,10 +193,20 @@ function renderNotifyRow() {
 function renderInboxList() {
   const container = document.getElementById('inboxList');
   if (!container) return;
-  const list = loadInbox();
+  const fullList = loadInbox();
+  const list = fullList.filter(item => {
+    if (inboxFilter === 'sent') return !!item.sent;
+    if (inboxFilter === 'received') return !item.sent;
+    return true;
+  });
 
-  if (list.length === 0) {
+  if (fullList.length === 0) {
     container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>받은 링크를 위에 붙여넣어보세요.</div>`;
+    return;
+  }
+  if (list.length === 0) {
+    const emptyMsg = inboxFilter === 'sent' ? '아직 내가 쓴 편지가 없어요.' : '아직 받은 편지가 없어요.';
+    container.innerHTML = `<div class="inbox-empty">${emptyMsg}</div>`;
     return;
   }
 
@@ -169,11 +220,20 @@ function renderInboxList() {
     const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
     const unlocked = Date.now() >= letter.unlock;
     const url = `index.html?d=${item.d}`;
+    // item.sent는 이 브라우저에서 직접 봉인해서 자동 저장된 편지에만 true로
+    // 찍힌다. 그 외(다른 사람이 준 "내 편지함에 등록" 링크로 저장된 경우)는
+    // 알 수 없으므로 받는사람/보낸사람 이름으로 구분할 수 있게 보여준다.
+    const kindTag = item.sent
+      ? `<span class="inbox-kind-tag sent">내가 쓴 편지</span>`
+      : `<span class="inbox-kind-tag">받은 편지</span>`;
+    const whoLine = item.sent
+      ? (letter.to ? `To. ${escapeHtml(letter.to)}` : tpl.label)
+      : (letter.from ? `From. ${escapeHtml(letter.from)}` : tpl.label);
     return `
       <div class="inbox-card">
         <div class="inbox-card-icon">${tpl.emoji}</div>
         <a class="inbox-card-body" href="${url}">
-          <div class="inbox-card-title">${tpl.label}</div>
+          <div class="inbox-card-title">${kindTag}${whoLine}</div>
           <div class="inbox-card-status ${unlocked ? 'unlocked' : ''}" data-unlock="${letter.unlock}">
             ${unlocked ? '지금 열람 가능' : countdownText(letter.unlock)}
           </div>
@@ -204,5 +264,6 @@ function updateCountdownsOnly() {
   });
 }
 
+autoAddFromUrl();
 render();
 checkTimerId = setInterval(checkUnlocks, 15000);
