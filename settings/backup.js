@@ -53,9 +53,10 @@
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    // 리마인드 타이머 갱신(백업했으니 다음 주기부터 다시 카운트)
+    // 리마인드 타이머 갱신(백업했으니 다음 주기부터 다시 카운트) + 파일명 기억
     const pref = getReminderPref();
     pref.lastBackupAt = Date.now();
+    pref.lastBackupFilename = filename;
     saveReminderPref(pref);
     return payload;
   }
