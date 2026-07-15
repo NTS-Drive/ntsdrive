@@ -71,7 +71,11 @@
 
     if (list.length === 0) {
       clockEl.style.display = '';
-      wrapEl.innerHTML = `<button class="add-dday-btn" onclick="NTSDday.openAddModal()">+ 디데이 추가</button>`;
+      wrapEl.innerHTML = `
+        <div class="empty-dday-actions">
+          <button class="moment-entry-btn" onclick="trackEvent('moment_button_click'); NTSDday.goToMoment('${todayStr()}')">그날의 기록 보기</button>
+          <button class="add-dday-btn" onclick="NTSDday.openAddModal()">디데이 추가</button>
+        </div>`;
       return;
     }
 
@@ -94,8 +98,8 @@
     wrapEl.innerHTML = `
       <div class="dday-hero-card dday-${season}" onclick="${editMode ? `NTSDday.openEditModal('${big.id}')` : `NTSDday.goToMoment('${big.date}')`}">
         ${editMode ? `<span class="dday-x" onclick="event.stopPropagation(); NTSDday.quickDelete('${big.id}')">×</span>` : ''}
-        <div class="dday-hero-num">${bigLabel}</div>
         <div class="dday-hero-title">${escapeHtml(big.title)}</div>
+        <div class="dday-hero-num">${bigLabel}</div>
         <div class="dday-hero-date">${formatDate(big.date)}</div>
       </div>
       <div class="dday-chip-row">
@@ -178,7 +182,7 @@
         <label>제목</label>
         <input type="text" id="ddayTitleInput" maxlength="20" placeholder="예: 기말고사" value="${item ? escapeHtml(item.title) : ''}">
         <label>날짜</label>
-        <input type="date" id="ddayDateInput" value="${item ? item.date : ''}">
+        <input type="date" id="ddayDateInput" min="${todayStr()}" value="${item ? item.date : ''}">
         <div class="row-actions">
           ${mode === 'edit' ? `<button class="btn-delete" onclick="NTSDday.deleteFromModal('${item.id}')">삭제</button>` : `<button class="btn-cancel" onclick="NTSDday.closeModal()">취소</button>`}
           <button class="btn-save" onclick="NTSDday.saveFromModal('${mode}'${item ? `, '${item.id}'` : ''})">저장</button>
@@ -192,6 +196,7 @@
     const date = document.getElementById('ddayDateInput').value;
     if (!title) { alert('제목을 입력해주세요.'); return; }
     if (!date) { alert('날짜를 선택해주세요.'); return; }
+    if (date < todayStr()) { alert('오늘보다 이전 날짜는 선택할 수 없어요.'); return; }
 
     let list = loadDdays();
     if (mode === 'add') {
@@ -204,11 +209,14 @@
     }
     saveDdays(list);
     closeModal();
+    editMode = false;
     render();
   }
   function deleteFromModal(id) {
     quickDelete(id);
     closeModal();
+    editMode = false;
+    render();
     trackEventSafe('dday_deleted');
   }
   function trackEventSafe(name, params) {
@@ -228,12 +236,14 @@
     trackEventSafe('dday_celebration_shown', { dday_title: item.title });
     const overlay = document.createElement('div');
     overlay.className = 'dday-celebrate-overlay';
+    const safeTitle = escapeHtml(item.title).replace(/'/g, "&#39;");
     overlay.innerHTML = `
       <div class="dday-celebrate-card">
         <div class="emoji">🎉</div>
         <h3>${escapeHtml(item.title)}, 오늘이에요</h3>
         <p>계속 기다려온 하루가 왔어요.</p>
-        <button onclick="NTSDday.finishCelebration('${item.id}', '${escapeHtml(item.title).replace(/'/g, "&#39;")}')">확인</button>
+        <button class="btn-primary" onclick="NTSDday.finishCelebration('${item.id}', '${safeTitle}')">마음 기록하기</button>
+        <button class="btn-secondary" onclick="NTSDday.dismissCelebration('${item.id}')">확인</button>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -261,16 +271,25 @@
     }
   }
 
-  function finishCelebration(id, title) {
+  function clearCelebratedDday(id) {
     markCelebrated(id);
-    trackEventSafe('dday_reached', { dday_title: title });
     const list = loadDdays().filter(d => d.id !== id);
     saveDdays(list);
     const overlay = document.querySelector('.dday-celebrate-overlay');
     if (overlay) overlay.remove();
     render();
+  }
+
+  function finishCelebration(id, title) {
+    trackEventSafe('dday_reached', { dday_title: title, action: 'record' });
+    clearCelebratedDday(id);
     // Diary로 자연스럽게 유도: "오늘 기분은 어떤가요?"
     window.location.href = `diary/index.html?ddaytitle=${encodeURIComponent(title)}`;
+  }
+
+  function dismissCelebration(id) {
+    trackEventSafe('dday_reached', { action: 'dismiss' });
+    clearCelebratedDday(id);
   }
 
   // confetti 낙하 애니메이션 keyframes 주입
@@ -281,7 +300,7 @@
   window.NTSDday = {
     render, toggleMenu, toggleEditMode, quickDelete, goToMoment,
     openAddModal, openEditModal, closeModal, saveFromModal, deleteFromModal,
-    finishCelebration, checkCelebration
+    finishCelebration, dismissCelebration, checkCelebration
   };
 
   document.addEventListener('DOMContentLoaded', () => {

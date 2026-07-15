@@ -161,7 +161,7 @@ function stopCamera(videoEl) {
 
 /* ===== Capture a frame from <video> — aspect ratio differs by type for authenticity ===== */
 // Snap: near-square (Instax Square-style). Film: 3:2 (classic 35mm frame).
-function captureFrame(videoEl, ratio) {
+function captureFrame(videoEl, ratio, mirror) {
   ratio = ratio || 1; // width / height
   const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
   let cw, ch;
@@ -174,6 +174,12 @@ function captureFrame(videoEl, ratio) {
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext('2d');
+  if (mirror) {
+    // 전방 카메라는 미리보기 화면에서 거울처럼 보이므로, 저장되는 사진도
+    // 미리보기에서 본 그대로(좌우반전 유지)가 되도록 캔버스 자체를 뒤집는다.
+    ctx.translate(outW, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.drawImage(videoEl, sx, sy, cw, ch, 0, 0, outW, outH);
   return canvas;
 }

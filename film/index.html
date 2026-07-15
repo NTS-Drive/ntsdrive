@@ -42,7 +42,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="../camera/shared.js?v=1784107173"></script>
+<script src="../camera/shared.js?v=1784130617"></script>
 <script>
 const stage = document.getElementById('stage');
 let currentFacing = 'environment';
@@ -84,7 +84,7 @@ function toggleFacing() {
 function handleShutter() {
   const video = document.getElementById('video');
   if (!video.videoWidth) { toast('카메라를 준비 중이에요, 잠시만요.'); return; }
-  const raw = captureFrame(video, 1.5); // 3:2
+  const raw = captureFrame(video, 1.5, currentFacing === 'user'); // 3:2
   stopCamera(video);
   const filtered = applyFilmFilter(raw);
   saveFilmPhoto(filtered);

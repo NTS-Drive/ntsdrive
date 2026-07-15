@@ -42,7 +42,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="../camera/shared.js?v=1784107173"></script>
+<script src="../camera/shared.js?v=1784130617"></script>
 <script>
 const stage = document.getElementById('stage');
 let capturedCanvas = null;
@@ -87,7 +87,7 @@ function toggleFacing() {
 function handleShutter() {
   const video = document.getElementById('video');
   if (!video.videoWidth) { toast('카메라를 준비 중이에요, 잠시만요.'); return; }
-  capturedCanvas = captureFrame(video, 1); // 1:1 square, Instax-square style
+  capturedCanvas = captureFrame(video, 1, currentFacing === 'user'); // 1:1 square, Instax-square style
   stopCamera(video);
   const framed = applySnapFilter(capturedCanvas);
   renderPreview(framed);
