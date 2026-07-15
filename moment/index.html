@@ -9,7 +9,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1784108714">
+<link rel="stylesheet" href="../styles.css?v=1784136107">
 <link rel="stylesheet" href="../fonts.css?v=1784067557">
 <script src="../analytics.js?v=1784067557"></script>
 <script src="../diary/shared.js?v=1784067557"></script>
@@ -144,7 +144,10 @@ function renderDiarySection() {
   const el = document.getElementById('momentDiary');
   const entries = NTSDiary.getEntriesByDate(currentDate).sort((a,b) => a.createdAt - b.createdAt);
   if (!entries.length) {
-    el.innerHTML = `<div class="moment-empty"><p>이 날 남긴 감정 기록이 없어요.</p><a class="cta" onclick="trackEvent('moment_diary_cta_click'); navigate('../diary/index.html')">지금 기록해볼까요?</a></div>`;
+    const isToday = currentDate === NTSDiary.todayStr();
+    el.innerHTML = isToday
+      ? `<div class="moment-empty"><p>이 날 남긴 감정 기록이 없어요.</p><a class="cta" onclick="trackEvent('moment_diary_cta_click'); navigate('../diary/index.html')">지금 기록해볼까요?</a></div>`
+      : `<div class="moment-empty"><p>이 날 남긴 감정 기록이 없어요.</p></div>`;
     return;
   }
   el.innerHTML = entries.map(e => {
@@ -168,7 +171,10 @@ function renderPhotoSection() {
     .sort((a,b) => a.createdAt - b.createdAt);
 
   if (!photos.length) {
-    el.innerHTML = `<div class="moment-empty"><p>이 날 찍은 사진이 없어요.</p><a class="cta" onclick="trackEvent('moment_snap_cta_click'); navigate('../snap/index.html')">지금 찍어볼까요?</a></div>`;
+    const isToday = currentDate === NTSDiary.todayStr();
+    el.innerHTML = isToday
+      ? `<div class="moment-empty"><p>이 날 찍은 사진이 없어요.</p><a class="cta" onclick="trackEvent('moment_snap_cta_click'); navigate('../snap/index.html')">지금 찍어볼까요?</a></div>`
+      : `<div class="moment-empty"><p>이 날 찍은 사진이 없어요.</p></div>`;
     return;
   }
 

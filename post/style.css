@@ -261,3 +261,38 @@ body.leaving { animation: pageOut .28s ease both; }
   .notify-status .ghost-btn { width: 100%; }
   .inbox-card { padding: 14px 14px; gap: 10px; }
 }
+
+/* ===== 나에게 쓰기 / D-day 등록 ===== */
+.toself-field { margin-bottom: 26px; }
+.toself-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); cursor: pointer; text-transform: none; letter-spacing: normal; margin-bottom: 0; }
+.toself-toggle input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+#ddayButtonArea:empty { display: none; }
+.dday-add-btn { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: none; padding: 9px 16px; border-radius: 99px; cursor: pointer; }
+.dday-pending { margin-top: 10px; display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--ink-muted); }
+.dday-pending b { color: var(--ink); }
+.dday-pending-cancel { font-size: 11.5px; color: var(--ink-muted); text-decoration: underline; background: none; border: none; cursor: pointer; }
+.dday-blocked { margin-top: 10px; font-size: 12.5px; color: var(--ink-muted); }
+
+.post-modal-backdrop { position: fixed; inset: 0; background: rgba(20,17,10,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; }
+.post-modal { background: #fff; border-radius: 20px; padding: 24px 22px 26px; width: 100%; max-width: 360px; margin: 20px; }
+.post-modal h3 { font-family: var(--font-serif); font-size: 16px; margin-bottom: 16px; }
+.post-modal input { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 11px 13px; font-size: 14px; margin-bottom: 16px; font-family: inherit; }
+.post-modal .row-actions { display: flex; gap: 8px; }
+.post-modal .row-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+.post-modal .btn-save { background: var(--ink); color: #fff; }
+.post-modal .btn-cancel { background: var(--accent-soft); color: var(--ink); }
+@media (max-width: 600px) {
+  .post-modal-backdrop { align-items: flex-end; }
+  .post-modal { border-radius: 20px 20px 0 0; margin: 0; max-width: 100%; }
+}
+
+/* D-day 도달 연출(dday.js가 생성) */
+.dday-celebrate-overlay { position: fixed; inset: 0; background: rgba(20,17,10,0.55); z-index: 200; display: flex; align-items: center; justify-content: center; }
+.dday-celebrate-card { background: #fff; border-radius: 24px; padding: 40px 28px; text-align: center; max-width: 340px; margin: 20px; }
+.dday-celebrate-card .emoji { font-size: 44px; margin-bottom: 14px; }
+.dday-celebrate-card h3 { font-family: var(--font-serif); font-size: 19px; margin-bottom: 8px; }
+.dday-celebrate-card p { font-size: 13px; color: var(--ink-muted); margin-bottom: 24px; }
+.dday-celebrate-card button { display: block; width: 100%; padding: 13px 28px; border-radius: 99px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.dday-celebrate-card .btn-primary { background: var(--ink); color: #fff; border: none; margin-bottom: 10px; }
+.dday-celebrate-card .btn-secondary { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+.confetti-piece { position: fixed; top: -20px; width: 8px; height: 14px; z-index: 199; opacity: 0.9; border-radius: 2px; }

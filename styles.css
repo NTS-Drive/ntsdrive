@@ -85,20 +85,36 @@ body.leaving{animation:pageOut .3s ease both;}
 .section-head h2{font-family:'Space Grotesk'; font-size:20px; font-weight:700;}
 .section-head span{font-size:12px; color:var(--sub);}
 
-.folders{display:flex; flex-direction:column; gap:16px;}
-.folder{position:relative; margin-top:13px; cursor:pointer; transition:transform .18s;}
+/* ---- 홈 '어제의 기록' 미리보기 ---- */
+.yesterday-card{max-width:760px; margin:0 auto 8px; padding:0 28px;}
+.yesterday-inner{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px 22px; cursor:pointer; transition:transform .18s;}
+.yesterday-inner:hover{transform:translateY(-2px);}
+.yesterday-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.yesterday-head h2{font-family:'Space Grotesk'; font-size:16px; font-weight:700;}
+.yesterday-head span{font-size:12px; color:var(--sub);}
+.yesterday-body{display:flex; align-items:center; gap:14px;}
+.yesterday-diary{display:flex; align-items:center; gap:10px; flex:1; min-width:0;}
+.yesterday-diary .memoji{font-size:24px; flex-shrink:0;}
+.yesterday-diary-text{min-width:0;}
+.yesterday-diary-mood{font-size:13.5px; font-weight:700; color:var(--ink); margin-right:6px;}
+.yesterday-diary-quote{font-family:'NanumSonDahaeng',sans-serif; font-size:14px; color:var(--sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.yesterday-empty{font-size:13px; color:var(--sub);}
+.yesterday-photos{display:flex; gap:6px; flex-shrink:0;}
+.yesterday-photo{width:44px; height:44px; border-radius:10px; overflow:hidden; background:#111;}
+.yesterday-photo img{width:100%; height:100%; object-fit:cover;}
+
+.folders{display:flex; flex-direction:column; gap:14px;}
+.folder{position:relative; cursor:pointer; transition:transform .18s;}
 .folder:hover{transform:translateY(-2px);}
 .folder.soon{cursor:default;}
 .folder.soon:hover{transform:none;}
 
-.ficon{position:absolute; top:-13px; left:20px; width:64px; height:16px; border-radius:6px 6px 0 0; background:var(--fcolor); z-index:1;}
-.folder-card{background:var(--panel); border:1px solid var(--line); border-top:none; border-radius:2px 14px 14px 14px; overflow:hidden;}
-.folder-card-top{height:9px; background:var(--fcolor);}
-.folder-card-body{padding:20px 22px 19px;}
-.folder-text{min-width:0; flex:1;}
+.folder-card{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; padding:18px 22px; display:flex; align-items:center; gap:14px;}
+.folder-ribbon{position:absolute; top:0; right:18px; width:20px; height:26px; background:var(--fcolor); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); z-index:1;}
+.folder-text{min-width:0; flex:1; display:flex; align-items:center; gap:14px;}
 
-.folder h3{font-family:'Inter',sans-serif; font-size:20px; font-weight:700; margin-bottom:5px; color:var(--ink);}
-.folder p{font-size:14px; color:var(--sub); line-height:1.55;}
+.folder h3{font-family:'Inter',sans-serif; font-size:20px; font-weight:700; color:var(--ink); line-height:1.4; min-width:66px; flex-shrink:0;}
+.folder p{font-size:14px; color:var(--sub); line-height:1.4;}
 .folder .badge{display:inline-block; margin-top:6px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:#F1F1F5; color:var(--sub);}
 .folder.soon .badge{background:#EDEDF0; color:#9A9DA8;}
 .folder.soon .glyph{opacity:0.6;}
@@ -137,83 +153,38 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 .footer-copyright{color:var(--sub); font-size:12px;}
 .footer-backup-note{font-size:11px; color:var(--sub); margin-bottom:10px; line-height:1.6;}
 .footer-backup-note a{color:var(--sub); text-decoration:underline; cursor:pointer;}
-.empty-dday-actions{display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:60px;}
-.moment-entry-btn{font-size:13px; font-weight:600; color:var(--ink); background:var(--panel); border:1px solid var(--line); padding:10px 20px; border-radius:99px; cursor:pointer;}
-.moment-entry-btn:hover{border-color:var(--blue); color:var(--blue);}
-.add-dday-btn{font-size:13px; font-weight:600; color:var(--blue); background:none; border:none; cursor:pointer; padding:10px 4px;}
-
-/* ---- 디데이 위젯 ---- */
+/* ---- 홈 D-day 카드 (Post 연동형, 계절 구분 없이 단일 그라데이션) ---- */
 .dday-hero-card{
-  width:300px; height:300px; margin:30px auto 14px;
-  border-radius:32px; padding:26px 24px; text-align:center; color:#fff;
+  width:300px; height:300px; margin:30px auto 24px;
+  border-radius:32px; padding:26px 24px; text-align:center; color:#7A4A32;
   position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center;
-  cursor:pointer; filter:saturate(1.05);
+  cursor:pointer;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(246,205,187,0.65), transparent 55%),
+    radial-gradient(circle at 88% 22%, rgba(209,215,241,0.55), transparent 52%),
+    radial-gradient(circle at 30% 90%, rgba(221,237,240,0.6), transparent 55%),
+    linear-gradient(115deg, #FBEEE8 0%, #F7F6F8 42%, #FFFFFF 72%);
+  box-shadow:0 30px 60px rgba(120,90,70,0.14);
 }
-.dday-hero-card:before{content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 55%, rgba(0,0,0,0.16), transparent 68%);}
 .dday-hero-num, .dday-hero-title, .dday-hero-date{position:relative; z-index:1;}
-.dday-hero-num{font-family:'Space Grotesk'; font-size:42px; font-weight:700; line-height:1; text-shadow:0 1px 18px rgba(0,0,0,0.28); margin-top:8px;}
+.dday-hero-num{font-family:'Space Grotesk'; font-size:42px; font-weight:700; line-height:1; margin-top:8px;}
 .dday-hero-title{font-size:21px; font-weight:700; opacity:.96;}
 .dday-hero-date{font-size:11px; margin-top:8px; opacity:.72;}
 
-.dday-spring{ background:
-    radial-gradient(ellipse 120% 90% at 15% 10%, #FFD3E0 0%, transparent 60%),
-    radial-gradient(ellipse 110% 100% at 90% 30%, #FFE8B8 0%, transparent 55%),
-    radial-gradient(ellipse 120% 110% at 60% 95%, #BFEAC4 0%, transparent 60%),
-    linear-gradient(160deg, #FCC9DB 0%, #F6DCA9 45%, #C7E9C9 100%);
-}
-.dday-summer{ background:
-    radial-gradient(ellipse 120% 90% at 10% 10%, #C7F0E8 0%, transparent 60%),
-    radial-gradient(ellipse 110% 100% at 90% 25%, #6FD3E6 0%, transparent 55%),
-    radial-gradient(ellipse 120% 110% at 60% 100%, #3E7FD6 0%, transparent 60%),
-    linear-gradient(160deg, #8FE3DC 0%, #4FBEDE 45%, #3E6FCB 100%);
-}
-.dday-autumn{ background:
-    radial-gradient(ellipse 120% 90% at 12% 8%, #FBE29B 0%, transparent 60%),
-    radial-gradient(ellipse 110% 100% at 92% 30%, #F0A85F 0%, transparent 55%),
-    radial-gradient(ellipse 120% 110% at 55% 100%, #B96A26 0%, transparent 60%),
-    linear-gradient(160deg, #F6D68A 0%, #E9974F 45%, #B96A26 100%);
-}
-.dday-winter{ background:
-    radial-gradient(ellipse 120% 90% at 12% 8%, #F1EBFC 0%, transparent 62%),
-    radial-gradient(ellipse 110% 100% at 92% 22%, #C9B6F0 0%, transparent 55%),
-    radial-gradient(ellipse 120% 110% at 55% 100%, #8B6FC9 0%, transparent 62%),
-    linear-gradient(160deg, #EDE4FB 0%, #C8B3EE 45%, #9B7FD4 100%);
-}
-
-.dday-chip-row{display:flex; align-items:center; gap:8px; width:300px; margin:0 auto 60px;}
-.dday-chip{
-  flex:0 0 auto; width:124px; background:rgba(255,255,255,0.55); backdrop-filter:blur(4px);
-  border:1px solid var(--line); border-radius:12px; padding:10px 12px; cursor:pointer; position:relative;
-}
-.dday-chip .cn{font-family:'Space Grotesk'; font-size:14px; font-weight:700; color:var(--ink);}
-.dday-chip .ct{font-size:10px; color:var(--sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
-.dday-more{flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; color:var(--sub); font-size:16px; font-weight:700; margin-left:auto; cursor:pointer;}
-
-/* 편집 모드 */
-.dday-x{position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#E0674F; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid var(--cream); z-index:2; cursor:pointer;}
-.dday-hero-card .dday-x{top:10px; right:10px;}
-
-/* ⋯ 메뉴 팝오버 */
-.dday-menu{position:absolute; bottom:44px; right:0; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(15,17,21,0.14); overflow:hidden; z-index:10; min-width:140px;}
+/* ⋯ 메뉴 버튼 & 팝오버 */
+.dday-more{position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; color:#7A4A32; font-size:16px; font-weight:700; cursor:pointer; z-index:2;}
+.dday-menu{position:absolute; top:48px; right:14px; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(15,17,21,0.14); overflow:hidden; z-index:10; min-width:120px;}
 .dday-menu button{display:block; width:100%; text-align:left; padding:12px 16px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--ink);}
 .dday-menu button:hover{background:#F5F5F7;}
-.dday-menu-wrap{position:relative; display:inline-block;}
 
-/* 추가/수정 폼 모달 */
+/* 삭제 확인 팝업 */
 .dday-modal-backdrop{position:fixed; inset:0; background:rgba(20,22,27,0.4); z-index:100; display:flex; align-items:center; justify-content:center;}
-.dday-modal{background:#fff; border-radius:20px; padding:24px 22px 30px; width:100%; max-width:420px; margin:20px;}
-@media (max-width:760px){
-  .dday-modal-backdrop{align-items:flex-end;}
-  .dday-modal{border-radius:20px 20px 0 0; margin:0; max-width:100%;}
-}
-.dday-modal h3{font-family:'Space Grotesk'; font-size:16px; margin-bottom:16px;}
-.dday-modal label{display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--sub); margin-bottom:6px;}
-.dday-modal input{width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; margin-bottom:16px; font-family:inherit;}
-.dday-modal .row-actions{display:flex; gap:8px;}
-.dday-modal .row-actions button{flex:1; padding:13px; border-radius:8px; border:none; font-size:14px; font-weight:600; cursor:pointer;}
-.dday-modal .btn-save{background:var(--ink); color:#fff;}
-.dday-modal .btn-cancel{background:#F1F1F5; color:var(--ink);}
-.dday-modal .btn-delete{background:#FCE4E0; color:#C0402C;}
+.dday-confirm-card{background:#fff; border-radius:20px; padding:26px 22px; width:100%; max-width:320px; margin:20px; text-align:center;}
+.dday-confirm-card p{font-size:14px; color:var(--ink); margin-bottom:18px;}
+.dday-confirm-card .row-actions{display:flex; gap:8px;}
+.dday-confirm-card .row-actions button{flex:1; padding:12px; border-radius:8px; border:none; font-size:14px; font-weight:600; cursor:pointer;}
+.dday-confirm-card .btn-cancel{background:#F1F1F5; color:var(--ink);}
+.dday-confirm-card .btn-delete{background:#FCE4E0; color:#C0402C;}
 
 /* 디데이 도달 연출 */
 .dday-celebrate-overlay{position:fixed; inset:0; background:rgba(20,22,27,0.55); z-index:200; display:flex; align-items:center; justify-content:center;}
@@ -286,12 +257,9 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .blob2{width:220px; height:220px; left:-60px;}
   .blob3{width:200px; height:200px; right:-50px;}
   .folders{gap:12px;}
-  .ficon{width:56px; height:14px; top:-11px;}
   .clock-widget{width:250px; height:250px; margin:20px auto 20px;}
   .clock-widget::after{width:206px; height:206px;}
-  .dday-hero-card{width:250px; height:250px; margin:20px auto 14px;}
-  .dday-chip-row{width:250px;}
-  .dday-chip{width:99px;}
+  .dday-hero-card{width:250px; height:250px; margin:20px auto 24px;}
   .tick-12{top:18px;} .tick-6{bottom:18px;} .tick-3{right:18px;} .tick-9{left:18px;}
   .hour-hand{height:54px;} .minute-hand{height:82px;} .second-hand{height:96px;}
   .pivot-glow{width:80px; height:80px;} .pivot{width:15px; height:15px;}
