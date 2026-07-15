@@ -91,6 +91,7 @@ function removeLetter(encoded) {
 function requestNotifyPermission() {
   if (!('Notification' in window)) { toast('이 브라우저는 알림을 지원하지 않아요.'); return; }
   Notification.requestPermission().then(perm => {
+    trackEvent('post_inbox_notify_requested', { result: perm });
     if (perm === 'granted') toast('알림이 켜졌어요. 이 탭을 열어두시면 돼요.');
     renderInboxList();
   });
@@ -173,6 +174,7 @@ function renderInboxFilterRow() {
 }
 function applyInboxFilter(key) {
   inboxFilter = key;
+  trackEvent('post_inbox_filter_used', { filter: key });
   renderInboxFilterRow();
   renderInboxList();
 }
@@ -265,5 +267,6 @@ function updateCountdownsOnly() {
 }
 
 autoAddFromUrl();
+trackEvent('post_inbox_viewed', { total_letters: loadInbox().length });
 render();
 checkTimerId = setInterval(checkUnlocks, 15000);

@@ -33,9 +33,10 @@
 <link rel="apple-touch-startup-image" href="splash/splash-1536x2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=1784107173">
 <script src="analytics.js"></script>
-<script src="settings/backup.js"></script>
+<script src="settings/backup.js?v=1784107173"></script>
+<script src="dday.js?v=1784108714"></script>
 <script src="install-shortcut.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
@@ -68,7 +69,7 @@
   <h1><span class="h1-lead">지금 이 순간을</span><br>기록하는 나만의 드라이브</h1>
   <p class="subtext">내일을 기대하고, 어제를 추억하는 파일이 있는 곳</p>
 
-  <div class="clock-widget" id="clockWidget" onclick="trackEvent('clock_widget_click'); navigate('moment/index.html')" style="cursor:pointer;">
+  <div id="clockWidget" class="clock-widget" onclick="trackEvent('clock_widget_click'); navigate('moment/index.html')" style="cursor:pointer;">
     <span class="tick tick-12"></span>
     <span class="tick tick-3"></span>
     <span class="tick tick-6"></span>
@@ -86,7 +87,7 @@
     </div>
     <div class="clock-day" id="clockDay">MONDAY</div>
   </div>
-  <button class="moment-entry-btn" onclick="trackEvent('moment_button_click'); navigate('moment/index.html')">📖 그날의 기록 보기</button>
+  <div id="ddayWidget"></div>
 </section>
 
 <section class="section" id="folders">
@@ -95,51 +96,6 @@
 </section>
 
 <div class="ad-slot"><span>광고 영역</span></div>
-
-<section class="section">
-  <div class="section-head"><h2>미니 게임 즐기기</h2><span>4개 영역</span></div>
-  <div class="mini-note">일부 게임은 PC에 최적화 되어 있어요</div>
-  <div class="folders mini-grid">
-    <div class="folder f-firewall" onclick="trackEvent('play_mini_click', {item_id:'formula-firewall'}); navigate('arcade/formula-firewall/index.html')">
-      <div class="ficon"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/><path d="M13 13c1.2 1 1.8 2 1.4 3.2-.3.9-1.2 1.3-2 1-.9-.3-1.2-1.2-.8-2.2.5-1.2 1.6-2 1.4-2z"/></svg></span></div>
-      <h3>Formula Firewall</h3>
-      <p>스프레드시트 타워디펜스</p>
-    </div>
-    <div class="folder f-numstreak" onclick="trackEvent('play_mini_click', {item_id:'number-streak'}); navigate('arcade/number-streak/index.html')">
-      <div class="ficon"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-6 4 4 7-9"/><path d="M14 6h6v6"/></svg></span></div>
-      <h3>Number Streak</h3>
-      <p>더 큰지 작은지 맞히기</p>
-    </div>
-    <div class="folder f-cardmem" onclick="trackEvent('play_mini_click', {item_id:'card-memory'}); navigate('arcade/card-memory/index.html')">
-      <div class="ficon"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="8" height="12" rx="1.5"/><rect x="13" y="6" width="8" height="12" rx="1.5"/></svg></span></div>
-      <h3>Card Memory</h3>
-      <p>이모지 짝맞추기</p>
-    </div>
-    <div class="folder f-tarot" onclick="trackEvent('play_mini_click', {item_id:'tarot-pick'}); navigate('fortune/tarot-pick/index.html')">
-      <div class="ficon"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="18" rx="1.5" transform="rotate(6 12 11)"/><path d="M12 9l1 2 2 .3-1.5 1.4.3 2-1.8-1-1.8 1 .3-2L9 11.3l2-.3z"/></svg></span></div>
-      <h3>Tarot Pick</h3>
-      <p>직장인 라이프 타로</p>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="section-head"><h2>이번 주 BEST</h2><span>운영자 큐레이션</span></div>
-  <div class="best-grid">
-    <a class="best-card" href="post/index.html">
-      <div class="rank">01</div>
-      <div class="info"><h4>Post</h4><p>마음을 담은 편지</p></div>
-    </a>
-    <a class="best-card" href="snap/index.html">
-      <div class="rank">02</div>
-      <div class="info"><h4>Snap</h4><p>지금 이 순간의 즉석사진</p></div>
-    </a>
-    <a class="best-card" href="arcade/formula-firewall/index.html">
-      <div class="rank">03</div>
-      <div class="info"><h4>Formula Firewall</h4><p>스프레드시트 타워디펜스</p></div>
-    </a>
-  </div>
-</section>
 
 <footer>
   <div class="footer-links">
@@ -267,7 +223,6 @@
   const ICONS = {
     post: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>',
     log: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>',
-    play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="16" height="6" rx="1.8"/><line x1="12" y1="15" x2="12" y2="6.5"/><circle cx="12" cy="5" r="2.3"/></svg>',
     snap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg>',
     film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg>',
     diary: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>'
@@ -277,7 +232,6 @@
     log:     { icon: ICONS.log,     cls: 'f-log',      unit: null },
     snap:    { icon: ICONS.snap,    cls: 'f-snap',     unit: null },
     film:    { icon: ICONS.film,    cls: 'f-film',     unit: null },
-    play:    { icon: ICONS.play,    cls: 'f-play',     unit: '개 운영중' },
     diary:   { icon: ICONS.diary,   cls: 'f-diary',    unit: null }
   };
 
@@ -306,11 +260,19 @@
         }
 
         return `
-          <div class="folder${soonClass} ${style.cls}${cat.id === 'post' ? ' featured' : ''}" ${cat.status === 'Live' ? `onclick="trackEvent('folder_card_click', {folder_id:'${cat.id}'}); navigate('${cat.path}')"` : ''}>
-            <div class="ficon"><span class="glyph">${style.icon}</span></div>
-            <h3>${cat.name}</h3>
-            <p>${cat.description}</p>
-            <span class="badge">${badgeText}</span>
+          <div class="folder${soonClass} ${style.cls}" ${cat.status === 'Live' ? `onclick="trackEvent('folder_card_click', {folder_id:'${cat.id}'}); navigate('${cat.path}')"` : ''}>
+            <div class="ficon"></div>
+            <div class="folder-card">
+              <div class="folder-card-top"></div>
+              <div class="folder-card-body">
+                <span class="glyph">${style.icon}</span>
+                <div class="folder-text">
+                  <h3>${cat.name}</h3>
+                  <p>${cat.description}</p>
+                  ${cat.status !== 'Live' ? `<span class="badge">${badgeText}</span>` : ''}
+                </div>
+              </div>
+            </div>
           </div>
         `;
       }));

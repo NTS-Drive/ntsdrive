@@ -59,6 +59,7 @@ body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
 .viewfinder.ratio-32 { aspect-ratio: 3 / 2; }
 .viewfinder.peek { width: 26.4%; margin-left: auto; margin-right: auto; }
 .viewfinder video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.viewfinder video.mirror { transform: scaleX(-1); }
 .viewfinder canvas.preview-canvas { width: 100%; height: 100%; display: block; object-fit: contain; background: #000; }
 
 .shutter-row { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 18px; }

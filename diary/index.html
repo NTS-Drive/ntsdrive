@@ -10,11 +10,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1783981104">
-<link rel="stylesheet" href="../fonts.css?v=1783981104">
+<link rel="stylesheet" href="style.css?v=1784107173">
+<link rel="stylesheet" href="../fonts.css?v=1784107173">
 <script src="../analytics.js"></script>
 <script src="../install-shortcut.js"></script>
-<script src="shared.js?v=1783981104"></script>
+<script src="shared.js?v=1784107173"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -164,6 +164,31 @@
   const textInput = document.getElementById('textInput');
   const charCount = document.getElementById('charCount');
   textInput.addEventListener('input', () => { charCount.textContent = textInput.value.length; });
+
+  // ---- 디데이 → Diary 자연 연결 ----
+  // 디데이 도달 연출 이후 "?ddaytitle=제목" 파라미터와 함께 들어오면,
+  // 제목이 기존 원인 태그와 정확히 일치할 경우 그 태그를 자동 선택하고,
+  // 일치하는 태그가 없으면 한줄메모에 "[제목] " 프리픽스를 채워둔다.
+  (function applyDdayTitle() {
+    const params = new URLSearchParams(window.location.search);
+    const ddayTitle = params.get('ddaytitle');
+    if (!ddayTitle) return;
+    const allTags = NTSDiary.CAUSE_GROUPS.flatMap(g => g.tags);
+    if (allTags.includes(ddayTitle)) {
+      if (!selectedCauses.includes(ddayTitle)) {
+        selectedCauses.push(ddayTitle);
+        refreshCauseTagStates();
+      }
+    } else {
+      const prefix = `[${ddayTitle}] `;
+      if (!textInput.value.startsWith(prefix)) {
+        textInput.value = prefix + textInput.value;
+        charCount.textContent = textInput.value.length;
+      }
+      textInput.focus();
+      textInput.setSelectionRange(textInput.value.length, textInput.value.length);
+    }
+  })();
 
   const saveBtn = document.getElementById('saveBtn');
   function updateSaveState() { saveBtn.disabled = !selectedMood; }

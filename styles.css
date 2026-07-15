@@ -85,45 +85,32 @@ body.leaving{animation:pageOut .3s ease both;}
 .section-head h2{font-family:'Space Grotesk'; font-size:20px; font-weight:700;}
 .section-head span{font-size:12px; color:var(--sub);}
 
-.folders{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;}
-.folder{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px 20px; cursor:pointer; transition:transform .18s, box-shadow .18s; display:flex; flex-direction:column; align-items:flex-start; min-width:0;}
-.folder:hover{transform:translateY(-4px); box-shadow:0 18px 34px rgba(15,17,21,0.08);}
-.folder.featured{grid-column:1 / -1;}
+.folders{display:flex; flex-direction:column; gap:16px;}
+.folder{position:relative; margin-top:13px; cursor:pointer; transition:transform .18s;}
+.folder:hover{transform:translateY(-2px);}
 .folder.soon{cursor:default;}
-.folder.soon:hover{transform:none; box-shadow:none;}
+.folder.soon:hover{transform:none;}
+
+.ficon{position:absolute; top:-13px; left:20px; width:64px; height:16px; border-radius:6px 6px 0 0; background:var(--fcolor); z-index:1;}
+.folder-card{background:var(--panel); border:1px solid var(--line); border-top:none; border-radius:2px 14px 14px 14px; overflow:hidden;}
+.folder-card-top{height:9px; background:var(--fcolor);}
+.folder-card-body{padding:18px 20px 17px; display:flex; align-items:center; gap:16px;}
+.folder-card-body .glyph{flex-shrink:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; color:var(--ink);}
+.folder-card-body .glyph svg{width:26px; height:26px;}
+.folder-text{min-width:0; flex:1;}
+
+.folder h3{font-family:'Noto Serif KR',serif; font-size:17px; font-weight:700; margin-bottom:3px;}
+.folder p{font-size:12.5px; color:var(--sub); line-height:1.55;}
+.folder .badge{display:inline-block; margin-top:6px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:#F1F1F5; color:var(--sub);}
 .folder.soon .badge{background:#EDEDF0; color:#9A9DA8;}
+.folder.soon .glyph{opacity:0.6;}
 
-.ficon{width:72px; height:56px; position:relative; margin-bottom:18px;}
-.ficon:before{content:''; position:absolute; left:0; top:-9px; width:42%; height:11px; border-radius:6px 6px 0 0; background:linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0) 60%), var(--tabc); border:1px solid rgba(255,255,255,0.35); border-bottom:none;}
-.ficon:after{content:''; position:absolute; inset:0; border-radius:3px 12px 12px 12px; background:linear-gradient(135deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0) 55%), linear-gradient(160deg, var(--bodyl), var(--bodyc)); box-shadow:0 10px 22px rgba(15,17,21,0.14), inset 0 1px 0 rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.4);}
-.ficon .glyph{position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; padding-top:6px; color:#3A3430;}
-.ficon .glyph svg{width:26px; height:26px;}
+.f-post{--fcolor:#F6C9CE;}
+.f-log{--fcolor:#F3DCA8;}
+.f-diary{--fcolor:#C7DCF5;}
+.f-snap{--fcolor:#DAD6E8;}
+.f-film{--fcolor:#E0CDB8;}
 
-.f-arcade{--tabc:#7FA8E0; --bodyl:#CFE3FA; --bodyc:#A9CBF2;}
-.f-fortune{--tabc:#B39AE0; --bodyl:#E5D9FA; --bodyc:#CBB8F0;}
-.f-post{--tabc:#D397A0; --bodyl:#F6D4D9; --bodyc:#ECB3BB;}
-.f-academy{--tabc:#7FC7B8; --bodyl:#D3F0E7; --bodyc:#A9E0D2;}
-.f-snap{--tabc:#E0A57E; --bodyl:#FBE0CC; --bodyc:#F3C6A2;}
-.f-film{--tabc:#9DBB8B; --bodyl:#E2EEDA; --bodyc:#C2DAB3;}
-.f-diary{--tabc:#84AEE0; --bodyl:#D5E6FA; --bodyc:#B2D0F2;}
-.f-community{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
-.f-store{--tabc:#B7BAC2; --bodyl:#E4E5E9; --bodyc:#C7C9D1;}
-.f-log{--tabc:#DBB077; --bodyl:#F8E7C8; --bodyc:#F0D19E;}
-.f-play{--tabc:#84AEE0; --bodyl:#D5E6FA; --bodyc:#B2D0F2;}
-.f-firewall{--tabc:#E0968A; --bodyl:#FADAD3; --bodyc:#F2B7AB;}
-.f-numstreak{--tabc:#B29AE0; --bodyl:#E6DBFA; --bodyc:#D0BFF2;}
-.f-cardmem{--tabc:#7EC4B4; --bodyl:#D4F0E8; --bodyc:#ACE0D3;}
-.f-tarot{--tabc:#E0BD7E; --bodyl:#FAECD0; --bodyc:#F2D9A6;}
-.mini-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-.mini-note{font-size:12px; color:var(--sub); margin:-6px 0 16px;}
-.folder.soon .ficon .glyph{opacity:0.7;}
-
-.folder h3{font-family:'Space Grotesk'; font-size:16px; margin-bottom:6px;}
-.folder p{font-size:12.5px; color:var(--sub); line-height:1.55; min-height:39px; width:100%;}
-.folder .badge{display:inline-block; margin-top:auto; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:99px; background:#F1F1F5; color:var(--sub);}
-
-/* ---- BEST 3 (root) ---- */
-.best-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px;}
 .mob-break{display:none;}
 .desc-mobile-only{display:none;}
 @media (max-width:760px){
@@ -131,12 +118,6 @@ body.leaving{animation:pageOut .3s ease both;}
   .desc-desktop-only{display:none;}
   .desc-mobile-only{display:inline;}
 }
-.best-card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 18px; position:relative; transition:transform .18s, box-shadow .18s; display:flex; align-items:center; gap:14px; cursor:pointer; text-decoration:none; color:inherit; min-width:0;}
-.best-card:hover{transform:translateY(-3px); box-shadow:0 14px 26px rgba(15,17,21,0.08);}
-.rank{font-family:'Space Grotesk'; font-size:20px; font-weight:700; color:var(--line); flex-shrink:0; width:28px;}
-.best-card .info{min-width:0;}
-.best-card h4{font-family:'Space Grotesk'; font-size:14px; margin-bottom:2px;}
-.best-card p{font-size:11.5px; color:var(--sub);}
 
 /* ---- modal (onboarding) ---- */
 .overlay{position:fixed; inset:0; background:rgba(15,17,21,0.5); backdrop-filter:blur(4px); display:none; align-items:flex-start; justify-content:center; z-index:100; padding:20px; padding-top:96px;}
@@ -158,8 +139,85 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 .footer-copyright{color:var(--sub); font-size:12px;}
 .footer-backup-note{font-size:11px; color:var(--sub); margin-bottom:10px; line-height:1.6;}
 .footer-backup-note a{color:var(--sub); text-decoration:underline; cursor:pointer;}
-.moment-entry-btn{display:block; margin:0 auto 60px; font-size:13px; font-weight:600; color:var(--ink); background:var(--panel); border:1px solid var(--line); padding:10px 22px; border-radius:99px; cursor:pointer;}
-.moment-entry-btn:hover{border-color:var(--blue); color:var(--blue);}
+.add-dday-btn{display:block; margin:0 auto 60px; font-size:13px; font-weight:600; color:var(--blue); background:none; border:none; cursor:pointer;}
+
+/* ---- 디데이 위젯 ---- */
+.dday-hero-card{
+  width:300px; height:300px; margin:30px auto 14px;
+  border-radius:32px; padding:26px 24px; text-align:center; color:#fff;
+  position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center;
+  cursor:pointer; filter:saturate(1.05);
+}
+.dday-hero-card:before{content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 55%, rgba(0,0,0,0.16), transparent 68%);}
+.dday-hero-num, .dday-hero-title, .dday-hero-date{position:relative; z-index:1;}
+.dday-hero-num{font-family:'Space Grotesk'; font-size:42px; font-weight:700; line-height:1; text-shadow:0 1px 18px rgba(0,0,0,0.28);}
+.dday-hero-title{font-size:14px; margin-top:10px; opacity:.94;}
+.dday-hero-date{font-size:11px; margin-top:5px; opacity:.72;}
+
+.dday-spring{ background:
+    radial-gradient(ellipse 120% 90% at 15% 10%, #FFD3E0 0%, transparent 60%),
+    radial-gradient(ellipse 110% 100% at 90% 30%, #FFE8B8 0%, transparent 55%),
+    radial-gradient(ellipse 120% 110% at 60% 95%, #BFEAC4 0%, transparent 60%),
+    linear-gradient(160deg, #FCC9DB 0%, #F6DCA9 45%, #C7E9C9 100%);
+}
+.dday-summer{ background:
+    radial-gradient(ellipse 120% 90% at 10% 10%, #C7F0E8 0%, transparent 60%),
+    radial-gradient(ellipse 110% 100% at 90% 25%, #6FD3E6 0%, transparent 55%),
+    radial-gradient(ellipse 120% 110% at 60% 100%, #3E7FD6 0%, transparent 60%),
+    linear-gradient(160deg, #8FE3DC 0%, #4FBEDE 45%, #3E6FCB 100%);
+}
+.dday-autumn{ background:
+    radial-gradient(ellipse 120% 90% at 12% 8%, #FBE29B 0%, transparent 60%),
+    radial-gradient(ellipse 110% 100% at 92% 30%, #F0A85F 0%, transparent 55%),
+    radial-gradient(ellipse 120% 110% at 55% 100%, #B96A26 0%, transparent 60%),
+    linear-gradient(160deg, #F6D68A 0%, #E9974F 45%, #B96A26 100%);
+}
+.dday-winter{ background:
+    radial-gradient(ellipse 120% 90% at 12% 8%, #F1EBFC 0%, transparent 62%),
+    radial-gradient(ellipse 110% 100% at 92% 22%, #C9B6F0 0%, transparent 55%),
+    radial-gradient(ellipse 120% 110% at 55% 100%, #8B6FC9 0%, transparent 62%),
+    linear-gradient(160deg, #EDE4FB 0%, #C8B3EE 45%, #9B7FD4 100%);
+}
+
+.dday-chip-row{display:flex; align-items:center; gap:8px; width:300px; margin:0 auto 60px;}
+.dday-chip{
+  flex:0 0 auto; width:124px; background:rgba(255,255,255,0.55); backdrop-filter:blur(4px);
+  border:1px solid var(--line); border-radius:12px; padding:10px 12px; cursor:pointer; position:relative;
+}
+.dday-chip .cn{font-family:'Space Grotesk'; font-size:14px; font-weight:700; color:var(--ink);}
+.dday-chip .ct{font-size:10px; color:var(--sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
+.dday-more{flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; color:var(--sub); font-size:16px; font-weight:700; margin-left:auto; cursor:pointer;}
+
+/* 편집 모드 */
+.dday-x{position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#E0674F; color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid var(--cream); z-index:2; cursor:pointer;}
+.dday-hero-card .dday-x{top:10px; right:10px;}
+
+/* ⋯ 메뉴 팝오버 */
+.dday-menu{position:absolute; bottom:44px; right:0; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(15,17,21,0.14); overflow:hidden; z-index:10; min-width:140px;}
+.dday-menu button{display:block; width:100%; text-align:left; padding:12px 16px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--ink);}
+.dday-menu button:hover{background:#F5F5F7;}
+.dday-menu-wrap{position:relative; display:inline-block;}
+
+/* 추가/수정 폼 모달 */
+.dday-modal-backdrop{position:fixed; inset:0; background:rgba(20,22,27,0.4); z-index:100; display:flex; align-items:flex-end; justify-content:center;}
+.dday-modal{background:#fff; border-radius:20px 20px 0 0; padding:24px 22px 30px; width:100%; max-width:420px;}
+.dday-modal h3{font-family:'Space Grotesk'; font-size:16px; margin-bottom:16px;}
+.dday-modal label{display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--sub); margin-bottom:6px;}
+.dday-modal input{width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; margin-bottom:16px; font-family:inherit;}
+.dday-modal .row-actions{display:flex; gap:8px;}
+.dday-modal .row-actions button{flex:1; padding:13px; border-radius:8px; border:none; font-size:14px; font-weight:600; cursor:pointer;}
+.dday-modal .btn-save{background:var(--ink); color:#fff;}
+.dday-modal .btn-cancel{background:#F1F1F5; color:var(--ink);}
+.dday-modal .btn-delete{background:#FCE4E0; color:#C0402C;}
+
+/* 디데이 도달 연출 */
+.dday-celebrate-overlay{position:fixed; inset:0; background:rgba(20,22,27,0.55); z-index:200; display:flex; align-items:center; justify-content:center;}
+.dday-celebrate-card{background:#fff; border-radius:24px; padding:40px 28px; text-align:center; max-width:340px; margin:20px;}
+.dday-celebrate-card .emoji{font-size:44px; margin-bottom:14px;}
+.dday-celebrate-card h3{font-family:'Space Grotesk'; font-size:19px; margin-bottom:8px;}
+.dday-celebrate-card p{font-size:13px; color:var(--sub); margin-bottom:24px;}
+.dday-celebrate-card button{background:var(--ink); color:#fff; border:none; padding:13px 28px; border-radius:99px; font-size:14px; font-weight:600; cursor:pointer;}
+.confetti-piece{position:fixed; top:-20px; width:8px; height:14px; z-index:199; opacity:0.9; border-radius:2px;}
 .backup-banner{display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; background:#FFF7E0; border-bottom:1px solid #F0E0B0; padding:10px 20px; font-size:12.5px; color:var(--ink);}
 .backup-banner-actions{display:flex; gap:8px;}
 .backup-banner-actions button{font-size:12px; padding:6px 14px; border-radius:99px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
@@ -220,12 +278,13 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .blob1{width:280px; height:280px; top:-80px; right:-60px;}
   .blob2{width:220px; height:220px; left:-60px;}
   .blob3{width:200px; height:200px; right:-50px;}
-  .folders{grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;}
-  .folder.soon{grid-column:span 1;}
-  .ficon{width:60px; height:46px;}
-  .best-grid{grid-template-columns:1fr;}
+  .folders{gap:12px;}
+  .ficon{width:56px; height:14px; top:-11px;}
   .clock-widget{width:250px; height:250px; margin:20px auto 20px;}
   .clock-widget::after{width:206px; height:206px;}
+  .dday-hero-card{width:250px; height:250px; margin:20px auto 14px;}
+  .dday-chip-row{width:250px;}
+  .dday-chip{width:99px;}
   .tick-12{top:18px;} .tick-6{bottom:18px;} .tick-3{right:18px;} .tick-9{left:18px;}
   .hour-hand{height:54px;} .minute-hand{height:82px;} .second-hand{height:96px;}
   .pivot-glow{width:80px; height:80px;} .pivot{width:15px; height:15px;}
@@ -233,9 +292,9 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
   .clock-digital .digital-hour{font-size:26px;}
   .clock-digital .digital-min{font-size:26px;}
   .clock-day{bottom:42px; font-size:10px;}
-  .folder, .best-card{transition:transform .1s;}
-  .folder:active, .best-card:active{transform:scale(0.97); box-shadow:none;}
-  .folder:hover, .best-card:hover{transform:none; box-shadow:none;}
+  .folder{transition:transform .1s;}
+  .folder:active{transform:scale(0.98);}
+  .folder:hover{transform:none;}
 
   .topbar{padding:14px 20px;}
   .main{padding:20px 18px 90px;}
