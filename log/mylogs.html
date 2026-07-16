@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784045908">
+<link rel="stylesheet" href="style.css?v=1784186501">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
@@ -60,23 +60,46 @@ function saveMylogs(list) {
 // 담긴 title/dday/goal을 내가 가진 방 목록과 대조해서 어느 방 편지인지
 // 자동으로 찾아 등록한다. 방이 여러 개 동시에 진행 중이어도 마스터가
 // 직접 방을 찾아 들어갈 필요가 없다.
-function extractAddParam(input) {
+// 반환값: { type: 'add'|'room'|'invalid', value }
+// - add: 편지 등록용 링크(정상 케이스)
+// - room: 방 초대/공유 링크를 잘못 붙여넣은 케이스(=room 파라미터)
+// - invalid: 위 두 가지 모두 아닌, 알아볼 수 없는 값
+function parseLetterInput(input) {
   const trimmed = (input || '').trim();
-  if (!trimmed) return null;
+  if (!trimmed) return { type: 'invalid', value: null };
   try {
     const url = new URL(trimmed);
-    return url.searchParams.get('add') || null;
+    const add = url.searchParams.get('add');
+    if (add) return { type: 'add', value: add };
+    const room = url.searchParams.get('room');
+    if (room) return { type: 'room', value: room };
+    return { type: 'invalid', value: null };
   } catch (e) {
     const m = trimmed.match(/[?&]add=([^&]+)/);
-    if (m) return m[1];
-    return trimmed.length > 20 ? trimmed : null;
+    if (m) return { type: 'add', value: m[1] };
+    const rm = trimmed.match(/[?&]room=([^&]+)/);
+    if (rm) return { type: 'room', value: rm[1] };
+    return { type: 'invalid', value: trimmed.length > 20 ? trimmed : null };
   }
 }
 
 function handleSmartRegister() {
   const input = document.getElementById('letterInput');
-  const encoded = extractAddParam(input.value);
-  if (!encoded) { toast('올바른 편지 링크가 아니에요.'); return; }
+  const parsed = parseLetterInput(input.value);
+
+  if (parsed.type === 'room') {
+    const rooms = loadMylogs();
+    const already = rooms.some(r => r.roomEncoded === parsed.value);
+    toast(already
+      ? '이 링크는 이미 내 로그함에 등록된 방이에요.'
+      : '이 링크는 친구에게 공유하는 초대 링크예요. 편지가 준비되면 오는 알림 링크를 붙여넣어주세요.');
+    return;
+  }
+  if (parsed.type !== 'add' || !parsed.value) {
+    toast('올바른 편지 링크가 아니에요. 링크를 다시 확인해주세요.');
+    return;
+  }
+  const encoded = parsed.value;
 
   let letter;
   try { letter = decodeData(encoded); } catch (e) { toast('편지 링크를 읽을 수 없어요.'); return; }
@@ -129,7 +152,7 @@ function render() {
     <div class="field" style="margin-bottom:20px;">
       <label>받은 편지 링크를 붙여넣으세요</label>
       <div class="inbox-add-row">
-        <input type="text" id="letterInput" placeholder="어느 방 링크인지 몰라도 자동으로 찾아서 등록돼요">
+        <input type="text" id="letterInput" placeholder="링크만 붙여넣으면 자동으로 등록돼요">
         <button class="ghost-btn" onclick="handleSmartRegister()">등록</button>
       </div>
     </div>

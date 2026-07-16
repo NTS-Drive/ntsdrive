@@ -76,7 +76,7 @@ function renderCompose() {
       <div class="field toself-field">
         <label class="toself-toggle">
           <input type="checkbox" id="toSelfToggle" ${composeState.toSelf ? 'checked' : ''} onchange="toggleToSelf(this.checked)">
-          <span>나에게 쓰는 편지예요</span>
+          <span>+D-day 등록하기</span>
         </label>
         <div id="ddayButtonArea">${ddayButtonAreaHtml()}</div>
       </div>
@@ -144,57 +144,72 @@ function escapeHtmlPost(str) {
   return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
 function toggleToSelf(checked) {
-  composeState.toSelf = checked;
-  if (!checked) composeState.ddayTitle = null;
-  const area = document.getElementById('ddayButtonArea');
-  if (area) area.innerHTML = ddayButtonAreaHtml();
+  const cb = document.getElementById('toSelfToggle');
+  if (checked) {
+    if (typeof NTSDday !== 'undefined' && NTSDday.hasActive()) {
+      if (cb) cb.checked = false;
+      composeState.toSelf = false;
+      const area = document.getElementById('ddayButtonArea');
+      if (area) area.innerHTML = `<div class="dday-blocked">진행 중인 D-day가 끝난 뒤에 새로 등록할 수 있어요.</div>`;
+      return;
+    }
+    composeState.toSelf = true;
+    openDdayTitleModal();
+  } else {
+    composeState.toSelf = false;
+    composeState.ddayTitle = null;
+    const area = document.getElementById('ddayButtonArea');
+    if (area) area.innerHTML = '';
+  }
 }
 function ddayButtonAreaHtml() {
-  if (!composeState.toSelf) return '';
-  if (composeState.ddayTitle) {
-    return `<div class="dday-pending">
-      <span>+ D-day 등록 예정 · <b>${escapeHtmlPost(composeState.ddayTitle)}</b></span>
-      <button type="button" class="dday-pending-cancel" onclick="cancelDdayPending()">취소</button>
-    </div>`;
-  }
-  if (typeof NTSDday !== 'undefined' && NTSDday.hasActive()) {
-    return `<div class="dday-blocked">진행 중인 D-day가 끝난 뒤에 새로 등록할 수 있어요.</div>`;
-  }
-  return `<button type="button" class="dday-add-btn" onclick="openDdayTitleModal()">+ D-day</button>`;
+  if (!composeState.toSelf || !composeState.ddayTitle) return '';
+  return `<div class="dday-pending">
+    <span>D-day 등록 시 홈메인에 노출돼요 · <b>${escapeHtmlPost(composeState.ddayTitle)}</b></span>
+    <button type="button" class="dday-pending-cancel" onclick="cancelDdayPending()">취소</button>
+  </div>`;
 }
 function cancelDdayPending() {
   composeState.ddayTitle = null;
+  composeState.toSelf = false;
+  const cb = document.getElementById('toSelfToggle');
+  if (cb) cb.checked = false;
   const area = document.getElementById('ddayButtonArea');
-  if (area) area.innerHTML = ddayButtonAreaHtml();
+  if (area) area.innerHTML = '';
 }
 function openDdayTitleModal() {
-  closeDdayTitleModal();
+  closeDdayTitleModal(false);
   const backdrop = document.createElement('div');
   backdrop.className = 'post-modal-backdrop';
   backdrop.id = 'ddayTitleModalBackdrop';
-  backdrop.onclick = (e) => { if (e.target === backdrop) closeDdayTitleModal(); };
+  backdrop.onclick = (e) => { if (e.target === backdrop) closeDdayTitleModal(true); };
   backdrop.innerHTML = `
     <div class="post-modal">
       <h3>D-day 제목</h3>
       <input type="text" id="ddayTitleInputPost" maxlength="20" placeholder="예: 수능">
       <div class="row-actions">
-        <button class="btn-cancel" onclick="closeDdayTitleModal()">취소</button>
+        <button class="btn-cancel" onclick="closeDdayTitleModal(true)">취소</button>
         <button class="btn-save" onclick="saveDdayTitleModal()">등록</button>
       </div>
     </div>`;
   document.body.appendChild(backdrop);
   setTimeout(() => { const el = document.getElementById('ddayTitleInputPost'); if (el) el.focus(); }, 0);
 }
-function closeDdayTitleModal() {
+function closeDdayTitleModal(cancelled) {
   const el = document.getElementById('ddayTitleModalBackdrop');
   if (el) el.remove();
+  if (cancelled && !composeState.ddayTitle) {
+    composeState.toSelf = false;
+    const cb = document.getElementById('toSelfToggle');
+    if (cb) cb.checked = false;
+  }
 }
 function saveDdayTitleModal() {
   const input = document.getElementById('ddayTitleInputPost');
   const val = input ? input.value.trim() : '';
   if (!val) { toast('제목을 입력해주세요.'); return; }
   composeState.ddayTitle = val;
-  closeDdayTitleModal();
+  closeDdayTitleModal(false);
   const area = document.getElementById('ddayButtonArea');
   if (area) area.innerHTML = ddayButtonAreaHtml();
 }
@@ -352,31 +367,36 @@ function handleSeal() {
     return;
   }
 
-  let hiddenLink = document.getElementById('hiddenLink').value.trim();
-  if (hiddenLink && !/^https?:\/\//i.test(hiddenLink)) hiddenLink = 'https://' + hiddenLink;
+  try {
+    let hiddenLink = document.getElementById('hiddenLink').value.trim();
+    if (hiddenLink && !/^https?:\/\//i.test(hiddenLink)) hiddenLink = 'https://' + hiddenLink;
 
-  const letter = {
-    tpl: composeState.tpl,
-    to: document.getElementById('toName').value.trim(),
-    from: document.getElementById('fromName').value.trim(),
-    title: document.getElementById('letterTitle').value.trim(),
-    body,
-    link: hiddenLink || null,
-    unlock: composeState.unlockMs,
-    img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
-    imgGrid: composeState.photoIndices ? IMG_GRID : null // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
-  };
+    const letter = {
+      tpl: composeState.tpl,
+      to: document.getElementById('toName').value.trim(),
+      from: document.getElementById('fromName').value.trim(),
+      title: document.getElementById('letterTitle').value.trim(),
+      body,
+      link: hiddenLink || null,
+      unlock: composeState.unlockMs,
+      img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
+      imgGrid: composeState.photoIndices ? IMG_GRID : null // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
+    };
 
-  const encoded = encodeLetter(letter);
-  const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
-  trackEvent('post_letter_sealed', { template: TEMPLATES[composeState.tpl].id, has_photo: !!composeState.photoIndices, body_length: body.length });
+    const encoded = encodeLetter(letter);
+    const url = `${window.location.origin}${window.location.pathname}?d=${encoded}`;
+    trackEvent('post_letter_sealed', { template: TEMPLATES[composeState.tpl].id, has_photo: !!composeState.photoIndices, body_length: body.length });
 
-  if (composeState.toSelf && composeState.ddayTitle && typeof NTSDday !== 'undefined') {
-    const ddayResult = NTSDday.registerFromPost({ title: composeState.ddayTitle, encoded, unlockMs: letter.unlock });
-    if (!ddayResult.ok) toast(ddayResult.message);
+    if (composeState.toSelf && composeState.ddayTitle && typeof NTSDday !== 'undefined') {
+      const ddayResult = NTSDday.registerFromPost({ title: composeState.ddayTitle, encoded, unlockMs: letter.unlock });
+      if (!ddayResult.ok) toast(ddayResult.message);
+    }
+
+    renderShareResult(url, encoded, letter.unlock);
+  } catch (err) {
+    console.error('handleSeal 오류:', err);
+    toast('편지를 봉인하는 중 문제가 생겼어요. 다시 시도해주세요.');
   }
-
-  renderShareResult(url, encoded, letter.unlock);
 }
 
 // post/inbox.js의 loadInbox()가 읽는 것과 동일한 저장 형식(post_inbox_v1)을
@@ -406,7 +426,7 @@ function renderShareResult(url, encoded, unlockMs) {
       <div class="link-box">
         <input type="text" id="shareUrl" readonly value="${url}">
       </div>
-      <p class="disclaimer" style="margin-top:16px;">내 편지함에도 자동으로 저장해뒀어요. 언제든 다시 확인할 수 있어요.</p>
+      <p class="disclaimer" style="margin-top:16px;">내 편지함에도 자동으로 저장해뒀어요.<br class="mob-break"> 언제든 다시 확인할 수 있어요.</p>
     </div>
   `;
   // 참여자/방 생성 화면과 동일한 패턴: 사용자 클릭 체인 안에서 동기적으로

@@ -9,13 +9,14 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1784136107">
+<link rel="stylesheet" href="../styles.css?v=1784186501">
 <link rel="stylesheet" href="../fonts.css?v=1784067557">
 <script src="../analytics.js?v=1784067557"></script>
 <script src="../diary/shared.js?v=1784067557"></script>
 <style>
   .moment-datebar{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;}
   .moment-datebar button{background:none; border:none; font-size:20px; color:var(--sub); cursor:pointer; padding:6px 10px;}
+  .moment-datebar button.is-disabled{opacity:0.3; cursor:default;}
   .moment-date-label{font-family:'Space Grotesk'; font-size:20px; font-weight:700; cursor:pointer; text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:4px;}
   .moment-dow{text-align:center; font-size:12px; color:var(--sub); margin-bottom:6px;}
   #momentDateInput{position:absolute; opacity:0; width:1px; height:1px; pointer-events:none;}
@@ -62,7 +63,7 @@
     <div class="moment-datebar">
       <button onclick="shiftDay(-1)">‹</button>
       <span class="moment-date-label" id="momentDateLabel" onclick="document.getElementById('momentDateInput').showPicker ? document.getElementById('momentDateInput').showPicker() : document.getElementById('momentDateInput').click()"></span>
-      <button onclick="shiftDay(1)">›</button>
+      <button onclick="shiftDay(1)" id="momentNextBtn">›</button>
     </div>
     <div class="moment-dow" id="momentDow"></div>
     <input type="date" id="momentDateInput" onchange="jumpToDate(this.value)">
@@ -101,20 +102,25 @@ let currentDate = getInitialDate();
 function getInitialDate() {
   const params = new URLSearchParams(window.location.search);
   const d = params.get('date');
-  if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-  return NTSDiary.todayStr();
+  const today = NTSDiary.todayStr();
+  if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d > today ? today : d;
+  return today;
 }
 
 function shiftDay(delta) {
+  if (delta > 0 && currentDate === NTSDiary.todayStr()) return;
   const d = new Date(currentDate + 'T00:00:00');
   d.setDate(d.getDate() + delta);
-  currentDate = NTSDiary.todayStr(d);
+  const today = NTSDiary.todayStr();
+  const next = NTSDiary.todayStr(d);
+  currentDate = next > today ? today : next;
   trackEvent('moment_date_shifted', { direction: delta > 0 ? 'next' : 'prev' });
   render();
 }
 function jumpToDate(value) {
   if (!value) return;
-  currentDate = value;
+  const today = NTSDiary.todayStr();
+  currentDate = value > today ? today : value;
   trackEvent('moment_date_picked');
   render();
 }
@@ -129,8 +135,16 @@ function render() {
   const d = new Date(currentDate + 'T00:00:00');
   document.getElementById('momentDateLabel').textContent = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
   document.getElementById('momentDow').textContent = `${WEEKDAY_KR[d.getDay()]}요일`;
-  document.getElementById('momentDateInput').value = currentDate;
+  const dateInput = document.getElementById('momentDateInput');
+  dateInput.value = currentDate;
+  dateInput.max = today;
   document.getElementById('momentTodayBtn').style.display = currentDate === today ? 'none' : 'block';
+  const nextBtn = document.getElementById('momentNextBtn');
+  if (nextBtn) {
+    const isToday = currentDate === today;
+    nextBtn.disabled = isToday;
+    nextBtn.classList.toggle('is-disabled', isToday);
+  }
 
   renderDiarySection();
   renderPhotoSection();
