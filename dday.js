@@ -104,11 +104,23 @@
     clockEl.style.display = 'none';
     const label = ddayLabel(item.unlockMs);
     const isTimeLabel = label.includes('남음');
-    const dashoffset = RING_CIRC * (1 - ringProgress(item));
+    // 음수 offset: 소모된(지나간) 영역이 12시 방향에서부터 시계 방향으로 쌓이고,
+    // 남은 에너지가 그 뒤를 따라가듯 줄어드는 방향으로 보이게 함
+    const dashoffset = -RING_CIRC * (1 - ringProgress(item));
 
     wrapEl.innerHTML = `
       <div class="dday-hero-card" onclick="NTSDday.goToPost('${item.encoded}')">
         <svg class="dday-ring" viewBox="0 0 300 300">
+          <defs>
+            <linearGradient id="ddayGlassGrad" x1="10%" y1="0%" x2="90%" y2="100%">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+              <stop offset="45%" stop-color="#F6CDBB" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.7"/>
+            </linearGradient>
+            <filter id="ddayGlassShadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-color="#7A4A32" flood-opacity="0.22"/>
+            </filter>
+          </defs>
           <circle cx="150" cy="150" r="${RING_R}" class="dday-ring-track"/>
           <circle cx="150" cy="150" r="${RING_R}" class="dday-ring-progress"
             stroke-dasharray="${RING_CIRC}" stroke-dashoffset="${dashoffset}"

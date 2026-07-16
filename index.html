@@ -33,11 +33,11 @@
 <link rel="apple-touch-startup-image" href="splash/splash-1536x2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1784186501">
+<link rel="stylesheet" href="styles.css?v=1784210240">
 <script src="analytics.js"></script>
 <script src="settings/backup.js?v=1784107173"></script>
-<script src="dday.js?v=1784186501"></script>
-<script src="diary/shared.js?v=1784186501"></script>
+<script src="dday.js?v=1784210240"></script>
+<script src="diary/shared.js?v=1784210240"></script>
 <script src="install-shortcut.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
@@ -91,15 +91,10 @@
   <div id="ddayWidget"></div>
 </section>
 
-<div class="yesterday-card">
-  <div class="yesterday-inner" onclick="trackEvent('yesterday_card_click'); navigate(`moment/index.html?date=${window.__ntsYesterday}`)">
-    <div class="yesterday-head">
-      <h2>어제의 기록</h2>
-      <span id="yesterdayDateLabel"></span>
-    </div>
-    <div id="yesterdayBody">불러오는 중…</div>
-  </div>
-</div>
+<section class="section yesterday-section" id="yesterday">
+  <div class="section-head"><h2>어제의 기록</h2><span id="yesterdayDateLabel"></span></div>
+  <div id="yesterdayBody">불러오는 중…</div>
+</section>
 
 <section class="section" id="folders">
   <div class="section-head"><h2>폴더 둘러보기</h2><span id="folder-count-label">불러오는 중…</span></div>
@@ -139,7 +134,7 @@
   <a onclick="navigate('film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
-<script src="camera/shared.js?v=1784186501"></script>
+<script src="camera/shared.js?v=1784210240"></script>
 <script>
   function navigate(url){
     document.body.classList.add('leaving');
@@ -210,6 +205,7 @@
     y.setDate(y.getDate() - 1);
     const yStr = NTSDiary.todayStr(y);
     window.__ntsYesterday = yStr;
+    const goYesterday = `trackEvent('yesterday_card_click'); navigate('moment/index.html?date=${yStr}')`;
 
     const dateLabelEl = document.getElementById('yesterdayDateLabel');
     if (dateLabelEl) dateLabelEl.textContent = `${y.getMonth() + 1}월 ${y.getDate()}일`;
@@ -217,22 +213,25 @@
     const bodyEl = document.getElementById('yesterdayBody');
     if (!bodyEl) return;
 
-    const entries = NTSDiary.getEntriesByDate(yStr).sort((a, b) => b.createdAt - a.createdAt).slice(0, 2);
+    const entries = NTSDiary.getEntriesByDate(yStr).sort((a, b) => a.createdAt - b.createdAt).slice(0, 2);
     let diaryHtml;
     if (entries.length) {
-      diaryHtml = `<div class="yesterday-diary-list">${entries.map(e => {
+      diaryHtml = entries.map(e => {
         const m = NTSDiary.getMood(e.mood);
-        return `<div class="yesterday-diary-row">
+        const t = new Date(e.createdAt);
+        const hh = String(t.getHours()).padStart(2, '0'), mm = String(t.getMinutes()).padStart(2, '0');
+        return `<div class="moment-diary-row">
           <span class="memoji">${m ? m.emoji : '🙂'}</span>
-          <span class="yesterday-diary-mood">${m ? m.label : ''}</span>
-          ${e.text ? `<span class="yesterday-diary-quote">${e.text}</span>` : ''}
+          <div>
+            <div><span class="moment-diary-mood">${m ? m.label : ''}</span><span class="moment-diary-time">${hh}:${mm}${e.causes && e.causes.length ? ' · ' + e.causes.join(', ') : ''}</span></div>
+            ${e.text ? `<div class="moment-diary-quote">${e.text}</div>` : ''}
+          </div>
         </div>`;
-      }).join('')}</div>`;
+      }).join('');
     } else {
-      diaryHtml = `<div class="yesterday-empty">이 날 남긴 감정 기록이 없어요.</div>`;
+      diaryHtml = `<div class="moment-empty"><p>이 날 남긴 감정 기록이 없어요.</p></div>`;
     }
 
-    let photosHtml;
     let photos = [];
     try {
       const all = (typeof loadAlbum === 'function') ? loadAlbum() : [];
@@ -240,22 +239,20 @@
         if (NTSDiary.todayStr(new Date(p.createdAt)) !== yStr) return false;
         if (p.type === 'film' && !p.revealed && Date.now() < p.unlockAt) return false;
         return true;
-      }).sort((a, b) => b.createdAt - a.createdAt).slice(0, 3);
+      }).sort((a, b) => a.createdAt - b.createdAt).slice(0, 3);
     } catch (e) { /* ignore */ }
 
-    if (photos.length) {
-      photosHtml = `<div class="yesterday-photos">${photos.map(p => `<div class="yesterday-photo"><img src="${p.dataUrl}" alt=""></div>`).join('')}</div>`;
-    } else {
-      photosHtml = `<div class="yesterday-empty">이 날 찍은 사진이 없어요.</div>`;
-    }
+    const photosHtml = photos.length
+      ? `<div class="moment-photo-grid">${photos.map(p => `<div class="moment-photo"><img src="${p.dataUrl}" alt=""></div>`).join('')}</div>`
+      : `<div class="moment-empty"><p>이 날 찍은 사진이 없어요.</p></div>`;
 
     bodyEl.innerHTML = `
-      <div class="yesterday-sub">
-        <div class="yesterday-sub-label">📔 다이어리</div>
+      <div class="yesterday-group" onclick="${goYesterday}">
+        <div class="yesterday-group-label">📔 다이어리</div>
         ${diaryHtml}
       </div>
-      <div class="yesterday-sub">
-        <div class="yesterday-sub-label">📸 Snap · 🎞️ Film</div>
+      <div class="yesterday-group" onclick="${goYesterday}">
+        <div class="yesterday-group-label">📸 Snap · 🎞️ Film</div>
         ${photosHtml}
       </div>
     `;
