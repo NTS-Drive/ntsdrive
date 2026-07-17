@@ -17,7 +17,7 @@ body.anim-settled { animation: none; }
 body.leaving { animation: pageOut .28s ease both; }
 @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }
 
-.topbar { max-width: 1180px; margin: 0 auto; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+.topbar { padding: 20px max(28px, calc((100% - 1180px) / 2 + 28px)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
 .topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); }
 .nav-links { display: flex; gap: 30px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
