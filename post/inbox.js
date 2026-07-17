@@ -152,7 +152,7 @@ function render() {
 
     <div id="inboxList"></div>
 
-    <div class="disclaimer">알림은 이 탭을 열어둔 상태에서만 울려요.<br>편지는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a onclick="handleCreateShortcut()" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
+    <div class="disclaimer">알림은 이 탭을 열어둔 상태에서만 울려요.<br>편지는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>
   `;
   renderNotifyRow();
   renderInboxFilterRow();

@@ -4,25 +4,8 @@
       <rect x="0" y="0" width="512" height="512" rx="114"/>
     </clipPath>
   </defs>
-
-  <!-- Background: ink black (unified system color) -->
   <g clip-path="url(#squircleClip)">
-    <rect x="0" y="0" width="512" height="512" fill="#17140F"/>
+    <rect x="0" y="0" width="512" height="512" fill="#0071E3"/>
   </g>
-
-  <!-- Folder: same silhouette/proportion as current blue favicon, now line-only in cream -->
-  <g transform="translate(-97.6 -98.9) scale(1.3)">
-    <path d="M156 196
-             a20 20 0 0 1 20 -20
-             h60
-             l24 26
-             h108
-             a20 20 0 0 1 20 20
-             v128
-             a20 20 0 0 1 -20 20
-             h-192
-             a20 20 0 0 1 -20 -20
-             z"
-          fill="none" stroke="#F7F3EC" stroke-width="19" stroke-linejoin="round"/>
-  </g>
+  <text x="256" y="305" font-family="Arial, 'Helvetica Neue', sans-serif" font-weight="900" font-size="152" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">NTS</text>
 </svg>

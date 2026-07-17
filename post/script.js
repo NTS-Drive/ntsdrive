@@ -186,7 +186,7 @@ function openDdayTitleModal() {
   backdrop.innerHTML = `
     <div class="post-modal">
       <h3>D-day 제목</h3>
-      <input type="text" id="ddayTitleInputPost" maxlength="20" placeholder="예: 새로운 시작">
+      <input type="text" id="ddayTitleInputPost" maxlength="8" placeholder="예: 새로운 시작">
       <div class="row-actions">
         <button class="btn-cancel" onclick="closeDdayTitleModal(true)">취소</button>
         <button class="btn-save" onclick="saveDdayTitleModal()">등록</button>

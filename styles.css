@@ -24,10 +24,11 @@ body.leaving{animation:pageOut .3s ease both;}
 .nav .links{display:flex; gap:30px; font-size:13px; font-weight:500; color:var(--sub);}
 .nav .links span{cursor:pointer; transition:color .15s;}
 .nav .links span:hover{color:var(--ink);}
+.nav .links span.active{color:var(--blue); font-weight:700; cursor:default;}
 .nav .links .active-link{color:var(--ink); cursor:default;}
 .nav .links .active-link:hover{color:var(--ink);}
 .nav .right{display:flex; align-items:center; gap:12px;}
-.first-btn{font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--panel); cursor:pointer; color:var(--ink);}
+.first-btn{font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:99px; border:1px solid var(--line); background:var(--bg); cursor:pointer; color:var(--ink);}
 .first-btn:hover{border-color:var(--blue); color:var(--blue);}
 .ad-slot{max-width:760px; margin:0 auto 40px; padding:0 28px;}
 .ad-slot span{display:flex; align-items:center; justify-content:center; height:90px; border:1px dashed var(--line); border-radius:10px; font-size:11px; color:var(--sub); letter-spacing:0.05em;}
@@ -172,11 +173,11 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 .dday-ring-glass{
   position:absolute; top:50%; left:50%; width:85.3%; height:85.3%; transform:translate(-50%,-50%);
   border-radius:50%; pointer-events:none; z-index:0;
-  -webkit-mask:radial-gradient(circle closest-side, transparent 97%, #000 98%, #000 100%);
-  mask:radial-gradient(circle closest-side, transparent 97%, #000 98%, #000 100%);
-  /* 12시에서 시계 방향으로 남은 비율(--dday-remain)만큼만 가는 실선을 남기고,
-     지나간 자리는 흔적 없이 완전히 투명하게 비워둔다 */
-  background:conic-gradient(rgba(122,74,50,0.4) 0deg var(--dday-remain,360deg), transparent var(--dday-remain,360deg) 360deg);
+  -webkit-mask:radial-gradient(circle closest-side, transparent 98%, #000 98.8%, #000 100%);
+  mask:radial-gradient(circle closest-side, transparent 98%, #000 98.8%, #000 100%);
+  /* 12시를 기준으로, 지나간 만큼(--dday-elapsed)은 투명하게 비우고 시계 방향으로
+     그 경계가 이동하며, 남은 만큼만 가는 실선으로 표시한다 */
+  background:conic-gradient(transparent 0deg var(--dday-elapsed,0deg), rgba(122,74,50,0.4) var(--dday-elapsed,0deg) 360deg);
   transition:background 1s linear;
 }
 .dday-hero-num{font-family:'Space Grotesk'; font-size:42px; font-weight:700; line-height:1; margin-top:8px;}
@@ -292,7 +293,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 
   .bottom-nav{
     display:flex; position:fixed; left:0; right:0; bottom:0; z-index:60;
-    background:rgba(255,255,255,0.94); backdrop-filter:blur(16px);
+    background:rgba(247,243,236,0.94); backdrop-filter:blur(16px);
     border-top:1px solid var(--line); padding:8px 4px calc(8px + env(safe-area-inset-bottom));
   }
   .bottom-nav a{

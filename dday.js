@@ -104,11 +104,11 @@
     const isTimeLabel = label.includes('남음');
     // conic-gradient는 0deg가 12시 방향이고 양수 각도가 시계 방향이라, 별도 회전 보정 없이
     // "남은 비율만큼 12시에서 시계 방향으로" 그대로 표현할 수 있음
-    const remainDeg = (ringProgress(item) * 360).toFixed(2);
+    const elapsedDeg = ((1 - ringProgress(item)) * 360).toFixed(2);
 
     wrapEl.innerHTML = `
       <div class="dday-hero-card" onclick="NTSDday.goToPost('${item.encoded}')">
-        <div class="dday-ring-glass" style="--dday-remain:${remainDeg}deg;"></div>
+        <div class="dday-ring-glass" style="--dday-elapsed:${elapsedDeg}deg;"></div>
         <div class="dday-more" onclick="event.stopPropagation(); NTSDday.toggleMenu(event)">⋯</div>
         ${menuOpen ? `<div class="dday-menu" onclick="event.stopPropagation();">
           <button onclick="NTSDday.openDeleteConfirm('${item.id}')">삭제하기</button>

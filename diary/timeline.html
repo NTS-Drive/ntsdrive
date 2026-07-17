@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17140F">
 <title>나의 감정 기록들 | Diary | NTS Drive</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784291689">
+<link rel="stylesheet" href="style.css?v=1784304680">
 <link rel="stylesheet" href="../fonts.css?v=1783981104">
 <script src="../analytics.js"></script>
-<script src="shared.js?v=1784278654"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="shared.js?v=1784304680"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -19,6 +21,7 @@
 <div class="topbar">
   <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
   <div class="nav-links">
+    <span onclick="navigate('../index.html')">Home</span>
     <span onclick="navigate('../post/index.html')">Post</span>
     <span onclick="navigate('../log/index.html')">Log</span>
     <span class="active">Diary</span>
@@ -39,13 +42,15 @@
   <div class="diary-subhead">타임라인</div>
   <div id="timelineView"></div>
 
-  <div class="disclaimer">감정 기록은 매년 1월 1일 00시에 초기화 돼요.<br>감정 기록은 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a onclick="handleCreateShortcut()" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">바로가기 생성</a>을 해주세요.</div>
+  <div class="disclaimer">감정 기록은 매년 1월 1일 00시에 초기화 돼요.<br>감정 기록은 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>
+
+  <div id="postLoopBanner"></div>
 </div>
 
 <a class="diary-fab" onclick="navigate('index.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>지금 감정 기록하기</a>
 
 <nav class="bottom-nav">
-  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>홈</a>
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
   <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
   <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
@@ -53,9 +58,19 @@
   <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
+<div class="toast" id="toast"></div>
+
 <script>
   function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 280); }
   function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
   trackEvent('diary_timeline_opened');
 
   document.body.addEventListener('animationend', function onDone(e) {
@@ -74,14 +89,53 @@
       : '';
 
     document.getElementById('weeklyCard').innerHTML = `
-      <div class="weekly-card">
+      <div class="weekly-card" id="weeklyCardCapture">
         <div class="range">${r.weekStart} ~ ${r.weekEnd} · 이번 주 기록 ${r.total}개</div>
         ${r.total ? `<div class="weekly-bar">${bar}</div><div class="weekly-legend">${legend}</div>` : ''}
         <div class="weekly-message">
           <div class="weekly-encourage"><span class="msg-label">이번 주 한마디</span>${r.encourage}</div>
           ${guide}
         </div>
+      </div>
+      <div class="weekly-actions">
+        <button class="btn-share" onclick="shareWeeklyCard()">공유하기</button>
+        <button class="btn-save" onclick="saveWeeklyCard()">저장하기</button>
       </div>`;
+  }
+
+  /* ---------------- 주간 카드 저장/공유 ---------------- */
+  function captureWeeklyCard() {
+    const el = document.getElementById('weeklyCardCapture');
+    if (!el || typeof html2canvas === 'undefined') { toast('이미지를 만들지 못했어요.'); return Promise.reject(); }
+    return html2canvas(el, { backgroundColor: '#F7F3EC', scale: 2 });
+  }
+  function saveWeeklyCard() {
+    trackEvent('diary_weekly_save_click');
+    captureWeeklyCard().then(canvas => {
+      const link = document.createElement('a');
+      link.download = `내_감정_기록_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast('이미지가 저장됐어요.');
+    }).catch(() => toast('저장에 실패했어요.'));
+  }
+  function shareWeeklyCard() {
+    trackEvent('diary_weekly_share_click');
+    captureWeeklyCard().then(canvas => {
+      canvas.toBlob(blob => {
+        if (!blob) { toast('공유에 실패했어요.'); return; }
+        const file = new File([blob], `내_감정_기록_${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: '내 감정 기록들' }).catch(() => {});
+        } else {
+          const link = document.createElement('a');
+          link.download = file.name;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          toast('이 브라우저에서는 바로 공유가 안 돼서, 대신 이미지로 저장했어요.');
+        }
+      }, 'image/png');
+    }).catch(() => toast('공유에 실패했어요.'));
   }
 
   /* ---------------- 캘린더 (월요일 시작, 올해 1~12월 내에서만 이동) ---------------- */
@@ -270,6 +324,32 @@
   renderWeeklyCard();
   renderCalendar();
   renderTimeline();
+  renderPostLoopBanner();
+
+  /* ---------------- Diary → Post 루프 (긍정 감정 기록 시, 세션 내 최초 1회) ---------------- */
+  function renderPostLoopBanner() {
+    let isPositive = false;
+    try { isPositive = sessionStorage.getItem('ntsdrive_diary_positive_flag') === '1'; } catch (e) { /* ignore */ }
+    let alreadyShown = false;
+    try { alreadyShown = sessionStorage.getItem('ntsdrive_diary_post_loop_shown') === '1'; } catch (e) { /* ignore */ }
+    if (!isPositive || alreadyShown) return;
+
+    try { sessionStorage.setItem('ntsdrive_diary_post_loop_shown', '1'); } catch (e) { /* ignore */ }
+    trackEvent('diary_to_post_shown');
+
+    document.getElementById('postLoopBanner').innerHTML = `
+      <div class="post-loop-banner" id="postLoopBannerInner">
+        <span class="post-loop-close" onclick="dismissPostLoopBanner('skip')">✕</span>
+        <p>이 마음, 다른 사람에게도 전해볼까요?</p>
+        <button onclick="dismissPostLoopBanner('click')">넘어가기</button>
+      </div>`;
+  }
+  function dismissPostLoopBanner(action) {
+    trackEvent(action === 'click' ? 'diary_to_post_clicked' : 'diary_to_post_skipped');
+    const el = document.getElementById('postLoopBannerInner');
+    if (el) el.remove();
+    if (action === 'click') navigate('../post/index.html');
+  }
 </script>
 <script src="../install-shortcut.js"></script>
 </body>
