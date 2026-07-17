@@ -15,6 +15,14 @@
 </head>
 <body class="album-mode">
 
+<script>
+  // body의 pageIn 애니메이션이 transform을 사용하고 fill-mode:both라 애니메이션 종료 후에도
+  // 계산된 transform 값이 body에 남아, position:fixed 자식(하단 GNB, 플로팅 버튼)이 뷰포트가
+  // 아니라 body 전체 높이를 기준으로 고정돼버리는 문제가 있어 애니메이션 종료 시 제거해준다.
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+</script>
 <div class="album-topbar">
   <a class="mark" onclick="navigate('../index.html')">NTS DRIVE</a>
   <span class="album-back" onclick="navigate('../snap/index.html')">← 촬영으로</span>

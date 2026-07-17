@@ -19,7 +19,7 @@ body.leaving { animation: pageOut .28s ease both; }
 
 .topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
 .topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); }
-.nav-links { display: flex; gap: 22px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
+.nav-links { display: flex; gap: 30px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
 .nav-links span:hover { color: var(--accent); }
 .nav-links span.active { color: var(--accent); font-weight: 700; cursor: default; }

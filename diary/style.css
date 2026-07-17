@@ -20,7 +20,7 @@ body.leaving { animation: pageOut .28s ease both; }
 /* ---- 상단 GNB: Post/Log와 동일 구조 ---- */
 .topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
 .topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); cursor: pointer; }
-.nav-links { display: flex; gap: 22px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
+.nav-links { display: flex; gap: 30px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
 .nav-links span:hover { color: var(--accent); }
 .nav-links span.active { color: var(--accent); font-weight: 700; cursor: default; }
@@ -132,8 +132,8 @@ body.leaving { animation: pageOut .28s ease both; }
 .post-loop-banner p{font-size:13.5px; color:var(--ink); margin-bottom:12px;}
 .post-loop-banner button{background:var(--ink); color:#fff; border:none; padding:10px 22px; border-radius:99px; font-size:13px; font-weight:600; cursor:pointer;}
 .post-loop-close{position:absolute; top:12px; right:14px; font-size:13px; color:var(--ink-muted); cursor:pointer; padding:4px;}
-.weekly-actions{display:flex; gap:8px; margin:-16px 0 26px;}
-.weekly-actions button{flex:1; padding:11px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;}
+.weekly-actions{display:flex; justify-content:center; gap:10px; margin:-16px 0 26px;}
+.weekly-actions button{padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;}
 .weekly-actions .btn-share{background:var(--ink); color:#fff; border:none;}
 .weekly-actions .btn-save{background:transparent; border:1px solid var(--line); color:var(--ink);}
 .weekly-card .range{font-size:12px; color:var(--ink-muted); margin-bottom:10px;}

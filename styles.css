@@ -264,6 +264,7 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 /* ---- mobile bottom GNB (shared) ---- */
 .bottom-nav{display:none;}
 @media (max-width:760px){
+  .hero h1{font-size:clamp(32px, 9.5vw, 36px);}
   .nav .links{display:none;}
   body{padding-bottom:78px;}
   .first-btn, .shortcut-btn{font-size:10.5px; padding:6px 10px;}

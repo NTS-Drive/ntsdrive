@@ -11,12 +11,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="../camera/style.css?v=1784304680">
+<link rel="stylesheet" href="../camera/style.css?v=1784306845">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
 <body class="cam-mode">
 
+<script>
+  // body의 pageIn 애니메이션이 transform을 사용하고 fill-mode:both라 애니메이션 종료 후에도
+  // 계산된 transform 값이 body에 남아, position:fixed 자식(하단 GNB, 플로팅 버튼)이 뷰포트가
+  // 아니라 body 전체 높이를 기준으로 고정돼버리는 문제가 있어 애니메이션 종료 시 제거해준다.
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+</script>
 <div class="cam-topbar">
   <a class="mark" onclick="navigate('../index.html')">NTS DRIVE</a>
   <div class="cam-nav-links">
@@ -118,6 +126,14 @@ function renderDeveloping(hours) {
     </div>
   `;
 }
+
+// 사진을 찍지 않고 백버튼 등으로 화면을 벗어나도 카메라 스트림이 계속 열려있으면
+// 모바일 브라우저가 뒤로가기 시 빈 화면을 보여주는 문제가 있어, 페이지를 벗어나는
+// 시점에 무조건 스트림을 정리해준다.
+window.addEventListener('pagehide', () => {
+  const video = document.getElementById('video');
+  if (video && video.srcObject) stopCamera(video);
+});
 
 renderViewfinder();
 </script>
