@@ -19,7 +19,7 @@ body.leaving { animation: pageOut .28s ease both; }
 @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }
 
 .topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
-.topbar .mark { font-family: var(--font-serif); font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-decoration: none; color: var(--ink); }
+.topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); }
 .nav-links { display: flex; gap: 22px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
 .nav-links span:hover { color: var(--accent); }
@@ -33,11 +33,15 @@ body.leaving { animation: pageOut .28s ease both; }
 .masthead .sub { font-family: var(--font-serif); font-style: italic; font-size: 15px; color: var(--ink-muted); }
 .inbox-fab {
   position: fixed; right: 22px; bottom: 26px; z-index: 55;
-  background: var(--ink); color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.55); color: var(--ink); text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5);
   padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
-  box-shadow: 0 8px 20px rgba(23,20,15,0.25); cursor: pointer; transition: background .15s, transform .15s;
+  box-shadow: 0 8px 20px rgba(23,20,15,0.16); cursor: pointer; transition: background .15s, transform .15s;
 }
-.inbox-fab:hover { background: var(--accent); transform: translateY(-2px); }
+.inbox-fab svg { width: 16px; height: 16px; flex-shrink: 0; }
+.inbox-fab:hover { background: rgba(255,255,255,0.75); transform: translateY(-2px); }
 
 /* ===== Template picker ===== */
 .tpl-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 40px; }
@@ -275,7 +279,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .dday-blocked { margin-top: 10px; font-size: 12.5px; color: var(--ink-muted); }
 
 .post-modal-backdrop { position: fixed; inset: 0; background: rgba(20,17,10,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; }
-.post-modal { background: #fff; border-radius: 20px; padding: 24px 22px 26px; width: 100%; max-width: 360px; margin: 20px; transition: transform 0.15s ease; }
+.post-modal { background: rgba(255,255,255,0.55); backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5); border: 1px solid rgba(255,255,255,0.6); border-radius: 20px; padding: 24px 22px 26px; width: 100%; max-width: 360px; margin: 20px; transition: transform 0.15s ease; }
 .post-modal h3 { font-family: var(--font-serif); font-size: 16px; margin-bottom: 16px; }
 .post-modal input { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 11px 13px; font-size: 14px; margin-bottom: 16px; font-family: inherit; }
 .post-modal .row-actions { display: flex; gap: 8px; }

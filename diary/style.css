@@ -1,11 +1,11 @@
 :root {
-  --cream: #FBF8F1;
-  --panel: #FFFFFF;
-  --ink: #14161B;
-  --ink-muted: #6E7280;
+  --cream: #F7F3EC;
+  --panel: #FFFDF9;
+  --ink: #17140F;
+  --ink-muted: #6B6459;
   --accent: #0071E3;
   --accent-soft: #E4F0FE;
-  --line: #EAEBF0;
+  --line: #E4DDD0;
   --font-serif: "Noto Serif KR", serif;
   --font-body: "Pretendard", "IBM Plex Sans KR", sans-serif;
 }
@@ -19,7 +19,7 @@ body.leaving { animation: pageOut .28s ease both; }
 
 /* ---- 상단 GNB: Post/Log와 동일 구조 ---- */
 .topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
-.topbar .mark { font-family: var(--font-serif); font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-decoration: none; color: var(--ink); cursor: pointer; }
+.topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); cursor: pointer; }
 .nav-links { display: flex; gap: 22px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
 .nav-links span:hover { color: var(--accent); }
@@ -80,8 +80,8 @@ body.leaving { animation: pageOut .28s ease both; }
 .char-count{text-align:right; font-size:11.5px; color:var(--ink-muted); margin-top:6px;}
 
 /* ---- 저장 버튼 ---- */
-.diary-save-btn{width:100%; padding:15px; border-radius:14px; border:none; background:var(--ink); color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; transition:opacity .15s;}
-.diary-save-btn:disabled{opacity:.35; cursor:not-allowed;}
+.diary-save-btn{width:100%; padding:15px; border-radius:14px; border:none; background:var(--ink); color:#fff; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; transition:background .15s, color .15s;}
+.diary-save-btn:disabled{background:var(--line); color:var(--ink-muted); cursor:not-allowed;}
 
 /* ---- 토스트 ---- */
 .toast{position:fixed; left:50%; bottom:100px; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:12px 22px; border-radius:99px; font-size:13.5px; font-weight:500; opacity:0; pointer-events:none; transition:all .25s; z-index:60; white-space:nowrap;}
@@ -90,11 +90,15 @@ body.leaving { animation: pageOut .28s ease both; }
 /* ---- 내 다이어리 플로팅 버튼 (Post inbox-fab / Log 내로그함과 동일 패턴) ---- */
 .diary-fab {
   position: fixed; right: 22px; bottom: 26px; z-index: 55;
-  background: var(--ink); color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.55); color: var(--ink); text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5);
   padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
-  box-shadow: 0 8px 20px rgba(20,22,27,0.25); cursor: pointer; transition: background .15s, transform .15s;
+  box-shadow: 0 8px 20px rgba(20,22,27,0.16); cursor: pointer; transition: background .15s, transform .15s;
 }
-.diary-fab:hover { background: var(--accent); transform: translateY(-2px); }
+.diary-fab svg { width: 16px; height: 16px; flex-shrink: 0; }
+.diary-fab:hover { background: rgba(255,255,255,0.75); transform: translateY(-2px); }
 
 /* ---- 하단 모바일 GNB: Post/Log와 동일 동작 ---- */
 .bottom-nav { display: none; }

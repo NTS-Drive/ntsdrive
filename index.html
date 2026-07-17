@@ -25,7 +25,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#EEECFF">
+<meta name="theme-color" content="#F7F3EC">
 <link rel="apple-touch-startup-image" href="splash/splash-750x1334.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
 <link rel="apple-touch-startup-image" href="splash/splash-1170x2532.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
 <link rel="apple-touch-startup-image" href="splash/splash-1179x2556.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
@@ -33,11 +33,11 @@
 <link rel="apple-touch-startup-image" href="splash/splash-1536x2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1784253476">
+<link rel="stylesheet" href="styles.css?v=1784278654">
 <script src="analytics.js"></script>
-<script src="settings/backup.js?v=1784107173"></script>
-<script src="dday.js?v=1784253476"></script>
-<script src="diary/shared.js?v=1784253476"></script>
+<script src="settings/backup.js?v=1784272475"></script>
+<script src="dday.js?v=1784272475"></script>
+<script src="diary/shared.js?v=1784278654"></script>
 <script src="install-shortcut.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 </head>
@@ -48,7 +48,7 @@
 
 <nav class="nav">
   <div class="nav-in">
-    <div class="brand"><img class="mark" src="favicon.svg" alt="NTS Drive" width="26" height="26">NTS Drive</div>
+    <div class="brand">NTS Drive</div>
     <div class="links">
       <span onclick="navigate('post/index.html')">Post</span>
       <span onclick="navigate('log/index.html')">Log</span>
@@ -66,9 +66,17 @@
 <div id="backupReminderBanner"></div>
 
 <section class="hero">
-  <div class="eyebrow">NTS DRIVE</div>
-  <h1><span class="h1-lead">지금 이 순간을</span><br>기록하는 나만의 드라이브</h1>
-  <p class="subtext">내일을 기대하고, 어제를 추억하는 파일이 있는 곳</p>
+  <div class="hero-blobs" aria-hidden="true">
+    <span class="hero-blob blob-sage"></span>
+    <span class="hero-blob blob-blush"></span>
+    <span class="hero-blob blob-lavender"></span>
+    <span class="hero-blob blob-gold"></span>
+  </div>
+  <div class="hero-glass">
+    <div class="eyebrow">NTS DRIVE</div>
+    <h1><span class="h1-lead">지금 이 순간을</span><br>기록하는 나만의 드라이브</h1>
+    <p class="subtext">내일을 기대하고, 어제를 추억하는 파일이 있는 곳</p>
+  </div>
 
   <div id="clockWidget" class="clock-widget" onclick="trackEvent('clock_widget_click'); navigate('moment/index.html')" style="cursor:pointer;">
     <span class="tick tick-12"></span>
@@ -134,7 +142,7 @@
   <a onclick="navigate('film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
-<script src="camera/shared.js?v=1784253476"></script>
+<script src="camera/shared.js?v=1784278654"></script>
 <script>
   function navigate(url){
     document.body.classList.add('leaving');

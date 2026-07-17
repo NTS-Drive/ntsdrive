@@ -19,11 +19,11 @@
   --cam-line: #302E2A;
   --snap-accent: #F0C24B;
   --film-accent: #C17F2A;
-  --album-cream: #FBF6EC;
-  --album-panel: #FFFDF8;
-  --album-ink: #1B1710;
-  --album-muted: #74695A;
-  --album-line: #E9E0CC;
+  --album-cream: #F7F3EC;
+  --album-panel: #FFFDF9;
+  --album-ink: #17140F;
+  --album-muted: #6B6459;
+  --album-line: #E4DDD0;
   --font-serif: "Noto Serif KR", serif;
   --font-body: "Pretendard", "IBM Plex Sans KR", sans-serif;
 }
@@ -38,7 +38,7 @@ body.leaving { animation: pageOut .28s ease both; }
 /* ===== Capture screens (dark viewfinder) ===== */
 body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
 .cam-topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; }
-.cam-topbar .mark { font-family: var(--font-serif); font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: var(--cam-ink); text-decoration: none; cursor: pointer; }
+.cam-topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; color: var(--cam-ink); text-decoration: none; cursor: pointer; }
 .cam-topbar .cam-nav-links { display: flex; gap: 22px; font-size: 12px; color: var(--cam-muted); }
 .cam-topbar .cam-nav-links span { cursor: pointer; }
 .cam-topbar .cam-nav-links span.active { color: var(--film-accent); font-weight: 700; }
@@ -113,16 +113,20 @@ body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
 
 .cam-album-link {
   position: fixed; right: 22px; bottom: 26px; z-index: 55;
-  background: var(--cam-ink); color: var(--cam-bg); text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(23,20,15,0.55); color: var(--cam-ink); text-decoration: none;
+  border: 1px solid rgba(247,243,236,0.25);
+  backdrop-filter: blur(14px) saturate(1.5); -webkit-backdrop-filter: blur(14px) saturate(1.5);
   padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 700;
   box-shadow: 0 8px 20px rgba(0,0,0,0.4); cursor: pointer;
 }
-.cam-album-link:hover { background: var(--film-accent); color: #fff; }
+.cam-album-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+.cam-album-link:hover { background: rgba(23,20,15,0.75); }
 
 /* ===== Album (light, cream) ===== */
 body.album-mode { background: var(--album-cream); color: var(--album-ink); }
 .album-topbar { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--album-line); }
-.album-topbar .mark { font-family: var(--font-serif); font-weight: 700; font-size: 14px; letter-spacing: 0.08em; color: var(--album-ink); cursor: pointer; }
+.album-topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 14px; letter-spacing: normal; color: var(--album-ink); cursor: pointer; }
 .album-topbar .album-back { font-size: 12px; color: var(--album-muted); cursor: pointer; }
 .album-topbar .album-back:hover { color: var(--film-accent); }
 

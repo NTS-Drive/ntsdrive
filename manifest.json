@@ -5,8 +5,8 @@
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#FBFBFD",
-  "theme_color": "#EEECFF",
+  "background_color": "#F7F3EC",
+  "theme_color": "#17140F",
   "related_applications": [
     { "platform": "webapp", "url": "https://ntsdrive.com/manifest.json" }
   ],

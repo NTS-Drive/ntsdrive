@@ -1,5 +1,5 @@
 :root{
-  --bg:#FBFBFD; --panel:#FFFFFF; --ink:#0F1115; --sub:#6E7280; --line:#EAEBF0;
+  --bg:#F7F3EC; --panel:#FFFDF9; --ink:#17140F; --sub:#6B6459; --line:#E4DDD0;
   --blue:#0071E3; --coral:#FF6F59; --violet:#8B5CF6; --teal:#14B8A6; --amber:#F5A524;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -35,11 +35,23 @@ body.leaving{animation:pageOut .3s ease both;}
 .shortcut-btn:hover{background:#0A63D6;}
 
 /* ---- hero ---- */
-.hero{max-width:1180px; margin:0 auto; padding:88px 28px 60px; text-align:center;}
+.hero{position:relative; max-width:1180px; margin:0 auto; padding:88px 28px 60px; text-align:center;}
+.hero-blobs{position:absolute; inset:-60px 0 0 0; z-index:0; pointer-events:none; overflow:hidden;}
+.hero-blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:0.55;}
+.blob-sage{width:320px; height:320px; background:#A9C9A0; top:-40px; left:6%;}
+.blob-blush{width:280px; height:280px; background:#F3C7B8; top:20px; right:8%;}
+.blob-lavender{width:260px; height:260px; background:#C9B8E8; bottom:-60px; left:20%;}
+.blob-gold{width:260px; height:260px; background:#F5DDA0; bottom:-20px; right:20%;}
+.hero-glass{
+  position:relative; z-index:1; max-width:640px; margin:0 auto 48px; padding:40px 32px;
+  background:rgba(255,255,255,0.32); border:1px solid rgba(255,255,255,0.5);
+  backdrop-filter:blur(22px) saturate(1.6); -webkit-backdrop-filter:blur(22px) saturate(1.6);
+  box-shadow:0 20px 50px rgba(23,20,15,0.12); border-radius:24px;
+}
 .eyebrow{font-size:12.5px; font-weight:600; color:var(--blue); letter-spacing:0.02em; margin-bottom:18px;}
 .hero h1{font-family:'Space Grotesk'; font-weight:700; font-size:clamp(32px,5.4vw,58px); line-height:1.18; letter-spacing:-0.01em; max-width:760px; margin:0 auto 18px;}
 .hero h1 .h1-lead{font-size:0.62em; font-weight:600; display:inline-block;}
-.hero .subtext{font-size:15px; color:var(--sub); max-width:420px; margin:0 auto 48px;}
+.hero .subtext{font-size:15px; color:var(--sub); max-width:420px; margin:0 auto;}
 .btn-primary{background:var(--ink); color:#fff; font-size:14px; font-weight:600; padding:13px 26px; border-radius:99px; border:none; cursor:pointer; transition:transform .15s, box-shadow .15s;}
 .btn-primary:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(15,17,21,0.22);}
 
@@ -112,7 +124,7 @@ body.leaving{animation:pageOut .3s ease both;}
 .folder.soon{cursor:default;}
 .folder.soon:hover{transform:none;}
 
-.folder-card{position:relative; background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.6); border-radius:12px; overflow:hidden; padding:18px 22px; display:flex; align-items:center; gap:14px; backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5); box-shadow:0 1px 0 rgba(255,255,255,0.7) inset;}
+.folder-card{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; padding:18px 22px; display:flex; align-items:center; gap:14px;}
 .folder-ribbon{position:absolute; top:0; right:18px; width:20px; height:26px; background:var(--fcolor); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); z-index:1;}
 .folder-text{min-width:0; flex:1; display:flex; align-items:center; gap:14px;}
 
@@ -139,7 +151,7 @@ body.leaving{animation:pageOut .3s ease both;}
 /* ---- modal (onboarding) ---- */
 .overlay{position:fixed; inset:0; background:rgba(15,17,21,0.5); backdrop-filter:blur(4px); display:none; align-items:flex-start; justify-content:center; z-index:100; padding:20px; padding-top:96px;}
 .overlay.show{display:flex;}
-.modal{background:#fff; border-radius:20px; max-width:400px; width:100%; padding:32px 28px; position:relative;}
+.modal{background:rgba(255,255,255,0.55); backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5); border:1px solid rgba(255,255,255,0.6); border-radius:20px; max-width:400px; width:100%; padding:32px 28px; position:relative;}
 .modal .close{position:absolute; top:16px; right:18px; cursor:pointer; font-size:16px; color:var(--sub);}
 .modal h3{font-family:'Space Grotesk'; font-size:19px; margin-bottom:18px;}
 .step{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
@@ -189,13 +201,13 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 
 /* ⋯ 메뉴 버튼 & 팝오버 */
 .dday-more{position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center; color:#7A4A32; font-size:16px; font-weight:700; cursor:pointer; z-index:2;}
-.dday-menu{position:absolute; top:48px; right:14px; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 30px rgba(15,17,21,0.14); overflow:hidden; z-index:10; min-width:120px;}
+.dday-menu{position:absolute; top:48px; right:14px; background:rgba(255,255,255,0.65); backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5); border:1px solid rgba(255,255,255,0.6); border-radius:12px; box-shadow:0 12px 30px rgba(15,17,21,0.14); overflow:hidden; z-index:10; min-width:120px;}
 .dday-menu button{display:block; width:100%; text-align:left; padding:12px 16px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--ink);}
 .dday-menu button:hover{background:#F5F5F7;}
 
 /* 삭제 확인 팝업 */
 .dday-modal-backdrop{position:fixed; inset:0; background:rgba(20,22,27,0.4); z-index:100; display:flex; align-items:center; justify-content:center;}
-.dday-confirm-card{background:#fff; border-radius:20px; padding:26px 22px; width:100%; max-width:320px; margin:20px; text-align:center;}
+.dday-confirm-card{background:rgba(255,255,255,0.55); backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5); border:1px solid rgba(255,255,255,0.6); border-radius:20px; padding:26px 22px; width:100%; max-width:320px; margin:20px; text-align:center;}
 .dday-confirm-card p{font-size:14px; color:var(--ink); margin-bottom:18px;}
 .dday-confirm-card .row-actions{display:flex; gap:8px;}
 .dday-confirm-card .row-actions button{flex:1; padding:12px; border-radius:8px; border:none; font-size:14px; font-weight:600; cursor:pointer;}

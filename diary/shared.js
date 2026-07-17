@@ -13,15 +13,15 @@
 
   /* ---------------- 감정 9종 (컬러 이모지, 3x3, 긍정→중립→부정 순) ---------------- */
   const MOODS = [
-    { id: 'joy',      label: '기쁨',   emoji: '😊', color: '#FFF3B0', tone: 'positive' },
-    { id: 'excited',  label: '설렘',   emoji: '🥰', color: '#FFCAD4', tone: 'positive' },
-    { id: 'proud',    label: '뿌듯함', emoji: '🥹', color: '#C9E4DE', tone: 'positive' },
-    { id: 'embarrassed', label: '당황', emoji: '😳', color: '#FAEDCD', tone: 'neutral'  },
-    { id: 'bored',    label: '피곤',   emoji: '😪', color: '#F2E9E1', tone: 'neutral'  },
-    { id: 'anger',    label: '분노',   emoji: '🔥', color: '#FBC4B6', tone: 'negative' },
-    { id: 'annoyed',  label: '짜증',   emoji: '😤', color: '#DBCDF0', tone: 'negative' },
-    { id: 'sad',      label: '슬픔',   emoji: '😢', color: '#C6DEF1', tone: 'negative' },
-    { id: 'anxious',  label: '불안',   emoji: '😰', color: '#E8AEB7', tone: 'negative' }
+    { id: 'joy',      label: '기쁨',   emoji: '😊', color: '#C4DAEE', tone: 'positive' },
+    { id: 'excited',  label: '설렘',   emoji: '🥰', color: '#FCDAD0', tone: 'positive' },
+    { id: 'proud',    label: '뿌듯함', emoji: '🥹', color: '#E2D6F2', tone: 'positive' },
+    { id: 'embarrassed', label: '당황', emoji: '😳', color: '#C8EAE1', tone: 'neutral'  },
+    { id: 'bored',    label: '피곤',   emoji: '😪', color: '#FAE6C4', tone: 'neutral'  },
+    { id: 'anger',    label: '분노',   emoji: '🔥', color: '#E2CAC8', tone: 'negative' },
+    { id: 'annoyed',  label: '짜증',   emoji: '😤', color: '#F9ECCC', tone: 'negative' },
+    { id: 'sad',      label: '슬픔',   emoji: '😢', color: '#E6E1E8', tone: 'negative' },
+    { id: 'anxious',  label: '불안',   emoji: '😰', color: '#EEDDC5', tone: 'negative' }
   ];
 
   /* ---------------- 원인 태그: 4개 카테고리 (고정 순서·색상, 긍정→중립→부정 순) ---------------- */
