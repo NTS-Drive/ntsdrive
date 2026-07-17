@@ -76,7 +76,7 @@ function renderCompose() {
       <div class="field toself-field">
         <label class="toself-toggle">
           <input type="checkbox" id="toSelfToggle" ${composeState.toSelf ? 'checked' : ''} onchange="toggleToSelf(this.checked)">
-          <span>+D-day 등록하기</span>
+          <span>D-day 등록하기</span>
         </label>
         <div id="ddayButtonArea">${ddayButtonAreaHtml()}</div>
       </div>
@@ -194,8 +194,34 @@ function openDdayTitleModal() {
     </div>`;
   document.body.appendChild(backdrop);
   setTimeout(() => { const el = document.getElementById('ddayTitleInputPost'); if (el) el.focus(); }, 0);
+  attachDdayKeyboardGuard();
+}
+// 모바일 네이티브 키패드가 하단 시트를 가리는 문제 방지: visualViewport가 줄어든 만큼
+// 모달을 위로 밀어올려 키보드 바로 위에 붙게 한다. PC는 애초에 키보드가 없어서 무영향.
+function attachDdayKeyboardGuard() {
+  if (!window.visualViewport) return;
+  const panel = document.querySelector('#ddayTitleModalBackdrop .post-modal');
+  if (!panel) return;
+  const handler = () => {
+    const vv = window.visualViewport;
+    const overlap = window.innerHeight - vv.height - vv.offsetTop;
+    panel.style.transform = overlap > 0 ? `translateY(-${Math.round(overlap)}px)` : '';
+  };
+  window.visualViewport.addEventListener('resize', handler);
+  window.visualViewport.addEventListener('scroll', handler);
+  ddayKeyboardGuardHandler = handler;
+  handler();
+}
+let ddayKeyboardGuardHandler = null;
+function detachDdayKeyboardGuard() {
+  if (window.visualViewport && ddayKeyboardGuardHandler) {
+    window.visualViewport.removeEventListener('resize', ddayKeyboardGuardHandler);
+    window.visualViewport.removeEventListener('scroll', ddayKeyboardGuardHandler);
+  }
+  ddayKeyboardGuardHandler = null;
 }
 function closeDdayTitleModal(cancelled) {
+  detachDdayKeyboardGuard();
   const el = document.getElementById('ddayTitleModalBackdrop');
   if (el) el.remove();
   if (cancelled && !composeState.ddayTitle) {

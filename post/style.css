@@ -275,7 +275,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .dday-blocked { margin-top: 10px; font-size: 12.5px; color: var(--ink-muted); }
 
 .post-modal-backdrop { position: fixed; inset: 0; background: rgba(20,17,10,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; }
-.post-modal { background: #fff; border-radius: 20px; padding: 24px 22px 26px; width: 100%; max-width: 360px; margin: 20px; }
+.post-modal { background: #fff; border-radius: 20px; padding: 24px 22px 26px; width: 100%; max-width: 360px; margin: 20px; transition: transform 0.15s ease; }
 .post-modal h3 { font-family: var(--font-serif); font-size: 16px; margin-bottom: 16px; }
 .post-modal input { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 11px 13px; font-size: 14px; margin-bottom: 16px; font-family: inherit; }
 .post-modal .row-actions { display: flex; gap: 8px; }
