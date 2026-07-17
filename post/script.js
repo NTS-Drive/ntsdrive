@@ -114,7 +114,7 @@ function renderCompose() {
       <input type="datetime-local" id="unlockInput" value="${toDatetimeLocalValue(composeState.unlockMs)}" style="display:none;">
     </div>
 
-    <button class="seal-btn" id="sealBtn" onclick="handleSeal()">편지 봉인하기</button>
+    <button class="seal-btn" id="sealBtn" onclick="handleSeal()" disabled>편지 봉인하기</button>
     <div class="disclaimer">이 잠금은 정말 열어보고 싶은 마음을 참는 재미를 위한 장치예요.<br>완벽한 보안 잠금은 아니라는 점, 참고해주세요.</div>
   `;
 
@@ -186,7 +186,7 @@ function openDdayTitleModal() {
   backdrop.innerHTML = `
     <div class="post-modal">
       <h3>D-day 제목</h3>
-      <input type="text" id="ddayTitleInputPost" maxlength="20" placeholder="예: 수능">
+      <input type="text" id="ddayTitleInputPost" maxlength="20" placeholder="예: 새로운 시작">
       <div class="row-actions">
         <button class="btn-cancel" onclick="closeDdayTitleModal(true)">취소</button>
         <button class="btn-save" onclick="saveDdayTitleModal()">등록</button>
@@ -281,6 +281,8 @@ function updateCharCount() {
   const el = document.getElementById('charCount');
   el.textContent = `${body.length} / ${MAX_CHARS}`;
   el.classList.toggle('over', body.length >= MAX_CHARS);
+  const sealBtn = document.getElementById('sealBtn');
+  if (sealBtn) sealBtn.disabled = !body.trim();
 }
 
 function switchPhotoMode(mode, btn) {

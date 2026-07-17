@@ -17,7 +17,7 @@ body.leaving{animation:pageOut .3s ease both;}
 .nav, .hero, .section, .shell, footer{position:relative; z-index:1;}
 
 /* ---- top nav (root) ---- */
-.nav{position:sticky; top:0; z-index:50; background:rgba(251,251,253,0.82); backdrop-filter:blur(14px); border-bottom:1px solid var(--line);}
+.nav{position:sticky; top:0; z-index:50; background:rgba(247,243,236,0.86); backdrop-filter:blur(14px); border-bottom:1px solid var(--line);}
 .nav-in{max-width:1180px; margin:0 auto; padding:16px 28px; display:flex; align-items:center; justify-content:space-between;}
 .nav .brand{font-family:'Space Grotesk'; font-weight:700; font-size:16px; display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); cursor:pointer;}
 .nav .brand .mark{width:26px; height:26px; border-radius:7px; display:block; object-fit:cover;}
@@ -36,22 +36,9 @@ body.leaving{animation:pageOut .3s ease both;}
 
 /* ---- hero ---- */
 .hero{position:relative; max-width:1180px; margin:0 auto; padding:88px 28px 60px; text-align:center;}
-.hero-blobs{position:absolute; inset:-60px 0 0 0; z-index:0; pointer-events:none; overflow:hidden;}
-.hero-blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:0.55;}
-.blob-sage{width:320px; height:320px; background:#A9C9A0; top:-40px; left:6%;}
-.blob-blush{width:280px; height:280px; background:#F3C7B8; top:20px; right:8%;}
-.blob-lavender{width:260px; height:260px; background:#C9B8E8; bottom:-60px; left:20%;}
-.blob-gold{width:260px; height:260px; background:#F5DDA0; bottom:-20px; right:20%;}
-.hero-glass{
-  position:relative; z-index:1; max-width:640px; margin:0 auto 48px; padding:40px 32px;
-  background:rgba(255,255,255,0.32); border:1px solid rgba(255,255,255,0.5);
-  backdrop-filter:blur(22px) saturate(1.6); -webkit-backdrop-filter:blur(22px) saturate(1.6);
-  box-shadow:0 20px 50px rgba(23,20,15,0.12); border-radius:24px;
-}
-.eyebrow{font-size:12.5px; font-weight:600; color:var(--blue); letter-spacing:0.02em; margin-bottom:18px;}
 .hero h1{font-family:'Space Grotesk'; font-weight:700; font-size:clamp(32px,5.4vw,58px); line-height:1.18; letter-spacing:-0.01em; max-width:760px; margin:0 auto 18px;}
 .hero h1 .h1-lead{font-size:0.62em; font-weight:600; display:inline-block;}
-.hero .subtext{font-size:15px; color:var(--sub); max-width:420px; margin:0 auto;}
+.hero .subtext{font-size:15px; color:var(--sub); max-width:420px; margin:0 auto 48px;}
 .btn-primary{background:var(--ink); color:#fff; font-size:14px; font-weight:600; padding:13px 26px; border-radius:99px; border:none; cursor:pointer; transition:transform .15s, box-shadow .15s;}
 .btn-primary:hover{transform:translateY(-1px); box-shadow:0 10px 24px rgba(15,17,21,0.22);}
 
@@ -151,12 +138,12 @@ body.leaving{animation:pageOut .3s ease both;}
 /* ---- modal (onboarding) ---- */
 .overlay{position:fixed; inset:0; background:rgba(15,17,21,0.5); backdrop-filter:blur(4px); display:none; align-items:flex-start; justify-content:center; z-index:100; padding:20px; padding-top:96px;}
 .overlay.show{display:flex;}
-.modal{background:rgba(255,255,255,0.55); backdrop-filter:blur(14px) saturate(1.5); -webkit-backdrop-filter:blur(14px) saturate(1.5); border:1px solid rgba(255,255,255,0.6); border-radius:20px; max-width:400px; width:100%; padding:32px 28px; position:relative;}
+.modal{background:var(--panel); border:1px solid var(--line); border-radius:20px; max-width:400px; width:100%; padding:32px 28px; position:relative;}
 .modal .close{position:absolute; top:16px; right:18px; cursor:pointer; font-size:16px; color:var(--sub);}
 .modal h3{font-family:'Space Grotesk'; font-size:19px; margin-bottom:18px;}
 .step{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
 .step .num{width:24px; height:24px; border-radius:50%; background:var(--ink); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; line-height:1;}
-.step p{font-size:13px; color:var(--sub); line-height:1.5; margin:0;}
+.step p{font-size:13px; color:var(--ink); line-height:1.5; margin:0;}
 .step b{color:var(--ink);}
 .modal .btn-primary{width:100%; margin-top:8px;}
 
@@ -185,13 +172,11 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 .dday-ring-glass{
   position:absolute; top:50%; left:50%; width:85.3%; height:85.3%; transform:translate(-50%,-50%);
   border-radius:50%; pointer-events:none; z-index:0;
-  -webkit-mask:radial-gradient(circle closest-side, transparent 92%, #000 93%, #000 100%);
-  mask:radial-gradient(circle closest-side, transparent 92%, #000 93%, #000 100%);
-  /* 12시에서 시계 방향으로 남은 비율(--dday-remain)만큼만 유리 재질을 채우고,
+  -webkit-mask:radial-gradient(circle closest-side, transparent 97%, #000 98%, #000 100%);
+  mask:radial-gradient(circle closest-side, transparent 97%, #000 98%, #000 100%);
+  /* 12시에서 시계 방향으로 남은 비율(--dday-remain)만큼만 가는 실선을 남기고,
      지나간 자리는 흔적 없이 완전히 투명하게 비워둔다 */
   background:conic-gradient(rgba(122,74,50,0.4) 0deg var(--dday-remain,360deg), transparent var(--dday-remain,360deg) 360deg);
-  backdrop-filter:blur(10px) saturate(1.4) brightness(1.05);
-  -webkit-backdrop-filter:blur(10px) saturate(1.4) brightness(1.05);
   transition:background 1s linear;
 }
 .dday-hero-num{font-family:'Space Grotesk'; font-size:42px; font-weight:700; line-height:1; margin-top:8px;}

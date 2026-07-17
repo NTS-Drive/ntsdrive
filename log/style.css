@@ -61,6 +61,8 @@ body.leaving { animation: pageOut .28s ease both; }
   transition: background .15s;
 }
 .seal-btn:hover { background: var(--accent); }
+.seal-btn:disabled { background: var(--line); color: var(--ink-muted); cursor: not-allowed; }
+.seal-btn:disabled:hover { background: var(--line); }
 .ghost-btn { background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 12px 20px; font-size: 13px; color: var(--ink); cursor: pointer; }
 .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
 .disclaimer { font-size: 11px; color: var(--ink-muted); text-align: center; margin-top: 16px; line-height: 1.7; }

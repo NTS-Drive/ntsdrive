@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784278654">
+<link rel="stylesheet" href="style.css?v=1784291689">
 <link rel="stylesheet" href="animation.css">
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -156,11 +156,13 @@ function renderIntro() {
       </div>
     </div>
 
-    <button class="seal-btn" onclick="handleCreateClick()">방 만들기</button>
+    <button class="seal-btn" id="createRoomBtn" onclick="handleCreateClick()" disabled>방 만들기</button>
     <div class="disclaimer">방 정보는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요.<br>친구용 링크를 잃어버리면 그 방은 다시 만들 수 없다는 점, 참고해주세요.</div>
   `;
   renderDdayPresetRow();
+  applyDdayPreset(selectedDdayPreset);
   renderGoalPresetRow();
+  document.getElementById('roomTitle').addEventListener('input', updateCreateBtnState);
   if (!document.querySelector('.inbox-fab')) {
     const fab = document.createElement('a');
     fab.className = 'inbox-fab';
@@ -172,13 +174,14 @@ function renderIntro() {
   }
 }
 
-let selectedDdayPreset = null;
+let selectedDdayPreset = 'tomorrow9';
 function renderDdayPresetRow() {
   const presets = [
-    { key: 'midnight', label: '오늘 자정' },
-    { key: 'tomorrow6pm', label: '내일 저녁 6시' },
-    { key: 'week1', label: '1주일 후' },
-    { key: 'month1', label: '1개월 후' },
+    { key: '1h', label: '1시간 후' },
+    { key: 'midnight', label: '오늘밤 12시' },
+    { key: 'tomorrow9', label: '내일 아침 9시' },
+    { key: 'month1', label: '한 달 후' },
+    { key: 'day100', label: '100일 후' },
     { key: 'custom', label: '직접입력' }
   ];
   document.getElementById('ddayPresetRow').innerHTML = presets.map(p => `
@@ -190,10 +193,11 @@ function renderDdayPresetRow() {
 function getDdayPresetTime(key) {
   const now = new Date();
   switch (key) {
+    case '1h': return Date.now() + 60 * 60 * 1000;
     case 'midnight': { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
-    case 'tomorrow6pm': { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(18, 0, 0, 0); return d.getTime(); }
-    case 'week1': return now.getTime() + 7 * 24 * 60 * 60 * 1000;
+    case 'tomorrow9': { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); return d.getTime(); }
     case 'month1': { const d = new Date(); d.setMonth(d.getMonth() + 1); return d.getTime(); }
+    case 'day100': return Date.now() + 100 * 24 * 60 * 60 * 1000;
     default: return null;
   }
 }
@@ -231,6 +235,11 @@ function applyGoalPreset(val) {
 document.addEventListener('input', (e) => {
   if (e.target && e.target.id === 'roomGoal') { selectedGoalPreset = 'custom'; renderGoalPresetRow(); }
 });
+function updateCreateBtnState() {
+  const btn = document.getElementById('createRoomBtn');
+  const title = document.getElementById('roomTitle');
+  if (btn && title) btn.disabled = !title.value.trim();
+}
 function handleCreateClick() {
   const title = document.getElementById('roomTitle').value.trim();
   const ddayVal = document.getElementById('roomDday').value;
@@ -403,11 +412,6 @@ function tryRegister(encoded, silent) {
   }
 
   const total = letters.reduce((sum, l) => sum + l.text.length, 0);
-  const remaining = currentRoom.goal - total;
-  if (letter.text.length > remaining) {
-    alert('🚨 목표 글자 수를 초과했어요.');
-    return;
-  }
 
   letters.push({ text: letter.text, from: letter.from || '', createdAt: letter.createdAt });
   saveLetters(roomEncoded, letters);
