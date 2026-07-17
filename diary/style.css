@@ -18,7 +18,7 @@ body.leaving { animation: pageOut .28s ease both; }
 @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }
 
 /* ---- 상단 GNB: Post/Log와 동일 구조 ---- */
-.topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+.topbar { max-width: 1180px; margin: 0 auto; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
 .topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; text-decoration: none; color: var(--ink); cursor: pointer; }
 .nav-links { display: flex; gap: 30px; font-size: 12px; letter-spacing: 0.03em; color: var(--ink-muted); }
 .nav-links span { cursor: pointer; }
@@ -134,7 +134,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .post-loop-close{position:absolute; top:12px; right:14px; font-size:13px; color:var(--ink-muted); cursor:pointer; padding:4px;}
 .weekly-actions{display:flex; justify-content:center; gap:10px; margin:-16px 0 26px;}
 .weekly-actions button{padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;}
-.weekly-actions .btn-share{background:var(--ink); color:#fff; border:none;}
+.weekly-actions .btn-share{background:transparent; border:1px solid var(--line); color:var(--ink);}
 .weekly-actions .btn-save{background:transparent; border:1px solid var(--line); color:var(--ink);}
 .weekly-card .range{font-size:12px; color:var(--ink-muted); margin-bottom:10px;}
 .weekly-bar{display:flex; height:14px; border-radius:99px; overflow:hidden; margin-bottom:14px; background:var(--line);}

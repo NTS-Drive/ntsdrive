@@ -37,7 +37,7 @@ body.leaving { animation: pageOut .28s ease both; }
 
 /* ===== Capture screens (dark viewfinder) ===== */
 body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
-.cam-topbar { padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; }
+.cam-topbar { max-width: 1180px; margin: 0 auto; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; }
 .cam-topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 15px; letter-spacing: normal; color: var(--cam-ink); text-decoration: none; cursor: pointer; }
 .cam-topbar .cam-nav-links { display: flex; gap: 30px; font-size: 12px; color: var(--cam-muted); }
 .cam-topbar .cam-nav-links span { cursor: pointer; }
