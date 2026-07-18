@@ -25,7 +25,7 @@
 }
 .reveal-card-front {
   background: var(--panel); border: 1px solid var(--line); transform: rotateY(180deg);
-  flex-direction: column; align-items: flex-start; gap: 4px;
+  flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0;
 }
-.reveal-card-front .letter-text { font-family: var(--font-serif); font-size: 14.5px; line-height: 1.7; color: var(--ink); }
+.reveal-card-front .letter-text { font-family: var(--font-serif); font-size: 14.5px; line-height: 1.7; color: var(--ink); width: 100%; overflow-wrap: break-word; word-break: break-word; }
 .reveal-card-front .letter-meta { font-size: 10.5px; color: var(--ink-muted); }
