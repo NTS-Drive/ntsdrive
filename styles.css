@@ -90,7 +90,8 @@ body.leaving{animation:pageOut .3s ease both;}
 .yesterday-section{padding-bottom:60px;}
 
 .privacy-note{max-width:760px; margin:60px auto 40px; padding:0 28px;}
-.privacy-note-card{padding:18px 20px; background:var(--panel); border:1px solid var(--line); border-radius:14px; text-align:center;}
+.privacy-note-card{padding:18px 20px; background:var(--panel); border:1px solid var(--line); border-radius:14px; text-align:center; cursor:pointer; transition:transform .18s;}
+.privacy-note-card:hover{transform:translateY(-2px);}
 .privacy-note-title{font-size:14px; font-weight:700; color:var(--ink); margin-bottom:4px;}
 .privacy-note-card p{font-size:12.5px; color:var(--sub); line-height:1.5;}
 

@@ -19,13 +19,17 @@ const IMG_GRID = 48;
 
 const TEMPLATES = [
   { id: 'celebrate', emoji: '🎉', label: '축하 편지', example: '축하해! 오늘 하루는 아무 생각하지 말고 즐겨!' },
-  { id: 'cheer',     emoji: '💪', label: '응원 편지', example: '너는 결국 해낼 사람이야.' },
-  { id: 'confess',   emoji: '💌', label: '고백 편지', example: '사실 예전부터 하고 싶었던 말이 있었어.' },
-  { id: 'thanks',    emoji: '🙏', label: '감사 편지', example: '그때 네가 없었으면 나 정말 힘들었을 거야. 고마워.' },
-  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때.....ㅋㅋㅋ..ㅋ.ㅋㅋ..ㅋㅋ.ㅋㅋㅋ' },
-  { id: 'comfort',   emoji: '😢', label: '위로 편지', example: '괜찮아, 지금은 그냥 힘들어해도 돼.' },
   { id: 'welcome',   emoji: '👋', label: '환영 편지', example: '만나서 반가워. 앞으로 잘 부탁해.' },
-  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' }
+  { id: 'cheer',     emoji: '💪', label: '응원 편지', example: '너는 결국 해낼 사람이야.' },
+  { id: 'pledge',    emoji: '🎯', label: '다짐 편지', example: '우리 이거 꼭 해내자. 나중에 이 편지 다시 열어보자.' },
+  { id: 'thanks',    emoji: '🙏', label: '감사 편지', example: '그때 네가 없었으면 나 정말 힘들었을 거야. 고마워.' },
+  { id: 'checkin',   emoji: '☕', label: '안부 편지', example: '오랜만이야, 잘 지내고 있어? 그냥 네 생각나서 써.' },
+  { id: 'confess',   emoji: '💌', label: '고백 편지', example: '사실 예전부터 하고 싶었던 말이 있었어.' },
+  { id: 'tease',     emoji: '😏', label: '놀림 편지', example: '너 그때.....ㅋㅋㅋ..ㅋ.ㅋㅋ..ㅋㅋ.ㅋㅋㅋ' },
+  { id: 'farewell',  emoji: '🍾', label: '송별 편지', example: '그동안 정말 고마웠어. 어디서든 잘 지내길 바랄게.' },
+  { id: 'comfort',   emoji: '😢', label: '위로 편지', example: '괜찮아, 지금은 그냥 힘들어해도 돼.' },
+  { id: 'reconcile', emoji: '🤝', label: '화해 편지', example: '미안해, 내가 잘못했어. 우리 다시 잘 지내자.' },
+  { id: 'worry',     emoji: '💭', label: '고민 편지', example: '사실 요즘 이런 고민이 있었어. 너한테만 말하는 거야.' }
 ];
 
 // Fixed 16-color palette shared by both the composer (encoding) and the

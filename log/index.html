@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#17140F">
 <title>Log | 여러 마음이 모여 쌓이는 편지함 | NTS Drive</title>
-<meta name="description" content="친구들과 함께 짧은 편지를 모아 목표 글자 수나 디데이가 되면 한 번에 여는 협업형 롤링페이퍼, Log.">
+<meta name="description" content="친구들과 함께 짧은 편지를 모아 목표 글자 수나 D-day가 되면 한 번에 여는 협업형 롤링페이퍼, Log.">
 <link rel="canonical" href="https://ntsdrive.com/log/index.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NTS Drive">
 <meta property="og:title" content="Log — 여러 마음이 모여 쌓이는 곳">
-<meta property="og:description" content="디데이가 되거나 목표 글자 수를 채우면, 한 번에 열려요.">
+<meta property="og:description" content="D-day가 되거나 목표 글자 수를 채우면, 한 번에 열려요.">
 <meta property="og:image" content="https://ntsdrive.com/log/og-image.png">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="800">
@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784359165">
+<link rel="stylesheet" href="style.css?v=1784373977">
 <link rel="stylesheet" href="animation.css">
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -61,7 +61,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="shared.js?v=1784337470"></script>
+<script src="shared.js?v=1784373977"></script>
 <script>
 const stage = document.getElementById('stage');
 let currentRoom = null;
@@ -144,9 +144,9 @@ function renderIntro() {
     </div>
 
     <div class="intro-steps">
-      <div class="step"><div class="num">1</div><p>대상자와 디데이, 목표 글자 수를 정해 방을 만들어요.</p></div>
+      <div class="step"><div class="num">1</div><p>대상자와 D-day, 목표 글자 수를 정해 방을 만들어요.</p></div>
       <div class="step"><div class="num">2</div><p>친구용 링크를 전달하면, 친구들이 각자 짧은 편지를 써요.</p></div>
-      <div class="step"><div class="num">3</div><p>받은 편지 링크를 내 방에 등록하면 글자 수가 쌓여요. 목표를 채우거나 디데이가 되면 한 번에 열려요.</p></div>
+      <div class="step"><div class="num">3</div><p>받은 편지 링크를 내 방에 등록하면 글자 수가 쌓여요. 목표를 채우거나 D-day가 되면 한 번에 열려요.</p></div>
     </div>
 
     <div class="compose-paper">
@@ -155,7 +155,7 @@ function renderIntro() {
         <input type="text" id="roomTitle" maxlength="30" placeholder="예: 지민이의 생일">
       </div>
       <div class="field">
-        <label>디데이 (이 시간이 되면 자동으로 열려요)</label>
+        <label>D-day (이 시간이 되면 자동으로 열려요)</label>
         <div class="preset-row" id="ddayPresetRow"></div>
         <input type="datetime-local" id="roomDday" style="display:none;">
       </div>
@@ -163,7 +163,7 @@ function renderIntro() {
         <label>목표 글자 수 (100~1,000자)</label>
         <div class="preset-row" id="goalPresetRow"></div>
         <input type="number" id="roomGoal" min="${GOAL_MIN}" max="${GOAL_MAX}" step="10" value="300">
-        <div class="field-hint">친구들이 쓴 편지 글자 수가 이 목표에 닿으면, 디데이 전이라도 바로 열려요.</div>
+        <div class="field-hint">친구들이 쓴 편지 글자 수가 이 목표에 닿으면, D-day 전이라도 바로 열려요.</div>
       </div>
     </div>
 
@@ -257,9 +257,9 @@ function handleCreateClick() {
   let goal = parseInt(document.getElementById('roomGoal').value, 10);
 
   if (!title) { toast('방 제목을 입력해주세요.'); return; }
-  if (!ddayVal) { toast('디데이를 설정해주세요.'); return; }
+  if (!ddayVal) { toast('D-day를 설정해주세요.'); return; }
   const dday = new Date(ddayVal).getTime();
-  if (isNaN(dday) || dday <= Date.now()) { toast('디데이는 현재보다 미래여야 해요.'); return; }
+  if (isNaN(dday) || dday <= Date.now()) { toast('D-day는 현재보다 미래여야 해요.'); return; }
   if (isNaN(goal)) { toast('목표 글자 수를 입력해주세요.'); return; }
   goal = Math.min(GOAL_MAX, Math.max(GOAL_MIN, goal));
 
