@@ -115,7 +115,7 @@ function renderCompose() {
     </div>
 
     <button class="seal-btn" id="sealBtn" onclick="handleSeal()" disabled>편지 봉인하기</button>
-    <div class="disclaimer">이 잠금은 정말 열어보고 싶은 마음을 참는 재미를 위한 장치예요.<br>완벽한 보안 잠금은 아니라는 점, 참고해주세요.</div>
+    <div class="disclaimer">편지는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요. 링크가 내용을 읽는 열쇠이니 안전하게 보관해 주세요.</div>
   `;
 
   renderPresetRow();
@@ -408,7 +408,8 @@ function handleSeal() {
       link: hiddenLink || null,
       unlock: composeState.unlockMs,
       img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
-      imgGrid: composeState.photoIndices ? IMG_GRID : null // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
+      imgGrid: composeState.photoIndices ? IMG_GRID : null, // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
+      ddayTitle: (composeState.toSelf && composeState.ddayTitle) ? composeState.ddayTitle : null
     };
 
     const encoded = encodeLetter(letter);
@@ -507,6 +508,25 @@ function renderLocked(letter, encoded) {
     ? `<div class="locked-inbox-note">✓ 이미 편지함에 저장해뒀어요</div>`
     : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">내 편지함에 등록해두세요 →</a></div>`;
 
+  let ddayInviteBlock = '';
+  if (letter.ddayTitle && !isMine && typeof NTSDday !== 'undefined') {
+    if (NTSDday.hasEncoded(encoded)) {
+      // 이미 등록해둔 D-day라 다시 물어보지 않음
+    } else if (NTSDday.hasActive()) {
+      ddayInviteBlock = `<div class="dday-invite-note">이 편지에 D-day가 설정되어 있어요. 진행 중인 D-day가 있어서 등록이 어려워요.</div>`;
+    } else {
+      currentLockedDdayInvite = { encoded, title: letter.ddayTitle, unlockMs: letter.unlock };
+      ddayInviteBlock = `
+        <div class="dday-invite" id="ddayInviteBlock">
+          <p>이 편지에 D-day가 설정되어 있어요. 내 홈에도 추가할까요?</p>
+          <div class="row-actions">
+            <button class="btn-cancel" onclick="declineDdayInvite()">아니요</button>
+            <button class="btn-save" onclick="acceptDdayInvite()">추가할게요</button>
+          </div>
+        </div>`;
+    }
+  }
+
   stage.innerHTML = `
     <div class="envelope-stage">
       <div class="envelope"><span class="seal">${tpl.emoji}</span></div>
@@ -515,11 +535,26 @@ function renderLocked(letter, encoded) {
       <div class="unlock-date">${formatUnlockDate(letter.unlock)}에 열려요</div>
       ${shareBlock}
       ${inboxNote}
+      ${ddayInviteBlock}
     </div>
   `;
   updateCountdown(letter);
   clearInterval(lockedTimerId);
   lockedTimerId = setInterval(() => updateCountdown(letter), 1000);
+}
+let currentLockedDdayInvite = null;
+function acceptDdayInvite() {
+  if (!currentLockedDdayInvite || typeof NTSDday === 'undefined') return;
+  const result = NTSDday.registerFromPost(currentLockedDdayInvite);
+  const block = document.getElementById('ddayInviteBlock');
+  if (block) block.remove();
+  toast(result.ok ? 'D-day가 내 홈에 추가됐어요.' : result.message);
+  currentLockedDdayInvite = null;
+}
+function declineDdayInvite() {
+  const block = document.getElementById('ddayInviteBlock');
+  if (block) block.remove();
+  currentLockedDdayInvite = null;
 }
 function updateCountdown(letter) {
   const remain = letter.unlock - Date.now();

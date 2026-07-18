@@ -35,16 +35,29 @@ function formatDday(ms) {
   return `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())} (${days[d.getDay()]}) ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
 
-/* ===== UTF-8 safe, URL-safe base64 (same scheme Post uses) ===== */
+/* ===== UTF-8 safe, URL-safe base64 + 경량 XOR 난독화 (Post와 동일 방식) ===== */
+const NTS_OBF_KEY = 'ntsdrive-2026-link-is-the-key';
+function ntsXor(bytes) {
+  const key = new TextEncoder().encode(NTS_OBF_KEY);
+  const out = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ key[i % key.length];
+  return out;
+}
 function encodeData(obj) {
   const json = JSON.stringify(obj);
-  const b64 = btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode('0x' + p1)));
+  const bytes = ntsXor(new TextEncoder().encode(json));
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  const b64 = btoa(bin);
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 function decodeData(str) {
   let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
   while (b64.length % 4) b64 += '=';
-  const json = decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const json = new TextDecoder().decode(ntsXor(bytes));
   return JSON.parse(json);
 }
 

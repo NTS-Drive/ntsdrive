@@ -185,6 +185,9 @@
   function hasActive() {
     return !!activeItem();
   }
+  function hasEncoded(encoded) {
+    return loadList().some(d => d.encoded === encoded);
+  }
   function registerFromPost({ title, encoded, unlockMs }) {
     if (activeItem()) {
       return { ok: false, message: '진행 중인 D-day가 끝난 뒤에 새로 등록할 수 있어요.' };
@@ -279,7 +282,7 @@
 
   window.NTSDday = {
     render, toggleMenu, openDeleteConfirm, closeDeleteConfirm, confirmDelete, goToPost,
-    hasActive, registerFromPost,
+    hasActive, hasEncoded, registerFromPost,
     finishCelebration, viewLetterFromCelebration, dismissCelebration, checkCelebration
   };
 

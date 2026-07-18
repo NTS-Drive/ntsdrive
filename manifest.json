@@ -1,7 +1,7 @@
 {
   "name": "NTS Drive",
   "short_name": "NTS Drive",
-  "description": "지금 순간의 마음까지 남는 드라이브",
+  "description": "서버에 남기지 않고, 링크가 곧 열쇠인 프라이빗 라이프 노트",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",

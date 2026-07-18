@@ -125,10 +125,13 @@ body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
 
 /* ===== Album (light, cream) ===== */
 body.album-mode { background: var(--album-cream); color: var(--album-ink); }
-.album-topbar { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--album-line); }
+.album-topbar { padding: 20px max(24px, calc((100% - 1180px) / 2 + 24px)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--album-line); }
 .album-topbar .mark { font-family: 'Space Grotesk'; font-weight: 700; font-size: 14px; letter-spacing: normal; color: var(--album-ink); cursor: pointer; }
 .album-topbar .album-back { font-size: 12px; color: var(--album-muted); cursor: pointer; }
 .album-topbar .album-back:hover { color: var(--film-accent); }
+.album-topbar .cam-nav-links { display: flex; gap: 30px; font-size: 12px; color: var(--album-muted); }
+.album-topbar .cam-nav-links span { cursor: pointer; }
+.album-topbar .cam-nav-links span:hover { color: var(--album-ink); }
 
 .album-stage { max-width: 640px; margin: 0 auto; padding: 24px 20px 90px; }
 .album-head { text-align: center; margin-bottom: 22px; }
