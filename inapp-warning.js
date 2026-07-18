@@ -9,9 +9,9 @@
 (function () {
   function detectInAppBrowser() {
     const ua = navigator.userAgent || '';
-    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', menu: '우측 상단 "···" 메뉴' };
-    if (/NAVER\(/i.test(ua)) return { id: 'naver', name: '네이버 앱', menu: '하단 메뉴(≡ 또는 •••)' };
-    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', menu: '우측 상단 "···" 메뉴' };
+    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', instruction: '우측 하단 "⋮" 메뉴에서 "다른 브라우저로 열기"를 눌러주세요.' };
+    if (/NAVER\(/i.test(ua)) return { id: 'naver', name: '네이버 앱', instruction: '하단 메뉴(≡ 또는 •••)에서 "URL 복사"를 누른 뒤, 평소 쓰는 브라우저(사파리·크롬 등)에 붙여넣어 열어주세요.' };
+    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', instruction: '우측 상단 "···" 메뉴에서 "다른 브라우저에서 열기"를 눌러주세요.' };
     return null;
   }
 
@@ -36,7 +36,7 @@
 
     const el = document.createElement('div');
     el.className = 'nts-inapp-banner';
-    el.innerHTML = `<span><b>${app.name}</b> 안에서는 저장한 내용이 평소 쓰는 브라우저와 연결되지 않아요. ${app.menu}에서 "다른 브라우저로 열기"를 눌러주세요.</span><button type="button" class="nts-inapp-close" aria-label="닫기">✕</button>`;
+    el.innerHTML = `<span><b>${app.name}</b> 안에서는 저장한 내용이 평소 쓰는 브라우저와 연결되지 않아요. ${app.instruction}</span><button type="button" class="nts-inapp-close" aria-label="닫기">✕</button>`;
     document.body.insertBefore(el, document.body.firstChild);
 
     el.querySelector('.nts-inapp-close').addEventListener('click', () => {
