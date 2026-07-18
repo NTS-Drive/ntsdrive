@@ -16,6 +16,8 @@
   }
 
   const app = detectInAppBrowser();
+  window.NTSInAppBrowser = app; // 다른 스크립트(예: Post 잠금화면)에서도 참조
+
   if (!app) return;
 
   try {

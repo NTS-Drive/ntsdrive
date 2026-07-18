@@ -115,7 +115,7 @@ function renderCompose() {
     </div>
 
     <button class="seal-btn" id="sealBtn" onclick="handleSeal()" disabled>편지 봉인하기</button>
-    <div class="disclaimer">편지는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요. 링크가 내용을 읽는 열쇠이니 안전하게 보관해 주세요.</div>
+    <div class="disclaimer">편지는 서버에 저장되지 않고, 생성되는 링크 안에만 담겨요.<br>링크가 내용을 읽는 열쇠이니 안전하게 보관해 주세요.</div>
   `;
 
   renderPresetRow();
@@ -504,9 +504,12 @@ function renderLocked(letter, encoded) {
       <button class="ghost-btn" style="width:100%;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
     </div>` : '';
 
+  const inboxCaption = (typeof window !== 'undefined' && window.NTSInAppBrowser)
+    ? '' // 카카오톡/네이버/인스타그램은 이미 상단 배너로 안내하고 있어 중복 노출하지 않음
+    : '<span class="locked-inbox-caption">(평소 쓰는 브라우저가 맞는지 확인해주세요)</span>';
   const inboxNote = myItem
     ? `<div class="locked-inbox-note">✓ 이미 편지함에 저장해뒀어요</div>`
-    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">내 편지함에 등록해두세요 →</a></div>`;
+    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">클릭하면 지금 이 브라우저에 바로 등록돼요 →</a>${inboxCaption}</div>`;
 
   let ddayInviteBlock = '';
   if (letter.ddayTitle && !isMine && typeof NTSDday !== 'undefined') {

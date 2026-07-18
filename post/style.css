@@ -152,6 +152,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .envelope-stage .unlock-date { font-size: 12.5px; color: var(--ink-muted); }
 .locked-inbox-note { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-muted); line-height: 1.8; }
 .locked-inbox-note a { color: var(--accent); text-decoration: underline; cursor: pointer; }
+.locked-inbox-caption { display: block; font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
 .locked-share-block { margin-top: 28px; text-align: left; }
 
 /* ===== Letter reveal ===== */
