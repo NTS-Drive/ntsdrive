@@ -103,6 +103,14 @@ body.leaving{animation:pageOut .3s ease both;}
 .moment-empty{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:28px 20px; text-align:center;}
 .moment-empty p{font-size:13px; color:var(--sub);}
 .moment-diary-row{display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--panel); margin-bottom:10px;}
+
+.remind-row{display:flex; align-items:center; gap:12px; padding:14px; border:1px solid var(--line); border-radius:14px; background:var(--panel); margin-bottom:10px; cursor:pointer; transition:transform .15s;}
+.remind-row:hover{transform:translateY(-2px);}
+.remind-row:last-child{margin-bottom:0;}
+.remind-row-emoji{font-size:22px; flex-shrink:0;}
+.remind-row-text{font-size:14px; color:var(--ink); flex:1; min-width:0;}
+.remind-row-date{font-size:12px; color:var(--sub); margin-top:2px;}
+.remind-row-close{flex-shrink:0; font-size:13px; color:var(--sub); padding:6px; cursor:pointer;}
 .moment-diary-row:last-child{margin-bottom:0;}
 .moment-diary-row .memoji{font-size:22px; flex-shrink:0;}
 .moment-diary-mood{font-size:13.5px; font-weight:700; margin-right:6px;}

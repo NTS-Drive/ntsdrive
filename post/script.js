@@ -33,7 +33,19 @@ function render() {
       return;
     }
   }
+  // 리마인드 카드 등에서 ?tpl=celebrate&to=이름 형태로 들어오면 해당 템플릿과
+  // 받는사람을 미리 채워둔 상태로 작성 화면을 연다.
+  const tplParam = params.get('tpl');
+  if (tplParam) {
+    const idx = TEMPLATES.findIndex(t => t.id === tplParam);
+    if (idx >= 0) composeState.tpl = idx;
+  }
   renderCompose();
+  const toParam = params.get('to');
+  if (toParam) {
+    const toEl = document.getElementById('toName');
+    if (toEl) toEl.value = toParam;
+  }
 }
 
 /* ===== Compose screen ===== */
@@ -450,6 +462,7 @@ function renderShareResult(url, encoded, unlockMs) {
       <div class="env-icon">✉️</div>
       <h2>편지가 봉인됐어요</h2>
       <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
+      <p class="irrevocable-warning">⚠️ 링크를 공유하고 나면 되돌리거나 취소할 수 없어요. 신중하게 공유해주세요.</p>
       <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
       <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
       <div class="link-box">
@@ -500,6 +513,7 @@ function renderLocked(letter, encoded) {
   // 버튼을 보여주지 않는다(남의 편지를 또 퍼뜨리는 상황 방지).
   const shareBlock = isMine ? `
     <div class="locked-share-block">
+      <p class="irrevocable-warning">⚠️ 링크를 공유하고 나면 되돌리거나 취소할 수 없어요. 신중하게 공유해주세요.</p>
       <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
       <button class="ghost-btn" style="width:100%;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
     </div>` : '';
