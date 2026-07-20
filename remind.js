@@ -96,7 +96,7 @@
           <div class="remind-row" onclick="NTSRemind.goToPost('${r.name.replace(/'/g, "\\'")}')">
             <span class="remind-row-emoji">🎂</span>
             <div class="remind-row-text">
-              <div><b>${escapeHtml(r.name)}</b> 생일이 ${label}이에요, 편지 써볼까요?</div>
+              <div><b>${escapeHtml(r.name)}</b> 님의 생일이 ${label}이에요. 편지 써볼까요?</div>
               <div class="remind-row-date">${formatDate(r.date)}</div>
             </div>
           </div>`;

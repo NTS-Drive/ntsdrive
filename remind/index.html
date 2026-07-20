@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="../styles.css?v=1784554330">
 <script src="../analytics.js?v=1784067557"></script>
 <script src="../install-shortcut.js?v=1784067557"></script>
-<script src="../remind.js?v=1784554330"></script>
+<script src="../remind.js?v=1784558279"></script>
 <style>
   .settings-card{max-width:520px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; margin-bottom:20px;}
   .settings-card h2{font-family:'Space Grotesk'; font-size:16px; margin-bottom:8px;}
@@ -69,8 +69,11 @@
         <input type="text" id="remindName" maxlength="20" placeholder="예: 은우">
       </div>
       <div class="remind-field">
-        <label>생일</label>
-        <input type="date" id="remindDate">
+        <label>생일 (월 · 일)</label>
+        <div style="display:flex; gap:8px;">
+          <select id="remindMonth" style="flex:1; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; font-family:inherit; background:#fff;"></select>
+          <select id="remindDay" style="flex:1; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; font-family:inherit; background:#fff;"></select>
+        </div>
       </div>
       <button class="settings-btn" onclick="handleAdd()">등록하기</button>
     </div>
@@ -78,6 +81,7 @@
     <div class="settings-card">
       <h2>등록된 생일</h2>
       <div id="remindListView"></div>
+      <p style="margin-top:16px; margin-bottom:0; font-size:11.5px; color:var(--sub); text-align:center;">다음에 추가로 등록하거나 수정하고 싶으면, 홈 화면 맨 아래 "리마인드" 링크에서 다시 이 페이지로 올 수 있어요.</p>
     </div>
   </main>
 </div>
@@ -95,15 +99,31 @@
 function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
 function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 
+const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // 2월은 윤년도 고려해 29일까지 선택 가능하게
+
+function populateDateSelects() {
+  const monthEl = document.getElementById('remindMonth');
+  const dayEl = document.getElementById('remindDay');
+  monthEl.innerHTML = Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}월</option>`).join('');
+  monthEl.addEventListener('change', () => populateDayOptions());
+  populateDayOptions();
+}
+function populateDayOptions() {
+  const monthEl = document.getElementById('remindMonth');
+  const dayEl = document.getElementById('remindDay');
+  const prevValue = dayEl.value;
+  const maxDay = DAYS_IN_MONTH[Number(monthEl.value) - 1] || 31;
+  dayEl.innerHTML = Array.from({ length: maxDay }, (_, i) => `<option value="${i + 1}">${i + 1}일</option>`).join('');
+  if (prevValue && Number(prevValue) <= maxDay) dayEl.value = prevValue;
+}
+
 function handleAdd() {
   const nameEl = document.getElementById('remindName');
-  const dateEl = document.getElementById('remindDate');
-  if (!dateEl.value) { alert('생일을 선택해주세요.'); return; }
-  const mmdd = dateEl.value.slice(5); // "YYYY-MM-DD" -> "MM-DD"
-  const result = NTSRemind.addRemind({ name: nameEl.value, date: mmdd });
+  const mm = String(document.getElementById('remindMonth').value).padStart(2, '0');
+  const dd = String(document.getElementById('remindDay').value).padStart(2, '0');
+  const result = NTSRemind.addRemind({ name: nameEl.value, date: `${mm}-${dd}` });
   if (!result.ok) { alert(result.message); return; }
   nameEl.value = '';
-  dateEl.value = '';
   renderList();
 }
 
@@ -139,6 +159,7 @@ function renderList() {
   }).join('');
 }
 
+populateDateSelects();
 renderList();
 </script>
 </body>
