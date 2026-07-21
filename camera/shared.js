@@ -181,6 +181,9 @@ function captureFrame(videoEl, ratio, mirror) {
     ctx.scale(-1, 1);
   }
   ctx.drawImage(videoEl, sx, sy, cw, ch, 0, 0, outW, outH);
+  // mirror 변환을 원상복구해준다. 안 하면 이 캔버스에 나중에 그려지는 것들(날짜
+  // 스탬프 등)까지 전부 좌우반전된 채로 그려지는 버그가 생긴다.
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   return canvas;
 }
 

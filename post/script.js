@@ -9,7 +9,10 @@ let composeState = {
   unlockMs: getPresetTime('tomorrow9'),
   selectedPreset: 'tomorrow9',
   toSelf: false,
-  ddayTitle: null
+  ddayTitle: null,
+  wantExpiry: false,
+  expirySelectedPreset: null,
+  expiresAtMs: null
 };
 let drawColorIndex = 6; // default pen color for the draw tool
 
@@ -22,6 +25,10 @@ function render() {
     const encoded = params.get('d');
     try {
       const letter = decodeLetter(encoded);
+      if (letter.expiresAt && Date.now() > letter.expiresAt) {
+        stage.innerHTML = `<div class="share-result"><div class="env-icon">⌛</div><h2>이제 이 편지는 못 열어요</h2><p>편지 열람 만료일이 지나서 더 이상 열람할 수 없어요.</p></div>`;
+        return;
+      }
       if (Date.now() < letter.unlock) {
         renderLocked(letter, encoded);
       } else {
@@ -85,14 +92,6 @@ function renderCompose() {
         </div>
       </div>
 
-      <div class="field toself-field">
-        <label class="toself-toggle">
-          <input type="checkbox" id="toSelfToggle" ${composeState.toSelf ? 'checked' : ''} onchange="toggleToSelf(this.checked)">
-          <span>D-day 등록하기</span>
-        </label>
-        <div id="ddayButtonArea">${ddayButtonAreaHtml()}</div>
-      </div>
-
       <div class="field">
         <label>편지 제목</label>
         <input type="text" id="letterTitle" maxlength="40" placeholder="편지에 제목을 붙여보세요">
@@ -121,9 +120,27 @@ function renderCompose() {
     </div>
 
     <div class="field">
-      <label>잠금 해제 시간</label>
+      <label>편지 열람 가능 시간</label>
       <div class="preset-row" id="presetRow"></div>
       <input type="datetime-local" id="unlockInput" value="${toDatetimeLocalValue(composeState.unlockMs)}" style="display:none;">
+    </div>
+
+    <div class="field">
+      <label>추가 옵션</label>
+      <div class="toself-field" style="margin-bottom:14px;">
+        <label class="toself-toggle">
+          <input type="checkbox" id="toSelfToggle" ${composeState.toSelf ? 'checked' : ''} onchange="toggleToSelf(this.checked)">
+          <span>편지 열람일을 D-day로 등록하기</span>
+        </label>
+        <div id="ddayButtonArea">${ddayButtonAreaHtml()}</div>
+      </div>
+      <div class="toself-field">
+        <label class="toself-toggle">
+          <input type="checkbox" id="expiryToggle" ${composeState.wantExpiry ? 'checked' : ''} onchange="toggleExpiry(this.checked)">
+          <span>편지 열람 만료일 등록하기</span>
+        </label>
+        <div id="expiryOptionsArea">${composeState.wantExpiry ? expiryPresetRowHtml() : ''}</div>
+      </div>
     </div>
 
     <button class="seal-btn" id="sealBtn" onclick="handleSeal()" disabled>편지 봉인하기</button>
@@ -148,7 +165,54 @@ function renderCompose() {
     composeState.unlockMs = new Date(e.target.value).getTime();
     composeState.selectedPreset = 'custom';
     renderPresetRow();
+    recomputeExpiryIfNeeded();
   });
+}
+
+/* ===== 편지 열람 만료일 ===== */
+const EXPIRY_PRESETS = [
+  { key: '1h', label: '한 시간' },
+  { key: '1d', label: '하루' },
+  { key: '1w', label: '일주일' },
+  { key: '1m', label: '한 달' }
+];
+function computeExpiryFromPreset(key, baseMs) {
+  const d = new Date(baseMs);
+  switch (key) {
+    case '1h': return baseMs + 60 * 60 * 1000;
+    case '1d': return baseMs + 24 * 60 * 60 * 1000;
+    case '1w': return baseMs + 7 * 24 * 60 * 60 * 1000;
+    case '1m': d.setMonth(d.getMonth() + 1); return d.getTime();
+    default: return null;
+  }
+}
+function toggleExpiry(checked) {
+  composeState.wantExpiry = checked;
+  if (checked) {
+    if (!composeState.expirySelectedPreset) composeState.expirySelectedPreset = '1h';
+    composeState.expiresAtMs = computeExpiryFromPreset(composeState.expirySelectedPreset, composeState.unlockMs);
+  } else {
+    composeState.expirySelectedPreset = null;
+    composeState.expiresAtMs = null;
+  }
+  const area = document.getElementById('expiryOptionsArea');
+  if (area) area.innerHTML = checked ? expiryPresetRowHtml() : '';
+}
+function expiryPresetRowHtml() {
+  return `<div class="preset-row">${EXPIRY_PRESETS.map(p => `<button type="button" class="preset-btn ${composeState.expirySelectedPreset === p.key ? 'selected' : ''}" onclick="applyExpiryPreset('${p.key}')">${p.label}</button>`).join('')}</div>`;
+}
+function applyExpiryPreset(key) {
+  composeState.expirySelectedPreset = key;
+  composeState.expiresAtMs = computeExpiryFromPreset(key, composeState.unlockMs);
+  const area = document.getElementById('expiryOptionsArea');
+  if (area) area.innerHTML = expiryPresetRowHtml();
+}
+// 열람 가능 시간이 바뀌면(프리셋 재선택/직접입력 변경), 이미 골라둔 만료일
+// 프리셋 기준으로 만료 시각도 같이 재계산한다("열람 가능 시간 + N" 규칙 유지).
+function recomputeExpiryIfNeeded() {
+  if (composeState.wantExpiry && composeState.expirySelectedPreset) {
+    composeState.expiresAtMs = computeExpiryFromPreset(composeState.expirySelectedPreset, composeState.unlockMs);
+  }
 }
 
 /* ===== 나에게 쓰기 / D-day 등록 ===== */
@@ -286,6 +350,7 @@ function applyPreset(key) {
   composeState.unlockMs = getPresetTime(key);
   document.getElementById('unlockInput').value = toDatetimeLocalValue(composeState.unlockMs);
   renderPresetRow();
+  recomputeExpiryIfNeeded();
 }
 
 function updateCharCount() {
@@ -403,7 +468,7 @@ function handleSeal() {
   if (!body) { toast('편지 내용을 적어주세요.'); return; }
   if (body.length > MAX_CHARS) { toast(`편지는 ${MAX_CHARS}자 이내로 적어주세요.`); return; }
   if (!composeState.unlockMs || composeState.unlockMs <= Date.now()) {
-    toast('잠금 해제 시간은 현재보다 미래여야 해요.');
+    toast('편지 열람 가능 시간은 현재보다 미래여야 해요.');
     return;
   }
 
@@ -421,7 +486,8 @@ function handleSeal() {
       unlock: composeState.unlockMs,
       img: composeState.photoIndices ? bytesToBase64(packIndices(composeState.photoIndices)) : null,
       imgGrid: composeState.photoIndices ? IMG_GRID : null, // records the grid size THIS letter's photo was encoded at, so future code changes to IMG_GRID never break old links
-      ddayTitle: (composeState.toSelf && composeState.ddayTitle) ? composeState.ddayTitle : null
+      ddayTitle: (composeState.toSelf && composeState.ddayTitle) ? composeState.ddayTitle : null,
+      expiresAt: (composeState.wantExpiry && composeState.expiresAtMs) ? composeState.expiresAtMs : null
     };
 
     const encoded = encodeLetter(letter);
@@ -593,12 +659,27 @@ function updateCountdown(letter) {
 }
 
 /* ===== Reveal screen ===== */
+function expiryRemainLabel(expiresAt) {
+  const remainMs = expiresAt - Date.now();
+  if (remainMs <= 0) return null;
+  if (remainMs < 24 * 60 * 60 * 1000) {
+    const hours = Math.floor(remainMs / (60 * 60 * 1000));
+    const minutes = Math.floor((remainMs % (60 * 60 * 1000)) / (60 * 1000));
+    const timeStr = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+    return `편지 만료까지 ${timeStr} 남음`;
+  }
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const target = new Date(expiresAt); target.setHours(0, 0, 0, 0);
+  const days = Math.round((target - today) / (24 * 60 * 60 * 1000));
+  return `편지 만료일까지 D-${days}`;
+}
 function renderReveal(letter) {
   const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
   const photoHtml = letter.img ? `
     <div class="letter-photo-wrap"><canvas id="revealCanvas"></canvas></div>
   ` : '';
   const safeLink = letter.link && /^https?:\/\//i.test(letter.link) ? letter.link : null;
+  const expiryNote = letter.expiresAt ? expiryRemainLabel(letter.expiresAt) : null;
   stage.innerHTML = `
     <div class="letter-paper">
       <div class="letter-meta"><span>${tpl.emoji} ${tpl.label}</span><span>${formatUnlockDate(letter.unlock)}</span></div>
@@ -609,6 +690,7 @@ function renderReveal(letter) {
       ${letter.from ? `<div class="letter-sign">— ${escapeHtml(letter.from)}</div>` : ''}
       ${safeLink ? `<div class="hidden-link-row"><a class="hidden-link-btn" href="${safeLink}" target="_blank" rel="noopener">숨겨둔 마음 보기</a></div>` : ''}
     </div>
+    ${expiryNote ? `<div class="letter-expiry-note">${expiryNote}</div>` : ''}
     <div class="reveal-actions">
       <button class="ghost-btn" onclick="saveLetterImage()">편지 저장하기</button>
       <button class="ghost-btn" onclick="navigate(location.pathname)">나도 편지 써보기</button>

@@ -173,6 +173,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .hidden-link-row { text-align: center; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
 .hidden-link-btn { display: inline-block; font-size: 12.5px; color: var(--accent); text-decoration: underline; cursor: pointer; }
 .reveal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.letter-expiry-note { text-align: center; font-size: 11.5px; color: #A69679; margin-top: 14px; }
 
 .letter-photo-wrap { text-align: center; margin: 8px 0 34px; }
 .letter-photo-wrap canvas {
