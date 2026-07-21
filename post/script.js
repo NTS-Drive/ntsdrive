@@ -134,7 +134,10 @@ function renderCompose() {
         </label>
         <div id="ddayButtonArea">${ddayButtonAreaHtml()}</div>
       </div>
-      <div class="toself-field">
+      <!-- [전략 확인 완료] 열람 가능 시간과 헷갈린다는 피드백으로 임시 숨김.
+           서비스 러닝 후 요청 있으면 이 style="display:none;" 한 줄만 지우면 재노출됨.
+           내부 로직(toggleExpiry/expiryPresetRowHtml 등)은 전부 그대로 살아있음. -->
+      <div class="toself-field" style="display:none;">
         <label class="toself-toggle">
           <input type="checkbox" id="expiryToggle" ${composeState.wantExpiry ? 'checked' : ''} onchange="toggleExpiry(this.checked)">
           <span>편지 열람 만료일 등록하기</span>
