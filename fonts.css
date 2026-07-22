@@ -1,0 +1,17 @@
+/* ============================================================
+   NTS Drive · 공용 커스텀 손글씨 폰트
+   camera/style.css에도 동일 정의가 있음(Snap/Film용) — 여기는
+   Post/Log/Diary처럼 camera/style.css를 로드하지 않는 페이지용
+   ============================================================ */
+@font-face {
+  font-family: 'NanumSonDahaeng';
+  src: url('/assets/fonts/NanumSonDahaeng.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BrownCookies';
+  src: url('/assets/fonts/BrownCookies.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+}

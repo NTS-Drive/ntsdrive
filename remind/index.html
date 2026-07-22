@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17140F">
+<title>리마인드 | NTS Drive</title>
+<meta name="description" content="친구·지인의 생일을 등록해두면, D-3부터 홈 화면에서 알려드려요. 편지도 바로 써볼 수 있어요.">
+<link rel="canonical" href="https://ntsdrive.com/remind/index.html">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css?v=1784592703">
+<script src="../analytics.js?v=1784067557"></script>
+<script src="../install-shortcut.js?v=1784067557"></script>
+<script src="../remind.js?v=1784558902"></script>
+<style>
+  .settings-card{max-width:520px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; margin-bottom:20px;}
+  .settings-card h2{font-family:'Space Grotesk'; font-size:16px; margin-bottom:8px;}
+  .settings-card p{font-size:12.5px; color:var(--sub); line-height:1.7; margin-bottom:16px;}
+  .settings-btn{width:100%; padding:14px; border-radius:10px; border:none; background:var(--ink); color:#fff; font-size:14px; font-weight:600; cursor:pointer; margin-bottom:10px;}
+  .settings-btn:last-child{margin-bottom:0;}
+  .remind-field{margin-bottom:14px;}
+  .remind-field label{display:block; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--sub); margin-bottom:6px;}
+  .remind-field input{width:100%; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; font-family:inherit; background:#fff;}
+  .remind-list-item{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);}
+  .remind-list-item:last-child{border-bottom:none;}
+  .remind-list-item .emoji{font-size:20px; flex-shrink:0;}
+  .remind-list-item .info{flex:1; min-width:0;}
+  .remind-list-item .name{font-size:14px; font-weight:600; color:var(--ink);}
+  .remind-list-item .date{font-size:12px; color:var(--sub); margin-top:2px;}
+  .remind-list-item .del{font-size:12px; color:var(--sub); text-decoration:underline; cursor:pointer; flex-shrink:0; background:none; border:none;}
+  .remind-empty{font-size:13px; color:var(--sub); text-align:center; padding:20px 0;}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+</head>
+<body>
+<script>
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+</script>
+<div class="shell">
+  <nav class="nav">
+    <div class="nav-in">
+      <a class="brand" onclick="navigate('../index.html')">NTS Drive</a>
+      <div class="links">
+        <span onclick="navigate('../index.html')">Home</span>
+        <span onclick="navigate('../post/index.html')">Post</span>
+        <span onclick="navigate('../log/index.html')">Log</span>
+        <span onclick="navigate('../diary/index.html')">Diary</span>
+        <span onclick="navigate('../snap/index.html')">Snap</span>
+        <span onclick="navigate('../film/index.html')">Film</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="crumb"><span class="crumb-link" onclick="navigate('../index.html')">내 드라이브</span> <span>／</span> <b>리마인드</b></div>
+    <div class="page-head">
+      <h1>리마인드</h1>
+      <p>친구·지인의 생일을 등록해두면, D-3부터 홈 화면에서 알려드려요.<br>이름과 생일 외엔 아무것도 저장하지 않고, 이 브라우저에만 남아요.</p>
+    </div>
+
+    <div class="settings-card">
+      <h2>🎂 생일 등록하기</h2>
+      <div class="remind-field">
+        <label>이름</label>
+        <input type="text" id="remindName" maxlength="20" placeholder="예: 은우">
+      </div>
+      <div class="remind-field">
+        <label>생일 (월 · 일)</label>
+        <div style="display:flex; gap:8px;">
+          <select id="remindMonth" style="flex:1; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; font-family:inherit; background:#fff;"></select>
+          <select id="remindDay" style="flex:1; border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-size:14px; font-family:inherit; background:#fff;"></select>
+        </div>
+      </div>
+      <button class="settings-btn" onclick="handleAdd()">등록하기</button>
+    </div>
+
+    <div class="settings-card">
+      <h2>등록된 생일</h2>
+      <div id="remindListView"></div>
+    </div>
+    <p style="font-size:11.5px; color:var(--sub); text-align:center; line-height:1.6;">추가로 등록하거나 수정하고 싶으면,<br>홈 화면 맨 아래 "리마인드"에서 올 수 있어요.</p>
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../diary/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
+</nav>
+
+<script>
+function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+
+const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // 2월은 윤년도 고려해 29일까지 선택 가능하게
+
+function populateDateSelects() {
+  const monthEl = document.getElementById('remindMonth');
+  const dayEl = document.getElementById('remindDay');
+  monthEl.innerHTML = Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}월</option>`).join('');
+  monthEl.addEventListener('change', () => populateDayOptions());
+  populateDayOptions();
+}
+function populateDayOptions() {
+  const monthEl = document.getElementById('remindMonth');
+  const dayEl = document.getElementById('remindDay');
+  const prevValue = dayEl.value;
+  const maxDay = DAYS_IN_MONTH[Number(monthEl.value) - 1] || 31;
+  dayEl.innerHTML = Array.from({ length: maxDay }, (_, i) => `<option value="${i + 1}">${i + 1}일</option>`).join('');
+  if (prevValue && Number(prevValue) <= maxDay) dayEl.value = prevValue;
+}
+
+function handleAdd() {
+  const nameEl = document.getElementById('remindName');
+  const mm = String(document.getElementById('remindMonth').value).padStart(2, '0');
+  const dd = String(document.getElementById('remindDay').value).padStart(2, '0');
+  const result = NTSRemind.addRemind({ name: nameEl.value, date: `${mm}-${dd}` });
+  if (!result.ok) { alert(result.message); return; }
+  nameEl.value = '';
+  renderList();
+}
+
+function handleDelete(id) {
+  if (!confirm('정말 삭제하시겠어요?')) return;
+  NTSRemind.removeRemind(id);
+  renderList();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+function renderList() {
+  const list = NTSRemind.loadList().sort((a, b) => NTSRemind.daysUntil(a.date) - NTSRemind.daysUntil(b.date));
+  const el = document.getElementById('remindListView');
+  if (!list.length) {
+    el.innerHTML = '<div class="remind-empty">아직 등록된 생일이 없어요.</div>';
+    return;
+  }
+  el.innerHTML = list.map(r => {
+    const d = NTSRemind.daysUntil(r.date);
+    const dLabel = d === 0 ? 'D-DAY' : `D-${d}`;
+    return `
+      <div class="remind-list-item">
+        <span class="emoji">🎂</span>
+        <div class="info">
+          <div class="name">${escapeHtml(r.name)}</div>
+          <div class="date">${NTSRemind.formatDate(r.date)} · ${dLabel}</div>
+        </div>
+        <button class="del" onclick="handleDelete('${r.id}')">삭제</button>
+      </div>`;
+  }).join('');
+}
+
+populateDateSelects();
+renderList();
+</script>
+</body>
+</html>

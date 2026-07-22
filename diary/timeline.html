@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17140F">
+<title>나의 감정 기록들 | Diary | NTS Drive</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1784592703">
+<link rel="stylesheet" href="../fonts.css?v=1783981104">
+<script src="../analytics.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="shared.js?v=1784373977"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../index.html')">Home</span>
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('../log/index.html')">Log</span>
+    <span class="active">Diary</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="diary-step-label">DIARY</div>
+  <div class="diary-title">내 감정 기록들</div>
+
+  <div id="weeklyCard"></div>
+
+  <div class="diary-subhead">캘린더</div>
+  <div id="calendarView"></div>
+
+  <div class="diary-subhead">타임라인</div>
+  <div id="timelineView"></div>
+
+  <div class="disclaimer">감정 기록은 매년 1월 1일 00시에 초기화 돼요.<br>감정 기록은 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>
+
+  <div id="postLoopBanner"></div>
+</div>
+
+<a class="diary-fab" onclick="navigate('index.html')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>지금 감정 기록하기</a>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 280); }
+  function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+  trackEvent('diary_timeline_opened');
+
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+
+  const WEEKDAY_KR = ['일', '월', '화', '수', '목', '금', '토'];
+
+  /* ---------------- 주간 리포트 카드 ---------------- */
+  function renderWeeklyCard() {
+    const r = NTSDiary.getWeeklyReport();
+    const bar = r.ratios.map(x => `<span style="width:${x.percent}%; background:${x.color}"></span>`).join('');
+    const legend = r.ratios.map(x => `<span class="item"><span class="dot" style="background:${x.color}"></span>${x.emoji} ${x.label} ${x.percent}%</span>`).join('');
+    const guide = r.actionGuide
+      ? `<div class="weekly-guide"><span class="msg-label">이럴 땐 이런 건 어떨까요</span>${r.actionGuide.map(g => '· ' + g).join('<br>')}</div>`
+      : '';
+
+    document.getElementById('weeklyCard').innerHTML = `
+      <div class="weekly-card" id="weeklyCardCapture">
+        <div class="range">${r.weekStart} ~ ${r.weekEnd} · 이번 주 기록 ${r.total}개</div>
+        ${r.total ? `<div class="weekly-bar">${bar}</div><div class="weekly-legend">${legend}</div>` : ''}
+        <div class="weekly-message">
+          <div class="weekly-encourage"><span class="msg-label">이번 주 한마디</span>${r.encourage}</div>
+          ${guide}
+        </div>
+      </div>
+      <div class="weekly-actions">
+        <button class="btn-share" onclick="shareWeeklyCard()">공유하기</button>
+        <button class="btn-save" onclick="saveWeeklyCard()">저장하기</button>
+      </div>`;
+  }
+
+  /* ---------------- 주간 카드 저장/공유 ---------------- */
+  function captureWeeklyCard() {
+    const el = document.getElementById('weeklyCardCapture');
+    if (!el || typeof html2canvas === 'undefined') { toast('이미지를 만들지 못했어요.'); return Promise.reject(); }
+    return html2canvas(el, { backgroundColor: '#F7F3EC', scale: 2 });
+  }
+  function saveWeeklyCard() {
+    trackEvent('diary_weekly_save_click');
+    captureWeeklyCard().then(canvas => {
+      const link = document.createElement('a');
+      link.download = `내_감정_기록_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast('이미지가 저장됐어요.');
+    }).catch(() => toast('저장에 실패했어요.'));
+  }
+  function shareWeeklyCard() {
+    trackEvent('diary_weekly_share_click');
+    captureWeeklyCard().then(canvas => {
+      canvas.toBlob(blob => {
+        if (!blob) { toast('공유에 실패했어요.'); return; }
+        const file = new File([blob], `내_감정_기록_${Date.now()}.png`, { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: '내 감정 기록들' }).catch(() => {});
+        } else {
+          const link = document.createElement('a');
+          link.download = file.name;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          toast('이 브라우저에서는 바로 공유가 안 돼서, 대신 이미지로 저장했어요.');
+        }
+      }, 'image/png');
+    }).catch(() => toast('공유에 실패했어요.'));
+  }
+
+  /* ---------------- 캘린더 (월요일 시작, 올해 1~12월 내에서만 이동) ---------------- */
+  const NOW = new Date();
+  const CUR_YEAR = NOW.getFullYear();
+  const CUR_MONTH = NOW.getMonth();
+  let calMonth = CUR_MONTH; // 0~11, calYear는 항상 CUR_YEAR로 고정 (연간 리셋 정책과 일치)
+
+  let openDayDetail = null;
+  function renderCalendar() {
+    const el = document.getElementById('calendarView');
+    const entries = NTSDiary.getEntries();
+    const byDate = {};
+    entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+
+    const first = new Date(CUR_YEAR, calMonth, 1);
+    const startDow = (first.getDay() + 6) % 7; // 0=월 ... 6=일
+    const daysInMonth = new Date(CUR_YEAR, calMonth + 1, 0).getDate();
+    const todayStr = NTSDiary.todayStr();
+
+    let cells = '';
+    for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${CUR_YEAR}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayEntries = byDate[dateStr] || [];
+      let layers = '';
+      if (dayEntries.length) {
+        const counts = {};
+        NTSDiary.MOODS.forEach(m => { counts[m.id] = 0; });
+        dayEntries.forEach(e => { counts[e.mood] = (counts[e.mood] || 0) + 1; });
+        const total = dayEntries.length;
+        layers = NTSDiary.MOODS.filter(m => counts[m.id] > 0).map(m => {
+          const pct = (counts[m.id] / total) * 100;
+          return `<span style="height:${pct}%; background:${m.color}"></span>`;
+        }).join('');
+      }
+      cells += `<div class="cal-cell${dateStr === todayStr ? ' today' : ''}${dayEntries.length ? ' has-entry' : ''}" data-date="${dateStr}">
+        <span class="daynum">${d}</span>
+        ${layers ? `<div class="cal-layers">${layers}</div>` : ''}
+      </div>`;
+    }
+
+    const monthOptions = Array.from({length: 12}, (_, i) =>
+      `<option value="${i}" ${i === calMonth ? 'selected' : ''}>${CUR_YEAR}년 ${i + 1}월</option>`).join('');
+
+    el.innerHTML = `
+      <div class="cal-head">
+        <button id="calPrev" ${calMonth === 0 ? 'disabled' : ''}>‹</button>
+        <select id="calMonthSelect" class="picker-select">${monthOptions}</select>
+        <button id="calNext" ${calMonth === 11 ? 'disabled' : ''}>›</button>
+        <button id="calThisMonth" class="picker-jump">이번 달</button>
+      </div>
+      <div class="cal-grid">
+        ${['월','화','수','목','금','토','일'].map(d => `<div class="cal-dow">${d}</div>`).join('')}
+        ${cells}
+      </div>
+      <div id="calDayDetail"></div>`;
+
+    document.getElementById('calPrev').onclick = () => { if (calMonth > 0) { calMonth--; renderCalendar(); } };
+    document.getElementById('calNext').onclick = () => { if (calMonth < 11) { calMonth++; renderCalendar(); } };
+    document.getElementById('calMonthSelect').onchange = (e) => { calMonth = parseInt(e.target.value, 10); renderCalendar(); };
+    document.getElementById('calThisMonth').onclick = () => { calMonth = CUR_MONTH; renderCalendar(); };
+
+    el.querySelectorAll('.cal-cell.has-entry').forEach(cell => {
+      cell.onclick = () => {
+        const date = cell.dataset.date;
+        if (openDayDetail === date) {
+          openDayDetail = null;
+          document.getElementById('calDayDetail').innerHTML = '';
+          el.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('active-day'));
+          return;
+        }
+        openDayDetail = date;
+        el.querySelectorAll('.cal-cell').forEach(c => c.classList.toggle('active-day', c.dataset.date === date));
+        renderDayDetail(date, byDate[date] || []);
+      };
+    });
+  }
+
+  function buildEntryRow(e, opts) {
+    opts = opts || {};
+    const m = NTSDiary.getMood(e.mood);
+    const created = new Date(e.createdAt);
+    const hh = String(created.getHours()).padStart(2, '0');
+    const mm = String(created.getMinutes()).padStart(2, '0');
+
+    if (opts.mode === 'compact') {
+      // 캘린더 날짜 클릭 시 요약: 이모지 없이 한 줄 요약 + (있으면) 메모
+      const causesText = e.causes.length ? ' · ' + e.causes.join(', ') : '';
+      const quote = e.text ? `<div class="tquote">${e.text}</div>` : '';
+      return `<div class="day-summary-row">
+        <div class="tdate">${hh}:${mm} · ${m.label}${causesText}</div>
+        ${quote}
+      </div>`;
+    }
+
+    // 타임라인: 컬러+이모지 아바타가 있는 카드형
+    let dateLabel = `${hh}:${mm}`;
+    if (opts.showDate) {
+      const d = new Date(e.date + 'T00:00:00');
+      const dow = WEEKDAY_KR[d.getDay()];
+      dateLabel = `${e.date} (${dow}) ${hh}:${mm}`;
+    }
+    const tags = e.causes.length ? `<div class="entry-tags">${e.causes.map(c => `<span class="entry-tag">${c}</span>`).join('')}</div>` : '';
+    const quote = e.text ? `<div class="tquote">${e.text}</div>` : '';
+    return `<div class="entry-row">
+      <span class="entry-avatar" style="background:${m.color}">${m.emoji}</span>
+      <div class="entry-content">
+        <div class="entry-head"><span class="entry-mood">${m.label}</span><span class="entry-time">${dateLabel}</span></div>
+        ${tags}
+        ${quote}
+      </div>
+    </div>`;
+  }
+
+  function renderDayDetail(dateStr, dayEntries) {
+    const detailEl = document.getElementById('calDayDetail');
+    if (!detailEl) return;
+    const d = new Date(dateStr + 'T00:00:00');
+    const dow = WEEKDAY_KR[d.getDay()];
+    const rows = dayEntries.slice().sort((a, b) => b.createdAt - a.createdAt)
+      .map(e => buildEntryRow(e, { mode: 'compact' })).join('');
+    detailEl.innerHTML = `<div class="day-detail"><div class="day-detail-head">${dateStr} (${dow})</div>${rows}</div>`;
+  }
+
+  /* ---------------- 타임라인: 주 단위 페이징 (올해 주차 내에서만 이동) ---------------- */
+  const CUR_MONDAY = NTSDiary.getMondayOf(NTSDiary.todayStr());
+
+  // 올해에 속한 모든 월요일 목록 생성
+  function buildYearMondays(year) {
+    const list = [];
+    const d = new Date(year, 0, 1);
+    const firstDow = (d.getDay() + 6) % 7;
+    d.setDate(d.getDate() - firstDow); // 그 주의 월요일로 이동 (전년도일 수 있음)
+    while (true) {
+      const monday = NTSDiary.todayStr(d);
+      // 그 주에 올해 날짜가 하나라도 포함되면 목록에 추가
+      const sun = new Date(d); sun.setDate(sun.getDate() + 6);
+      if (d.getFullYear() === year || sun.getFullYear() === year) {
+        list.push(monday);
+      }
+      d.setDate(d.getDate() + 7);
+      if (d.getFullYear() > year) break;
+    }
+    return list;
+  }
+  const YEAR_MONDAYS = buildYearMondays(CUR_YEAR);
+  let tlWeekMonday = CUR_MONDAY;
+
+  function renderTimeline() {
+    const el = document.getElementById('timelineView');
+    const monday = tlWeekMonday;
+    const mondayDate = new Date(monday + 'T00:00:00');
+    const sundayDate = new Date(mondayDate); sundayDate.setDate(sundayDate.getDate() + 6);
+    const sunday = NTSDiary.todayStr(sundayDate);
+
+    const entries = NTSDiary.getEntries().filter(e => e.date >= monday && e.date <= sunday);
+
+    const list = entries.length
+      ? `<div class="timeline-list">${entries.map(e => buildEntryRow(e, { mode: 'card', showDate: true })).join('')}</div>`
+      : `<div class="timeline-empty">이 주에는 기록이 없어요.</div>`;
+
+    const idx = YEAR_MONDAYS.indexOf(monday);
+    const weekOptions = YEAR_MONDAYS.map((mon, i) => {
+      const sd = new Date(mon + 'T00:00:00'); sd.setDate(sd.getDate() + 6);
+      const label = `${mon} ~ ${NTSDiary.todayStr(sd)}`;
+      return `<option value="${mon}" ${mon === monday ? 'selected' : ''}>${label}</option>`;
+    }).join('');
+
+    el.innerHTML = `
+      <div class="tl-head">
+        <button id="tlPrev" ${idx <= 0 ? 'disabled' : ''}>‹</button>
+        <select id="tlWeekSelect" class="picker-select">${weekOptions}</select>
+        <button id="tlNext" ${idx >= YEAR_MONDAYS.length - 1 ? 'disabled' : ''}>›</button>
+        <button id="tlThisWeek" class="picker-jump">이번 주</button>
+      </div>
+      ${list}`;
+
+    document.getElementById('tlPrev').onclick = () => { if (idx > 0) { tlWeekMonday = YEAR_MONDAYS[idx - 1]; renderTimeline(); } };
+    document.getElementById('tlNext').onclick = () => { if (idx < YEAR_MONDAYS.length - 1) { tlWeekMonday = YEAR_MONDAYS[idx + 1]; renderTimeline(); } };
+    document.getElementById('tlWeekSelect').onchange = (e) => { tlWeekMonday = e.target.value; renderTimeline(); };
+    document.getElementById('tlThisWeek').onclick = () => { tlWeekMonday = CUR_MONDAY; renderTimeline(); };
+  }
+
+  /* ---------------- 초기화 ---------------- */
+  renderWeeklyCard();
+  renderCalendar();
+  renderTimeline();
+  renderPostLoopBanner();
+
+  /* ---------------- Diary → Post 루프 (긍정 감정 기록 시, 세션 내 최초 1회) ---------------- */
+  function renderPostLoopBanner() {
+    let isPositive = false;
+    try { isPositive = sessionStorage.getItem('ntsdrive_diary_positive_flag') === '1'; } catch (e) { /* ignore */ }
+    let alreadyShown = false;
+    try { alreadyShown = sessionStorage.getItem('ntsdrive_diary_post_loop_shown') === '1'; } catch (e) { /* ignore */ }
+    if (!isPositive || alreadyShown) return;
+
+    try { sessionStorage.setItem('ntsdrive_diary_post_loop_shown', '1'); } catch (e) { /* ignore */ }
+    trackEvent('diary_to_post_shown');
+
+    document.getElementById('postLoopBanner').innerHTML = `
+      <div class="post-loop-banner" id="postLoopBannerInner">
+        <span class="post-loop-close" onclick="dismissPostLoopBanner('skip')">✕</span>
+        <p>이 마음, 다른 사람에게도 전해볼까요?</p>
+        <button onclick="dismissPostLoopBanner('click')">넘어가기</button>
+      </div>`;
+  }
+  function dismissPostLoopBanner(action) {
+    trackEvent(action === 'click' ? 'diary_to_post_clicked' : 'diary_to_post_skipped');
+    const el = document.getElementById('postLoopBannerInner');
+    if (el) el.remove();
+    if (action === 'click') navigate('../post/index.html');
+  }
+</script>
+<script src="../install-shortcut.js"></script>
+</body>
+</html>

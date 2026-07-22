@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17140F">
+<title>내 로그함 | Log</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1784592703">
+<script src="../analytics.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+<script src="../inapp-warning.js?v=1784391970"></script>
+</head>
+<body>
+
+<script>
+  // body의 pageIn 애니메이션이 transform을 사용하고 fill-mode:both라 애니메이션 종료 후에도
+  // 계산된 transform 값이 body에 남아, position:fixed 자식(하단 GNB, 플로팅 버튼)이 뷰포트가
+  // 아니라 body 전체 높이를 기준으로 고정돼버리는 문제가 있어 애니메이션 종료 시 제거해준다.
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+</script>
+<div class="topbar">
+  <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
+  <div class="nav-links">
+    <span onclick="navigate('../index.html')">Home</span>
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('index.html')">Log</span>
+    <span onclick="navigate('../diary/index.html')">Diary</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../diary/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js?v=1784373977"></script>
+<script>
+const stage = document.getElementById('stage');
+const MYLOGS_KEY = 'log_mylogs_v1';
+let checkTimerId = null;
+
+function loadMylogs() {
+  try {
+    const raw = localStorage.getItem(MYLOGS_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function saveMylogs(list) {
+  try { localStorage.setItem(MYLOGS_KEY, JSON.stringify(list)); }
+  catch (e) { toast('저장 공간이 부족해서 저장하지 못했어요.'); }
+}
+
+// 친구가 보낸 "편지가 준비됐어요" 링크(?add=...)를 붙여넣으면, 그 안에
+// 담긴 title/dday/goal을 내가 가진 방 목록과 대조해서 어느 방 편지인지
+// 자동으로 찾아 등록한다. 방이 여러 개 동시에 진행 중이어도 마스터가
+// 직접 방을 찾아 들어갈 필요가 없다.
+// 반환값: { type: 'add'|'room'|'invalid', value }
+// - add: 편지 등록용 링크(정상 케이스)
+// - room: 방 초대/공유 링크를 잘못 붙여넣은 케이스(=room 파라미터)
+// - invalid: 위 두 가지 모두 아닌, 알아볼 수 없는 값
+function parseLetterInput(input) {
+  const trimmed = (input || '').trim();
+  if (!trimmed) return { type: 'invalid', value: null };
+  try {
+    const url = new URL(trimmed);
+    const add = url.searchParams.get('add');
+    if (add) return { type: 'add', value: add };
+    const room = url.searchParams.get('room');
+    if (room) return { type: 'room', value: room };
+    return { type: 'invalid', value: null };
+  } catch (e) {
+    const m = trimmed.match(/[?&]add=([^&]+)/);
+    if (m) return { type: 'add', value: m[1] };
+    const rm = trimmed.match(/[?&]room=([^&]+)/);
+    if (rm) return { type: 'room', value: rm[1] };
+    return { type: 'invalid', value: trimmed.length > 20 ? trimmed : null };
+  }
+}
+
+function handleSmartRegister() {
+  const input = document.getElementById('letterInput');
+  const parsed = parseLetterInput(input.value);
+
+  if (parsed.type === 'room') {
+    const rooms = loadMylogs();
+    const already = rooms.some(r => r.roomEncoded === parsed.value);
+    toast(already
+      ? '이 링크는 이미 내 로그함에 등록된 방이에요.'
+      : '이 링크는 친구에게 공유하는 초대 링크예요. 편지가 준비되면 오는 알림 링크를 붙여넣어주세요.');
+    return;
+  }
+  if (parsed.type !== 'add' || !parsed.value) {
+    toast('올바른 편지 링크가 아니에요. 링크를 다시 확인해주세요.');
+    return;
+  }
+  const encoded = parsed.value;
+
+  let letter;
+  try { letter = decodeData(encoded); } catch (e) { toast('편지 링크를 읽을 수 없어요.'); return; }
+
+  const rooms = loadMylogs();
+  const match = rooms.find(r => r.title === letter.title && r.dday === letter.dday && r.goal === letter.goal);
+  if (!match) { toast('일치하는 방을 찾을 수 없어요. 방을 먼저 만들었는지 확인해주세요.'); return; }
+
+  const letters = loadLettersFor(match.roomEncoded);
+  if (letters.some(l => l.text === letter.text && l.createdAt === letter.createdAt)) {
+    toast('이미 등록된 편지예요.');
+    input.value = '';
+    return;
+  }
+
+  const total = letters.reduce((s, l) => s + l.text.length, 0);
+
+  letters.push({ text: letter.text, from: letter.from || '', createdAt: letter.createdAt });
+  try { localStorage.setItem(`log_room:${match.roomEncoded}`, JSON.stringify(letters)); }
+  catch (e) { toast('저장 공간이 부족해서 등록하지 못했어요.'); return; }
+
+  trackEvent('log_letter_registered_smart', { room_title: match.title });
+  input.value = '';
+  toast(`"${match.title}" 방에 등록했어요. 💌`);
+  render();
+}
+
+function removeRoom(encoded) {
+  saveMylogs(loadMylogs().filter(r => r.roomEncoded !== encoded));
+  render();
+}
+
+function requestNotifyPermission() {
+  if (!('Notification' in window)) { toast('이 브라우저는 알림을 지원하지 않아요.'); return; }
+  Notification.requestPermission().then(() => render());
+}
+
+function render() {
+  stage.innerHTML = `
+    <div class="masthead">
+      <div class="kicker">Log</div>
+      <h1>내 로그함</h1>
+      <div class="sub">내가 만든 방들을 모아두고,<br>열리는 순간을 놓치지 마세요</div>
+    </div>
+    <div id="notifyRow" style="margin-bottom:22px;"></div>
+    <div class="field" style="margin-bottom:20px;">
+      <label>받은 편지 링크를 붙여넣으세요</label>
+      <div class="inbox-add-row">
+        <input type="text" id="letterInput" placeholder="링크만 붙여넣으면 자동으로 등록돼요">
+        <button class="ghost-btn" onclick="handleSmartRegister()">등록</button>
+      </div>
+    </div>
+    <div id="roomList"></div>
+    <div class="disclaimer">로그는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>
+  `;
+  renderNotifyRow();
+  renderRoomList();
+}
+
+function renderNotifyRow() {
+  const row = document.getElementById('notifyRow');
+  if (!row) return;
+  if (!('Notification' in window)) { row.innerHTML = ''; return; }
+  if (Notification.permission === 'granted') {
+    row.innerHTML = `<div class="notify-status">🔔 알림이 켜져 있어요. 이 탭을 열어두시면 로그가 열릴 때 알려드려요.</div>`;
+  } else if (Notification.permission === 'denied') {
+    row.innerHTML = `<div class="notify-status">🔕 알림이 차단되어 있어요. 브라우저 설정에서 허용하면 다시 받을 수 있어요.</div>`;
+  } else {
+    row.innerHTML = `<div class="notify-status">이 탭을 열어두면 로그가 열릴 때 알려드릴 수 있어요.<button class="ghost-btn" onclick="requestNotifyPermission()">알림 켜기</button></div>`;
+  }
+}
+
+function renderRoomList() {
+  const container = document.getElementById('roomList');
+  const list = loadMylogs();
+  if (list.length === 0) {
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 방이 없어요.</div>`;
+    return;
+  }
+  container.innerHTML = list.map(r => {
+    const letters = loadLettersFor(r.roomEncoded);
+    const total = letters.reduce((s, l) => s + l.text.length, 0);
+    const done = Date.now() >= r.dday || total >= r.goal;
+    const url = `index.html?room=${r.roomEncoded}`;
+    return `
+      <div class="inbox-card">
+        <div class="inbox-card-icon">📖</div>
+        <a class="inbox-card-body" href="${url}">
+          <div class="inbox-card-title">${escapeHtml(r.title)}</div>
+          <div class="inbox-card-len">${done ? '지금 열람 가능' : `${total} / ${r.goal}자 · ${formatDday(r.dday)}에 열림`}</div>
+        </a>
+        <span class="inbox-card-remove" onclick="removeRoom('${r.roomEncoded}')">삭제</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function loadLettersFor(roomEncoded) {
+  try {
+    const raw = localStorage.getItem(`log_room:${roomEncoded}`);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+
+function checkRooms() {
+  const list = loadMylogs();
+  let changed = false;
+  list.forEach(r => {
+    if (r.notified) return;
+    const letters = loadLettersFor(r.roomEncoded);
+    const total = letters.reduce((s, l) => s + l.text.length, 0);
+    if (Date.now() >= r.dday || total >= r.goal) {
+      r.notified = true;
+      changed = true;
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('방이 열렸어요 📖', { body: r.title, tag: r.roomEncoded.slice(0, 20) });
+      }
+    }
+  });
+  if (changed) { saveMylogs(list); renderRoomList(); }
+}
+
+render();
+checkTimerId = setInterval(checkRooms, 15000);
+</script>
+<script src="../install-shortcut.js"></script>
+</body>
+</html>

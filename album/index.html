@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17140F">
+<title>내 사진첩 | NTS Drive</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link rel="stylesheet" href="../camera/style.css">
+<script src="../analytics.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+</head>
+<body class="album-mode">
+
+<script>
+  // body의 pageIn 애니메이션이 transform을 사용하고 fill-mode:both라 애니메이션 종료 후에도
+  // 계산된 transform 값이 body에 남아, position:fixed 자식(하단 GNB, 플로팅 버튼)이 뷰포트가
+  // 아니라 body 전체 높이를 기준으로 고정돼버리는 문제가 있어 애니메이션 종료 시 제거해준다.
+  document.body.addEventListener('animationend', function onDone(e) {
+    if (e.animationName === 'pageIn') document.body.classList.add('anim-settled');
+  });
+</script>
+<div class="album-topbar">
+  <a class="mark" onclick="navigate('../index.html')">NTS DRIVE</a>
+  <div class="cam-nav-links">
+    <span onclick="navigate('../index.html')">Home</span>
+    <span onclick="navigate('../post/index.html')">Post</span>
+    <span onclick="navigate('../log/index.html')">Log</span>
+    <span onclick="navigate('../diary/index.html')">Diary</span>
+    <span onclick="navigate('../snap/index.html')">Snap</span>
+    <span onclick="navigate('../film/index.html')">Film</span>
+  </div>
+</div>
+
+<div class="album-stage" id="stage"></div>
+
+<nav class="bottom-nav">
+  <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
+  <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
+  <a onclick="navigate('../log/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
+  <a onclick="navigate('../diary/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
+  <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
+  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
+</nav>
+
+<div class="lightbox-overlay" id="lightbox" style="display:none;"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../camera/shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+let currentFilter = 'all';
+let checkTimerId = null;
+
+function render() {
+  const photos = loadAlbum();
+  stage.innerHTML = `
+    <div class="album-head">
+      <h1>내 사진첩</h1>
+      <p>Snap과 Film으로 남긴 순간들이에요</p>
+    </div>
+    <div class="album-filter" id="filterRow">
+      <button class="active" data-f="all" onclick="setFilter('all', this)">전체</button>
+      <button data-f="snap" onclick="setFilter('snap', this)">Snap</button>
+      <button data-f="film" onclick="setFilter('film', this)">Film</button>
+    </div>
+    <div class="album-notice">
+      사진은 이 브라우저에만 저장되고, 최대 2주 · 24컷까지 보관돼요.
+      저장 공간 상황에 따라 그보다 일찍 자동 삭제될 수 있으니, 아끼는 사진은 미리 다운로드해두세요.
+    </div>
+    <div class="album-grid" id="grid"></div>
+  `;
+  renderGrid(photos);
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('#filterRow button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(loadAlbum());
+}
+
+function renderGrid(photos) {
+  const grid = document.getElementById('grid');
+  const filtered = currentFilter === 'all' ? photos : photos.filter(p => p.type === currentFilter);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="album-empty">아직 사진이 없어요.<br>Snap이나 Film으로 첫 순간을 남겨보세요.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((p, i) => {
+    if (p.type === 'film' && Date.now() < p.unlockAt) {
+      return `
+        <div class="album-card film-card">
+          <div class="locked-face" data-unlock="${p.unlockAt}" data-id="${p.id}">
+            <span class="lock-icon">🎞️</span>
+            <span>현상 중 · <span class="lock-remain">${remainText(p.unlockAt)}</span></span>
+          </div>
+        </div>
+      `;
+    }
+    const rot = (i % 5 - 2) * 1.6; // -3.2..3.2deg scatter for the snap corkboard feel
+    const needsDevelop = p.type === 'film' && !p.revealed;
+    return `
+      <div class="album-card ${p.type}-card" style="--rot:${rot}deg;" onclick="openLightbox('${p.id}')">
+        <img class="${needsDevelop ? 'developing' : ''}" src="${p.dataUrl}" data-id="${p.id}">
+      </div>
+    `;
+  }).join('');
+
+  // mark film photos as "revealed" once their develop-in animation has been shown
+  filtered.forEach(p => {
+    if (p.type === 'film' && !p.revealed && Date.now() >= p.unlockAt) {
+      updatePhoto(p.id, { revealed: true });
+    }
+  });
+}
+
+function remainText(unlockAt) {
+  const remain = unlockAt - Date.now();
+  if (remain <= 0) return '곧 열려요';
+  const hrs = Math.floor(remain / 3600000);
+  const mins = Math.floor((remain % 3600000) / 60000);
+  return hrs > 0 ? `${hrs}시간 ${mins}분` : `${mins}분`;
+}
+
+function openLightbox(id) {
+  const photo = loadAlbum().find(p => p.id === id);
+  if (!photo) return;
+  if (photo.type === 'film' && Date.now() < photo.unlockAt) return; // still locked, ignore
+  const box = document.getElementById('lightbox');
+  box.style.display = 'flex';
+  box.innerHTML = `
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-box">
+      <img src="${photo.dataUrl}">
+      <div class="lightbox-actions">
+        <button class="cam-btn" onclick="handleShare('${photo.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align:-3px; margin-right:4px;"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg>공유하기</button>
+        <button class="cam-btn" onclick="downloadPhoto('${photo.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; vertical-align:-3px; margin-right:4px;"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>다운로드</button>
+        <button class="cam-btn" onclick="handleDelete('${photo.id}')">삭제</button>
+      </div>
+    </div>
+  `;
+}
+
+function handleShare(id) {
+  const photo = loadAlbum().find(p => p.id === id);
+  if (!photo) return;
+  sharePhoto(photo.dataUrl, `${photo.type}_${photo.id}.jpg`, 'NTS Drive');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+}
+
+function downloadPhoto(id) {
+  const photo = loadAlbum().find(p => p.id === id);
+  if (!photo) return;
+  const a = document.createElement('a');
+  a.href = photo.dataUrl;
+  a.download = `${photo.type}_${photo.id}.jpg`;
+  a.click();
+  toast('사진을 저장했어요.');
+}
+
+function handleDelete(id) {
+  removePhoto(id);
+  closeLightbox();
+  render();
+}
+
+// live-update lock countdown text + auto-refresh the grid once something unlocks
+checkTimerId = setInterval(() => {
+  let anyUnlocked = false;
+  document.querySelectorAll('.locked-face').forEach(el => {
+    const unlockAt = parseInt(el.dataset.unlock, 10);
+    if (Date.now() >= unlockAt) { anyUnlocked = true; }
+    else { const span = el.querySelector('.lock-remain'); if (span) span.textContent = remainText(unlockAt); }
+  });
+  if (anyUnlocked) renderGrid(loadAlbum());
+}, 15000);
+
+render();
+</script>
+</body>
+</html>
