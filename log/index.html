@@ -24,8 +24,8 @@
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1784787508"></script>
-<script src="../install-shortcut.js?v=1784788806"></script>
+<script src="../inapp-warning.js?v=1784815173"></script>
+<script src="../install-shortcut.js?v=1784815173"></script>
 </head>
 <body>
 
@@ -126,11 +126,12 @@ function init() {
 
   // If we arrived via a friend's ?add= link, try to auto-register it now.
   if (params.has('add')) {
-    tryRegister(params.get('add'), true);
+    const originalAddParam = params.get('add');
+    tryRegister(originalAddParam, true);
     // clean the URL so refreshing doesn't re-attempt the same add
     const clean = `${window.location.pathname}?room=${roomEncoded}`;
     window.history.replaceState({}, '', clean);
-    renderReplyReceived(roomEncoded);
+    renderReplyReceived(roomEncoded, originalAddParam);
     return;
   }
 
@@ -149,7 +150,7 @@ function isRoomOwner(re) {
 // 이 화면과 무관하게 그대로 보존되며, 여기서는 "이 회신 한 통"에 대한 안내만
 // 보여준다. 방 주인인지 여부로만 추가 버튼 노출을 결정하고, 인앱 브라우저인지는
 // 여기서 신경 쓰지 않는다(상단 배너/인터스티셜이 이미 별도로 안내하고 있음).
-function renderReplyReceived(re) {
+function renderReplyReceived(re, addParam) {
   const owner = isRoomOwner(re);
   trackEvent('log_reply_screen_shown', { is_owner: owner });
   const roomUrl = `${window.location.origin}${window.location.pathname}?room=${re}`;
@@ -158,13 +159,29 @@ function renderReplyReceived(re) {
       <button class="seal-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_goto_room_click'); handleGoToRoomClick('${re}')">내 방으로 이동하기</button>
       <button class="ghost-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_copy_click'); copyRoomLink('${roomUrl}')">방 링크 복사하기</button>
     </div>` : '';
+  // 카톡/인스타 웹뷰 안에서는 "이 브라우저가 방주인 것인지" 자체를 알 수 없어서
+  // (진짜 방 데이터는 평소 브라우저에 있음), 오버레이를 닫고 남은 사람 누구에게나
+  // 이 링크를 보여준다. 방주인이면 실제로 등록되고, 아니면 그냥 이동만 될 뿐이라
+  // 해가 되지 않는다 (Post의 "클릭하면 등록돼요"와 동일한 원칙).
+  const inlineRegisterLink = addParam
+    ? `<div class="locked-inbox-note" style="margin-top:22px;"><a onclick="handleLogInlineRegisterClick('${encodeURIComponent(addParam)}')">클릭하면 지금 이 브라우저에 바로 등록돼요 →</a></div>`
+    : '';
   stage.innerHTML = `
     <div class="share-result">
       <div class="env-icon">✉️</div>
       <h2>마음이 잘 전달됐어요</h2>
       <p>방을 만든 사람이 "내 로그함"에 등록하고,<br>목표가 달성되거나 D-day가 되면 내용을 확인할 수 있어요.</p>
       ${ownerActions}
+      ${inlineRegisterLink}
     </div>`;
+}
+function handleLogInlineRegisterClick(addParamEncoded) {
+  const url = `index.html?add=${addParamEncoded}`;
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser && typeof window.ntsSmartNavigate === 'function') {
+    window.ntsSmartNavigate(url);
+  } else {
+    navigate(url);
+  }
 }
 function copyRoomLink(url) {
   navigator.clipboard.writeText(url)
@@ -617,6 +634,11 @@ function renderRevealShared(payload) {
 }
 
 function saveRoomImage() {
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) {
+    alert(`${window.NTSInAppBrowser.name} 안에서는 이미지를 저장할 수 없어요. 주 사용 브라우저(사파리 또는 크롬)로 이동해서 다시 시도해주세요.`);
+    trackEvent('room_image_save_blocked_inapp', { app: window.NTSInAppBrowser.id });
+    return;
+  }
   // Flip every card face-up first so the saved image shows the actual
   // letters, not the still-mid-animation/back-facing state.
   document.querySelectorAll('.reveal-card').forEach(c => c.classList.add('flipped'));

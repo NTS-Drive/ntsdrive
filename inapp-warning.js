@@ -13,6 +13,12 @@
      처리가 필요 없다(기본 동작 그대로 사용).
    ============================================================ */
 (function () {
+  // 이 스크립트는 <head>에서 가장 먼저 실행되므로, 페이지 자체 로직(예: Log의
+  // ?add= 처리 후 history.replaceState로 주소를 조용히 정리하는 동작)이 URL을
+  // 바꾸기 "이전"의 원본 주소를 여기서 붙잡아둔다. 나중에 오버레이 버튼을
+  // 눌렀을 때 이 원본 값을 쓰면, 그 사이에 주소가 바뀌었어도 영향을 안 받는다.
+  const ORIGINAL_URL = window.location.href;
+
   function detectApp() {
     const ua = navigator.userAgent || '';
     if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡' };
@@ -39,7 +45,7 @@
   // Post의 편지 확인 링크(?d=)라면 "내 편지함 등록" 링크(?add=)로 바꿔서
   // 돌려준다. 그 외(Log의 ?add= 링크 등)는 지금 URL을 그대로 돌려준다.
   function resolveTargetUrl() {
-    const url = new URL(window.location.href);
+    const url = new URL(ORIGINAL_URL);
     const isPostPage = /\/post\//.test(url.pathname);
     const dParam = url.searchParams.get('d');
     if (isPostPage && dParam) {
@@ -87,7 +93,7 @@
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 4200);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 6000);
   }
 
   // 안드로이드: intent:// 로 크롬 이동 시도. 실패하면 토스트 + 복사(액션플랜).
@@ -112,14 +118,14 @@
           ? '자동 이동에 실패해서 링크를 복사했어요. ① 크롬 앱 열기 → ② 주소창에 붙여넣기 → ③ 이동해주세요.'
           : '자동 이동에 실패했어요. 주소를 직접 복사해서 크롬 주소창에 붙여넣어주세요.');
       });
-    }, 1200);
+    }, 2500);
   }
 
   // Post/Log의 인라인 버튼("클릭하면 지금 이 브라우저에 바로 등록돼요",
   // "내 방으로 이동하기")에서도 재사용한다. 게이트를 닫고 인앱에 남은 유저를
   // 위한 보조 안전장치 역할.
   window.ntsSmartNavigate = function (url) {
-    const abs = /^https?:\/\//.test(url) ? url : `${window.location.origin}${url}`;
+    const abs = new URL(url, window.location.href).toString();
     if (os === 'android') {
       trackEventSafe('inapp_redirect_attempt', { app: app.id, os, source: 'inline_action' });
       const absNoProto = abs.replace(/^https?:\/\//, '');
@@ -140,7 +146,7 @@
               : '자동 이동에 실패했어요. 주소를 직접 복사해서 크롬 주소창에 붙여넣어주세요.');
           });
         }
-      }, 1200);
+      }, 2500);
     } else {
       copyText(abs, (ok) => {
         showToast(ok

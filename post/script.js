@@ -721,6 +721,11 @@ function renderReveal(letter) {
 }
 
 function saveLetterImage() {
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) {
+    alert(`${window.NTSInAppBrowser.name} 안에서는 이미지를 저장할 수 없어요. 주 사용 브라우저(사파리 또는 크롬)로 이동해서 다시 시도해주세요.`);
+    trackEvent('letter_save_blocked_inapp', { app: window.NTSInAppBrowser.id });
+    return;
+  }
   const paper = document.querySelector('.letter-paper');
   if (!paper || typeof html2canvas === 'undefined') { toast('저장 기능을 불러오지 못했어요.'); return; }
   html2canvas(paper, { backgroundColor: '#F7F3EC', scale: 2 }).then(canvas => {
