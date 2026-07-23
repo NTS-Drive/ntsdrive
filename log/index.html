@@ -19,12 +19,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784592703">
+<link rel="stylesheet" href="style.css?v=1784780760">
 <link rel="stylesheet" href="animation.css?v=1784396378">
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1784391970"></script>
+<script src="../inapp-warning.js?v=1784787508"></script>
+<script src="../install-shortcut.js?v=1784788806"></script>
 </head>
 <body>
 
@@ -129,9 +130,54 @@ function init() {
     // clean the URL so refreshing doesn't re-attempt the same add
     const clean = `${window.location.pathname}?room=${roomEncoded}`;
     window.history.replaceState({}, '', clean);
+    renderReplyReceived(roomEncoded);
+    return;
   }
 
   renderDashboard();
+}
+
+function isRoomOwner(re) {
+  try {
+    const raw = localStorage.getItem('log_mylogs_v1');
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) && list.some(r => r.roomEncoded === re);
+  } catch (e) { return false; }
+}
+
+// 친구의 회신 링크(?add=)로 들어왔을 때 뜨는 화면. 방 전체 진행 상황(대시보드)은
+// 이 화면과 무관하게 그대로 보존되며, 여기서는 "이 회신 한 통"에 대한 안내만
+// 보여준다. 방 주인인지 여부로만 추가 버튼 노출을 결정하고, 인앱 브라우저인지는
+// 여기서 신경 쓰지 않는다(상단 배너/인터스티셜이 이미 별도로 안내하고 있음).
+function renderReplyReceived(re) {
+  const owner = isRoomOwner(re);
+  trackEvent('log_reply_screen_shown', { is_owner: owner });
+  const roomUrl = `${window.location.origin}${window.location.pathname}?room=${re}`;
+  const ownerActions = owner ? `
+    <div class="share-actions" style="margin-top:22px;">
+      <button class="seal-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_goto_room_click'); handleGoToRoomClick('${re}')">내 방으로 이동하기</button>
+      <button class="ghost-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_copy_click'); copyRoomLink('${roomUrl}')">방 링크 복사하기</button>
+    </div>` : '';
+  stage.innerHTML = `
+    <div class="share-result">
+      <div class="env-icon">✉️</div>
+      <h2>마음이 잘 전달됐어요</h2>
+      <p>방을 만든 사람이 "내 로그함"에 등록하고,<br>목표가 달성되거나 D-day가 되면 내용을 확인할 수 있어요.</p>
+      ${ownerActions}
+    </div>`;
+}
+function copyRoomLink(url) {
+  navigator.clipboard.writeText(url)
+    .then(() => toast('방 링크가 복사됐어요.'))
+    .catch(() => toast('복사에 실패했어요.'));
+}
+function handleGoToRoomClick(re) {
+  const url = `index.html?room=${re}`;
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser && typeof window.ntsSmartNavigate === 'function') {
+    window.ntsSmartNavigate(url);
+  } else {
+    navigate(url);
+  }
 }
 
 /* ===== Intro (no room yet) — 방 만들기 폼을 바로 포함 ===== */
@@ -252,6 +298,11 @@ function updateCreateBtnState() {
   if (btn && title) btn.disabled = !title.value.trim();
 }
 function handleCreateClick() {
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) {
+    alert(`${window.NTSInAppBrowser.name} 안에서는 방이 저장되지 않아요. 주 사용 브라우저(사파리 또는 크롬)로 이동해서 방을 만들어주세요.`);
+    trackEvent('log_room_create_blocked_inapp', { app: window.NTSInAppBrowser.id });
+    return;
+  }
   const title = document.getElementById('roomTitle').value.trim();
   const ddayVal = document.getElementById('roomDday').value;
   let goal = parseInt(document.getElementById('roomGoal').value, 10);

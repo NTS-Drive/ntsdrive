@@ -104,6 +104,11 @@ body.leaving { animation: pageOut .28s ease both; }
 .inbox-card-title { font-family: var(--font-serif); font-size: 14px; }
 .inbox-card-len { font-size: 11.5px; color: var(--ink-muted); }
 .inbox-empty { text-align: center; color: var(--ink-muted); font-size: 13px; padding: 40px 20px; border: 1px dashed var(--line); border-radius: 6px; line-height: 1.8; }
+.inbox-card-remove { font-size: 11px; color: var(--ink-muted); text-decoration: underline; cursor: pointer; flex-shrink: 0; }
+.inbox-card-remove:hover { color: var(--accent); }
+.inbox-pagination { display: flex; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+.inbox-page-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 12.5px; cursor: pointer; }
+.inbox-page-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12.5px; z-index: 999; opacity: 0; transition: opacity .3s ease; }
 .toast.show { opacity: 1; }

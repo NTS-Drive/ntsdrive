@@ -12,7 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles.css?v=1784592703">
 <script src="../analytics.js?v=1784067557"></script>
-<script src="../install-shortcut.js?v=1784067557"></script>
 <script src="../remind.js?v=1784558902"></script>
 <style>
   .settings-card{max-width:520px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:24px; margin-bottom:20px;}
@@ -33,6 +32,8 @@
   .remind-empty{font-size:13px; color:var(--sub); text-align:center; padding:20px 0;}
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+<script src="../inapp-warning.js?v=1784787508"></script>
+<script src="../install-shortcut.js?v=1784788806"></script>
 </head>
 <body>
 <script>
@@ -118,6 +119,11 @@ function populateDayOptions() {
 }
 
 function handleAdd() {
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) {
+    alert(`${window.NTSInAppBrowser.name} 안에서는 등록이 저장되지 않아요. 주 사용 브라우저(사파리 또는 크롬)로 이동해서 다시 등록해주세요.`);
+    trackEvent('remind_add_blocked_inapp', { app: window.NTSInAppBrowser.id });
+    return;
+  }
   const nameEl = document.getElementById('remindName');
   const mm = String(document.getElementById('remindMonth').value).padStart(2, '0');
   const dd = String(document.getElementById('remindDay').value).padStart(2, '0');

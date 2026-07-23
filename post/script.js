@@ -550,7 +550,13 @@ function copyShareLink(url) {
   // Copies the raw link only (no explanatory text prepended) — combining
   // text + URL previously caused some paste targets (e.g. an address bar)
   // to treat the whole thing as a search query instead of a link.
-  navigator.clipboard.writeText(url).then(() => { toast('링크가 복사됐어요.'); trackEvent('post_link_copied'); }).catch(() => toast('복사에 실패했어요.'));
+  navigator.clipboard.writeText(url).then(() => {
+    const inapp = (typeof window !== 'undefined') ? window.NTSInAppBrowser : null;
+    toast(inapp
+      ? `${inapp.name} 안에서는 바로 공유가 안 돼서, 대신 링크를 복사했어요. 카카오톡 등 원하는 곳에 붙여넣어 보내주세요.`
+      : '링크가 복사됐어요.');
+    trackEvent('post_link_copied', { inapp: !!inapp });
+  }).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
@@ -592,7 +598,7 @@ function renderLocked(letter, encoded) {
     : '<span class="locked-inbox-caption">(평소 쓰는 브라우저가 맞는지 확인해주세요)</span>';
   const inboxNote = myItem
     ? `<div class="locked-inbox-note">✓ 이미 편지함에 저장해뒀어요</div>`
-    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="navigate('inbox.html?add=${encodeURIComponent(encoded)}')">클릭하면 지금 이 브라우저에 바로 등록돼요 →</a>${inboxCaption}</div>`;
+    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="handleInboxRegisterClick('${encodeURIComponent(encoded)}')">클릭하면 지금 이 브라우저에 바로 등록돼요 →</a>${inboxCaption}</div>`;
 
   let ddayInviteBlock = '';
   if (letter.ddayTitle && !isMine && typeof NTSDday !== 'undefined') {
@@ -629,6 +635,14 @@ function renderLocked(letter, encoded) {
   lockedTimerId = setInterval(() => updateCountdown(letter), 1000);
 }
 let currentLockedDdayInvite = null;
+function handleInboxRegisterClick(encodedParam) {
+  const url = `inbox.html?add=${encodedParam}`;
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser && typeof window.ntsSmartNavigate === 'function') {
+    window.ntsSmartNavigate(url);
+  } else {
+    navigate(url);
+  }
+}
 function acceptDdayInvite() {
   if (!currentLockedDdayInvite || typeof NTSDday === 'undefined') return;
   const result = NTSDday.registerFromPost(currentLockedDdayInvite);

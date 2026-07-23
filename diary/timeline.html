@@ -15,6 +15,8 @@
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="shared.js?v=1784373977"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
+<script src="../inapp-warning.js?v=1784787508"></script>
+<script src="../backup-reminder.js?v=1784781420"></script>
 </head>
 <body>
 
@@ -33,6 +35,8 @@
 <div class="stage">
   <div class="diary-step-label">DIARY</div>
   <div class="diary-title">내 감정 기록들</div>
+
+  <div id="backupReminderSlot"></div>
 
   <div id="weeklyCard"></div>
 
@@ -325,6 +329,7 @@
   renderCalendar();
   renderTimeline();
   renderPostLoopBanner();
+  if (typeof NTSBackupReminder !== 'undefined') NTSBackupReminder.mount('backupReminderSlot', '../settings/index.html');
 
   /* ---------------- Diary → Post 루프 (긍정 감정 기록 시, 세션 내 최초 1회) ---------------- */
   function renderPostLoopBanner() {
@@ -351,6 +356,6 @@
     if (action === 'click') navigate('../post/index.html');
   }
 </script>
-<script src="../install-shortcut.js"></script>
+<script src="../install-shortcut.js?v=1784788806"></script>
 </body>
 </html>

@@ -323,6 +323,15 @@ function downloadDataUrl(dataUrl, filename) {
 }
 
 function sharePhoto(dataUrl, filename, shareTitle) {
+  // 카카오톡/인스타그램 인앱 브라우저는 공유 API도, download 속성도 대부분 막혀있어서
+  // 시도 자체가 "페이지를 읽어 들일 수 없습니다" 같은 혼란스러운 오류로 끝나는 경우가
+  // 많다. 이런 환경으로 감지되면 아예 시도하지 않고 바로 안내한다(상단 배너/인터스티셜에
+  // 이미 이동 유도가 있으므로, 여기서는 짧게만 한 번 더 상기시켜준다).
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) {
+    alert(`${window.NTSInAppBrowser.name} 안에서는 저장·공유가 안 돼요. 주 사용 브라우저(사파리 또는 크롬)로 이동해서 다시 시도해주세요.`);
+    trackEvent('camera_save_blocked_inapp', { app: window.NTSInAppBrowser.id });
+    return;
+  }
   const file = dataUrlToFile(dataUrl, filename);
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     navigator.share({ files: [file], title: shareTitle || 'NTS Drive' })

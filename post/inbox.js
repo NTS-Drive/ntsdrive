@@ -150,12 +150,15 @@ function render() {
 
     <div class="preset-row" id="inboxFilterRow"></div>
 
+    <div id="backupReminderSlot"></div>
+
     <div id="inboxList"></div>
 
     <div class="disclaimer">편지는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>
   `;
   renderNotifyRow();
   renderInboxFilterRow();
+  if (typeof NTSBackupReminder !== 'undefined') NTSBackupReminder.mount('backupReminderSlot', '../settings/index.html');
   renderInboxList();
 }
 
@@ -174,6 +177,7 @@ function renderInboxFilterRow() {
 }
 function applyInboxFilter(key) {
   inboxFilter = key;
+  inboxPage = 1;
   trackEvent('post_inbox_filter_used', { filter: key });
   renderInboxFilterRow();
   renderInboxList();
@@ -192,6 +196,9 @@ function renderNotifyRow() {
   }
 }
 
+let inboxPage = 1;
+const INBOX_PAGE_SIZE = 10;
+
 function renderInboxList() {
   const container = document.getElementById('inboxList');
   if (!container) return;
@@ -203,7 +210,7 @@ function renderInboxList() {
   });
 
   if (fullList.length === 0) {
-    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>받은 링크를 위에 붙여넣어보세요.</div>`;
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>받은 링크를 위에 붙여넣어보세요.<br><br>혹시 다른 브라우저에서 쓰셨다면, 기록은 브라우저마다 따로 저장돼요.<br>백업 파일이 있다면 <a onclick="navigate('../settings/index.html')" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">설정</a>에서 불러올 수 있어요.</div>`;
     return;
   }
   if (list.length === 0) {
@@ -218,7 +225,11 @@ function renderInboxList() {
     return { item, letter };
   }).filter(Boolean).sort((a, b) => a.letter.unlock - b.letter.unlock);
 
-  container.innerHTML = entries.map(({ item, letter }) => {
+  const totalPages = Math.max(1, Math.ceil(entries.length / INBOX_PAGE_SIZE));
+  if (inboxPage > totalPages) inboxPage = totalPages;
+  const pageEntries = entries.slice((inboxPage - 1) * INBOX_PAGE_SIZE, inboxPage * INBOX_PAGE_SIZE);
+
+  container.innerHTML = pageEntries.map(({ item, letter }) => {
     const tpl = TEMPLATES[letter.tpl] || TEMPLATES[0];
     const unlocked = Date.now() >= letter.unlock;
     const url = `index.html?d=${item.d}`;
@@ -243,7 +254,20 @@ function renderInboxList() {
         <span class="inbox-card-remove" onclick="removeLetter('${item.d}')">삭제</span>
       </div>
     `;
-  }).join('');
+  }).join('') + (totalPages > 1 ? renderInboxPagination(totalPages) : '');
+}
+function renderInboxPagination(totalPages) {
+  let btns = '';
+  for (let i = 1; i <= totalPages; i++) {
+    btns += `<button type="button" class="inbox-page-btn ${i === inboxPage ? 'active' : ''}" onclick="goToInboxPage(${i})">${i}</button>`;
+  }
+  return `<div class="inbox-pagination">${btns}</div>`;
+}
+function goToInboxPage(p) {
+  inboxPage = p;
+  renderInboxList();
+  const container = document.getElementById('inboxList');
+  if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function countdownText(unlockMs) {
