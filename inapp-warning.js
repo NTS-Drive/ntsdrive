@@ -21,8 +21,8 @@
 
   function detectApp() {
     const ua = navigator.userAgent || '';
-    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡' };
-    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램' };
+    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', escapeIcon: '↑', escapeMenu: '공유 아이콘', escapeAction: '"Safari로 열기"' };
+    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', escapeIcon: '•••', escapeMenu: '메뉴', escapeAction: '"외부 브라우저에서 열기"' };
     return null;
   }
   function detectOS() {
@@ -166,9 +166,14 @@
       .nts-gate-card p{font-size:12.5px; color:#6B6459; line-height:1.6; margin-bottom:0;}
       .nts-gate-primary{width:100%; margin-top:18px; padding:13px; border-radius:10px; border:none; background:#17140F; color:#fff; font-size:14px; font-weight:600; cursor:pointer;}
       .nts-gate-caption{margin-top:8px; font-size:11px;}
+      .nts-gate-escape{margin-top:18px; padding:16px; background:#F1E3E1; border-radius:14px; display:flex; align-items:center; gap:12px; text-align:left;}
+      .nts-gate-escape-icon{flex-shrink:0; width:38px; height:38px; border-radius:10px; background:#FFFDF9; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#7A4A32;}
+      .nts-gate-escape p{font-size:12px; color:#7A4A32; line-height:1.6; margin:0;}
+      .nts-gate-or{margin-top:14px; font-size:11px; color:#B5A890;}
+      .nts-gate-secondary{width:100%; margin-top:10px; padding:12px; border-radius:10px; border:1px solid #E4DDD0; background:transparent; color:#17140F; font-size:13.5px; font-weight:600; cursor:pointer;}
       .nts-gate-steps{margin-top:14px; padding:12px 14px; background:#F1E3E1; border-radius:10px; font-size:12px; color:#7A4A32; text-align:left; line-height:1.9; display:none;}
       .nts-gate-steps.show{display:block;}
-      .nts-gate-dismiss{width:100%; margin-top:12px; padding:12px; border-radius:10px; border:1px solid #E4DDD0; background:transparent; color:#6B6459; font-size:13px; cursor:pointer;}
+      .nts-gate-dismiss{width:100%; margin-top:14px; padding:8px; border-radius:10px; border:none; background:transparent; color:#B5A890; font-size:12px; cursor:pointer; text-decoration:underline;}
       .nts-gate-close{position:absolute; top:10px; right:14px; background:none; border:none; font-size:15px; color:#B5A890; cursor:pointer; padding:6px;}
 
       .nts-inapp-toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 48px); background:#17140F; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; line-height:1.6; text-align:center; z-index:999; opacity:0; pointer-events:none; transition:opacity .3s ease;}
@@ -187,14 +192,18 @@
       <button type="button" class="nts-gate-close" id="ntsGateClose" aria-label="닫기">✕</button>
     `;
     const iosButtons = `
-      <button type="button" class="nts-gate-primary" id="ntsGateCopy">링크 복사하기</button>
-      <div class="nts-gate-steps" id="ntsGateSteps">① 복사 완료 ✓<br>② 사파리(또는 크롬) 앱 열기<br>③ 주소창에 붙여넣기<br>④ 이동</div>
-      <button type="button" class="nts-gate-dismiss" id="ntsGateDismiss">이동 없이 둘러보기</button>
+      <div class="nts-gate-escape">
+        <div class="nts-gate-escape-icon">${app.escapeIcon}</div>
+        <p><b>${app.escapeMenu}</b>을 누르고 ${app.escapeAction}를 선택하면<br>바로 사파리로 이동해요 (제일 쉬운 방법이에요)</p>
+      </div>
+      <div class="nts-gate-or">또는</div>
+      <button type="button" class="nts-gate-secondary" id="ntsGateCopy">링크 복사하기</button>
+      <div class="nts-gate-steps" id="ntsGateSteps">① 복사 완료 ✓<br>② 사파리 앱 열기<br>③ 주소창에 붙여넣기<br>④ 이동</div>
+      <button type="button" class="nts-gate-dismiss" id="ntsGateDismiss">그냥 읽기만 할게요</button>
     `;
 
     el.innerHTML = `
       <div class="nts-gate-card">
-        ${os === 'android' ? '' : ''}
         <div class="nts-gate-icon">🔒</div>
         <h3>${app.name} 안에서는 이용이 제한돼요</h3>
         <p>저장·공유가 정상적으로 안 돼요. 주 사용 브라우저(사파리 또는 크롬)로 이동해야 온전히 이용할 수 있어요.</p>

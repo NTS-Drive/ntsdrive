@@ -25,6 +25,13 @@ function render() {
     const encoded = params.get('d');
     try {
       const letter = decodeLetter(encoded);
+      // 인앱 브라우저가 아닌 "진짜" 브라우저에서 편지를 열람하는 거라면, 그
+      // 자체로 자동으로 내 편지함에 등록해준다. 카카오톡 자체 "Safari로 열기"
+      // 처럼 저희 오버레이를 거치지 않고 빠져나온 경우에도 이 링크(?d=)를
+      // 여는 순간 자동 저장되므로, 경로에 상관없이 항상 저장된다.
+      if (typeof window !== 'undefined' && !window.NTSInAppBrowser) {
+        autoSaveReceivedLetter(encoded, letter);
+      }
       if (letter.expiresAt && Date.now() > letter.expiresAt) {
         stage.innerHTML = `<div class="share-result"><div class="env-icon">⌛</div><h2>이제 이 편지는 못 열어요</h2><p>편지 열람 만료일이 지나서 더 이상 열람할 수 없어요.</p></div>`;
         return;
@@ -522,6 +529,22 @@ function saveToMyInbox(encoded, unlockMs) {
     safeList.unshift({ d: encoded, addedAt: Date.now(), notified: Date.now() >= unlockMs, sent: true });
     localStorage.setItem(INBOX_KEY, JSON.stringify(safeList));
   } catch (e) { /* 저장 공간 부족 등은 조용히 무시 — 공유 자체는 계속 진행 가능해야 함 */ }
+}
+
+// 받는 사람이 (인앱 브라우저가 아닌) 정상 브라우저에서 편지 링크를 여는
+// 순간 조용히 자동 등록한다. sent 플래그가 없다는 점만 saveToMyInbox와 다르다
+// (보낸 사람 자신이 열었다면 이미 sent:true로 등록돼 있어 아래 중복 체크에
+// 걸려 아무 일도 안 일어난다).
+function autoSaveReceivedLetter(encoded, letter) {
+  const INBOX_KEY = 'post_inbox_v1';
+  try {
+    const raw = localStorage.getItem(INBOX_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    const safeList = Array.isArray(list) ? list : [];
+    if (safeList.some(item => item.d === encoded)) return;
+    safeList.push({ d: encoded, addedAt: Date.now(), notified: Date.now() >= letter.unlock });
+    localStorage.setItem(INBOX_KEY, JSON.stringify(safeList));
+  } catch (e) { /* 조용히 무시 */ }
 }
 
 function renderShareResult(url, encoded, unlockMs) {
