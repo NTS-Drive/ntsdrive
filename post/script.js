@@ -32,6 +32,13 @@ function render() {
       if (typeof window !== 'undefined' && !window.NTSInAppBrowser) {
         autoSaveReceivedLetter(encoded, letter);
       }
+      // North Star 지표(§4-1)용: "공유 후 실제 열람률" 계산에 필요한 열람 이벤트.
+      // by_sender로 본인이 재방문한 건지, 진짜 받은 사람이 연 건지 구분한다
+      // (개인 식별 정보 없이 boolean 하나만 남김 — 서버 미저장 원칙과 무관하게
+      // GA4 집계 이벤트일 뿐, 이 값 자체를 저장하지 않음).
+      const myItemForView = getMyInboxItem(encoded);
+      const isMineForView = !!(myItemForView && myItemForView.sent);
+      trackEvent('post_letter_viewed', { by_sender: isMineForView, unlocked: Date.now() >= letter.unlock });
       if (letter.expiresAt && Date.now() > letter.expiresAt) {
         stage.innerHTML = `<div class="share-result"><div class="env-icon">⌛</div><h2>이제 이 편지는 못 열어요</h2><p>편지 열람 만료일이 지나서 더 이상 열람할 수 없어요.</p></div>`;
         return;

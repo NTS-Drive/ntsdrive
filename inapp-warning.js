@@ -21,8 +21,8 @@
 
   function detectApp() {
     const ua = navigator.userAgent || '';
-    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', escapeIcon: '↑', escapeMenu: '공유 아이콘', escapeAction: '"Safari로 열기"' };
-    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', escapeIcon: '•••', escapeMenu: '메뉴', escapeAction: '"외부 브라우저에서 열기"' };
+    if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', escapeIcon: '↑', escapeMenu: '공유 아이콘', escapeLocation: '화면 하단', escapeAction: '"Safari로 열기"' };
+    if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', escapeIcon: '•••', escapeMenu: '메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"외부 브라우저에서 열기"' };
     return null;
   }
   function detectOS() {
@@ -82,7 +82,7 @@
   }
 
   let toastTimer = null;
-  function showToast(msg) {
+  function showToast(msg, actionLabel, actionFn) {
     let el = document.getElementById('ntsInappToast');
     if (!el) {
       el = document.createElement('div');
@@ -90,15 +90,23 @@
       el.className = 'nts-inapp-toast';
       document.body.appendChild(el);
     }
-    el.textContent = msg;
+    el.innerHTML = actionLabel
+      ? `<span>${msg}</span><button type="button" class="nts-toast-action" id="ntsToastAction">${actionLabel}</button>`
+      : msg;
     el.classList.add('show');
+    if (actionLabel && actionFn) {
+      const btn = document.getElementById('ntsToastAction');
+      if (btn) btn.addEventListener('click', () => { el.classList.remove('show'); actionFn(); });
+    }
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 6000);
   }
 
-  // 안드로이드: intent:// 로 크롬 이동 시도. 실패하면 토스트 + 복사(액션플랜).
-  function attemptAndroidRedirect() {
-    trackEventSafe('inapp_redirect_attempt', { app: app.id, os });
+  // 안드로이드: intent:// 로 크롬 이동 시도. 처음 실패하면 "다시 시도" 버튼을
+  // 보여주고, 유저가 눌러서 한 번 더 시도했는데도 또 실패하면 그때 복사
+  // 폴백으로 넘어간다.
+  function attemptAndroidRedirect(isRetry) {
+    trackEventSafe('inapp_redirect_attempt', { app: app.id, os, retry: !!isRetry });
     const target = resolveTargetUrl();
     const noProto = target.replace(/^https?:\/\//, '');
     const intentUrl = `intent://${noProto}#Intent;scheme=https;package=com.android.chrome;end`;
@@ -109,10 +117,14 @@
     window.location.href = intentUrl;
     setTimeout(() => {
       if (left) {
-        trackEventSafe('inapp_redirect_success', { app: app.id });
+        trackEventSafe('inapp_redirect_success', { app: app.id, retry: !!isRetry });
         return;
       }
-      trackEventSafe('inapp_redirect_failed', { app: app.id });
+      trackEventSafe('inapp_redirect_failed', { app: app.id, retry: !!isRetry });
+      if (!isRetry) {
+        showToast('자동 이동에 실패했어요.', '다시 시도', () => attemptAndroidRedirect(true));
+        return;
+      }
       copyText(target, (ok) => {
         showToast(ok
           ? '자동 이동에 실패해서 링크를 복사했어요. ① 크롬 앱 열기 → ② 주소창에 붙여넣기 → ③ 이동해주세요.'
@@ -176,8 +188,9 @@
       .nts-gate-dismiss{width:100%; margin-top:14px; padding:8px; border-radius:10px; border:none; background:transparent; color:#B5A890; font-size:12px; cursor:pointer; text-decoration:underline;}
       .nts-gate-close{position:absolute; top:10px; right:14px; background:none; border:none; font-size:15px; color:#B5A890; cursor:pointer; padding:6px;}
 
-      .nts-inapp-toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 48px); background:#17140F; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; line-height:1.6; text-align:center; z-index:999; opacity:0; pointer-events:none; transition:opacity .3s ease;}
-      .nts-inapp-toast.show{opacity:1;}
+      .nts-inapp-toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 48px); background:#17140F; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; line-height:1.6; text-align:center; z-index:999; opacity:0; pointer-events:none; transition:opacity .3s ease; display:flex; align-items:center; gap:10px;}
+      .nts-inapp-toast.show{opacity:1; pointer-events:auto;}
+      .nts-toast-action{flex-shrink:0; background:#F7F3EC; color:#17140F; border:none; border-radius:99px; padding:6px 12px; font-size:11.5px; font-weight:700; cursor:pointer;}
     `;
     document.head.appendChild(style);
   }
@@ -194,7 +207,7 @@
     const iosButtons = `
       <div class="nts-gate-escape">
         <div class="nts-gate-escape-icon">${app.escapeIcon}</div>
-        <p><b>${app.escapeMenu}</b>을 누르고 ${app.escapeAction}를 선택하면<br>바로 사파리로 이동해요 (제일 쉬운 방법이에요)</p>
+        <p><b>${app.escapeLocation}의 ${app.escapeMenu}</b>(${app.escapeIcon})을 누르고<br>${app.escapeAction}를 선택하면 바로 사파리로 이동해요<br><span style="opacity:0.75;">(제일 쉽고 빠른 방법이에요)</span></p>
       </div>
       <div class="nts-gate-or">또는</div>
       <button type="button" class="nts-gate-secondary" id="ntsGateCopy">링크 복사하기</button>

@@ -17,12 +17,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Serif+KR:ital,wght@0,500;0,700;1,500&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1784762817">
+<link rel="stylesheet" href="style.css?v=1784885839">
 <link rel="stylesheet" href="../fonts.css">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1784818142"></script>
-<script src="../install-shortcut.js?v=1784815173"></script>
+<script src="../inapp-warning.js?v=1784885839"></script>
+<script src="../install-shortcut.js?v=1784885839"></script>
 </head>
 <body>
 
@@ -104,6 +104,10 @@ function init() {
     stage.innerHTML = `<div class="share-result"><div class="env-icon">📖</div><h2>링크를 읽을 수 없어요</h2><p>링크가 손상되었을 수 있어요.</p></div>`;
     return;
   }
+  // North Star 지표(§4-1)용: "답장률" 분모가 되는, 회신 작성 화면이 실제로
+  // 열린 횟수. 완료 이벤트(log_letter_written)랑 짝지어서 "몇 명이 열어서
+  // 몇 명이 실제로 썼는지" 비율을 볼 수 있다.
+  trackEvent('log_write_link_opened', { room_title: room.title });
   renderWrite();
 }
 

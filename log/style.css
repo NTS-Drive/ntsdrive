@@ -110,7 +110,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .inbox-page-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 12.5px; cursor: pointer; }
 .inbox-page-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12.5px; z-index: 999; opacity: 0; transition: opacity .3s ease; }
+.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 12.5px; z-index: 999; opacity: 0; transition: opacity .3s ease; }
 .toast.show { opacity: 1; }
 
 .bottom-nav { display: none; }
