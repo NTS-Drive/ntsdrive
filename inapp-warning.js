@@ -245,7 +245,6 @@
       });
       el.querySelector('#ntsGateDismiss').addEventListener('click', () => {
         trackEventSafe('inapp_gate_dismissed', { app: app.id, os });
-        try { sessionStorage.setItem('ntsdrive_inapp_gate_dismissed', '1'); } catch (e) { /* ignore */ }
         el.remove();
       });
     }
@@ -253,14 +252,10 @@
 
   function mount() {
     injectStyles();
-    if (os === 'ios') {
-      let dismissed = false;
-      try { dismissed = sessionStorage.getItem('ntsdrive_inapp_gate_dismissed') === '1'; } catch (e) { /* ignore */ }
-      if (dismissed) return;
-    }
-    // 안드로이드는 매번(페이지 이동마다) 다시 뜬다 — "이동"이 유일한 핵심
-    // 경로라, 안 누르고 넘어가면 계속 안내해야 함. iOS만 "둘러보기" 선택을
-    // 세션 동안 존중한다.
+    // 아이폰/안드로이드 둘 다 매번(페이지 이동마다) 다시 뜬다. "그냥 읽기만
+    // 할게요"를 선택해도 어차피 저장·촬영·방만들기 등 대부분 기능이 막혀있어서
+    // "읽기 전용 모드"가 실질적 의미가 없고, 계속 안내해서 실제로 이동하도록
+    // 유도하는 게 더 낫다고 판단해 세션 억제를 없앴다.
     mountGate();
   }
 

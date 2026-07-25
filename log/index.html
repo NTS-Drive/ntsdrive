@@ -24,7 +24,7 @@
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1784885839"></script>
+<script src="../inapp-warning.js?v=1784947703"></script>
 <script src="../install-shortcut.js?v=1784885839"></script>
 </head>
 <body>
@@ -128,9 +128,13 @@ function init() {
   if (params.has('add')) {
     const originalAddParam = params.get('add');
     tryRegister(originalAddParam, true);
-    // clean the URL so refreshing doesn't re-attempt the same add
-    const clean = `${window.location.pathname}?room=${roomEncoded}`;
-    window.history.replaceState({}, '', clean);
+    // 예전엔 여기서 history.replaceState로 주소를 조용히 ?room=으로 정리했는데,
+    // 이게 오히려 문제였다: 카카오톡 자체 "공유 아이콘 → Safari로 열기" 같은
+    // 기능은 저희 코드를 거치지 않고 "지금 주소창에 떠 있는 값"을 그대로
+    // 새 브라우저로 넘긴다. 그 시점에 이미 ?room=으로 바뀌어 있으면, 정작
+    // 등록에 필요한 ?add= 정보가 사라진 채로 넘어가서 등록이 안 됐다.
+    // ?add= 링크를 그대로 남겨둬도 문제없다 — tryRegister 안에 이미 같은
+    // 편지를 중복 등록하지 않는 체크가 있어서, 새로고침해도 안전하다.
     renderReplyReceived(roomEncoded, originalAddParam);
     return;
   }
@@ -155,9 +159,9 @@ function renderReplyReceived(re, addParam) {
   trackEvent('log_reply_screen_shown', { is_owner: owner });
   const roomUrl = `${window.location.origin}${window.location.pathname}?room=${re}`;
   const ownerActions = owner ? `
-    <div class="share-actions" style="margin-top:22px;">
-      <button class="seal-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_goto_room_click'); handleGoToRoomClick('${re}')">내 방으로 이동하기</button>
-      <button class="ghost-btn" style="width:auto; flex:1;" onclick="trackEvent('log_reply_copy_click'); copyRoomLink('${roomUrl}')">방 링크 복사하기</button>
+    <div class="share-actions" style="margin-top:22px; flex-direction:column;">
+      <button class="seal-btn" style="width:100%;" onclick="trackEvent('log_reply_goto_room_click'); handleGoToRoomClick('${re}')">내 방으로 이동하기</button>
+      <button class="ghost-btn" style="width:100%;" onclick="trackEvent('log_reply_copy_click'); copyRoomLink('${roomUrl}')">방 링크 복사하기</button>
     </div>` : '';
   // 카톡/인스타 웹뷰 안에서는 "이 브라우저가 방주인 것인지" 자체를 알 수 없어서
   // (진짜 방 데이터는 평소 브라우저에 있음), 오버레이를 닫고 남은 사람 누구에게나
