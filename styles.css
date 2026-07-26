@@ -326,6 +326,10 @@ footer{border-top:1px solid var(--line); padding:28px; text-align:center; font-s
 }
 
 /* ===== 이용가이드 / 브랜드철학 / 블로그 (공개 콘텐츠 페이지) ===== */
+.content-tabs{display:flex; justify-content:center; gap:8px; max-width:640px; margin:0 auto 28px;}
+.content-tabs span{font-size:12.5px; padding:7px 16px; border-radius:99px; cursor:pointer; color:var(--sub); border:1px solid var(--line);}
+.content-tabs span.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
 .content-hero{max-width:640px; margin:0 auto 40px; text-align:center;}
 .content-hero .kicker{font-size:12px; font-weight:700; letter-spacing:0.05em; color:var(--sub); text-transform:uppercase; margin-bottom:10px;}
 .content-hero h1{font-family:'Noto Serif KR', serif; font-size:clamp(26px,4vw,34px); font-weight:700; margin-bottom:12px; letter-spacing:-0.01em;}

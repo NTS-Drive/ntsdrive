@@ -130,7 +130,7 @@
           ? '자동 이동에 실패해서 링크를 복사했어요. ① 크롬 앱 열기 → ② 주소창에 붙여넣기 → ③ 이동해주세요.'
           : '자동 이동에 실패했어요. 주소를 직접 복사해서 크롬 주소창에 붙여넣어주세요.');
       });
-    }, 2500);
+    }, 4500);
   }
 
   // Post/Log의 인라인 버튼("클릭하면 지금 이 브라우저에 바로 등록돼요",
@@ -158,7 +158,7 @@
               : '자동 이동에 실패했어요. 주소를 직접 복사해서 크롬 주소창에 붙여넣어주세요.');
           });
         }
-      }, 2500);
+      }, 4500);
     } else {
       copyText(abs, (ok) => {
         showToast(ok
@@ -185,8 +185,6 @@
       .nts-gate-secondary{width:100%; margin-top:10px; padding:12px; border-radius:10px; border:1px solid #E4DDD0; background:transparent; color:#17140F; font-size:13.5px; font-weight:600; cursor:pointer;}
       .nts-gate-steps{margin-top:14px; padding:12px 14px; background:#F1E3E1; border-radius:10px; font-size:12px; color:#7A4A32; text-align:left; line-height:1.9; display:none;}
       .nts-gate-steps.show{display:block;}
-      .nts-gate-dismiss{width:100%; margin-top:14px; padding:8px; border-radius:10px; border:none; background:transparent; color:#B5A890; font-size:12px; cursor:pointer; text-decoration:underline;}
-      .nts-gate-close{position:absolute; top:10px; right:14px; background:none; border:none; font-size:15px; color:#B5A890; cursor:pointer; padding:6px;}
 
       .nts-inapp-toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 48px); background:#17140F; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; line-height:1.6; text-align:center; z-index:999; opacity:0; pointer-events:none; transition:opacity .3s ease; display:flex; align-items:center; gap:10px;}
       .nts-inapp-toast.show{opacity:1; pointer-events:auto;}
@@ -202,7 +200,6 @@
 
     const androidButtons = `
       <button type="button" class="nts-gate-primary" id="ntsGateAndroidGo">주 브라우저로 이동</button>
-      <button type="button" class="nts-gate-close" id="ntsGateClose" aria-label="닫기">✕</button>
     `;
     const iosButtons = `
       <div class="nts-gate-escape">
@@ -212,7 +209,6 @@
       <div class="nts-gate-or">또는</div>
       <button type="button" class="nts-gate-secondary" id="ntsGateCopy">링크 복사하기</button>
       <div class="nts-gate-steps" id="ntsGateSteps">① 복사 완료 ✓<br>② 사파리 앱 열기<br>③ 주소창에 붙여넣기<br>④ 이동</div>
-      <button type="button" class="nts-gate-dismiss" id="ntsGateDismiss">그냥 읽기만 할게요</button>
     `;
 
     el.innerHTML = `
@@ -227,10 +223,6 @@
 
     if (os === 'android') {
       el.querySelector('#ntsGateAndroidGo').addEventListener('click', attemptAndroidRedirect);
-      el.querySelector('#ntsGateClose').addEventListener('click', () => {
-        trackEventSafe('inapp_gate_dismissed', { app: app.id, os });
-        el.remove();
-      });
     } else {
       el.querySelector('#ntsGateCopy').addEventListener('click', () => {
         const target = resolveTargetUrl();
@@ -242,10 +234,6 @@
             if (steps) steps.classList.add('show');
           }
         });
-      });
-      el.querySelector('#ntsGateDismiss').addEventListener('click', () => {
-        trackEventSafe('inapp_gate_dismissed', { app: app.id, os });
-        el.remove();
       });
     }
   }
