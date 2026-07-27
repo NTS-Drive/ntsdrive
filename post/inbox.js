@@ -2,28 +2,6 @@ const INBOX_KEY = 'post_inbox_v1';
 const stage = document.getElementById('stage');
 let checkTimerId = null;
 
-// ?add=<encoded> 로 들어오면(잠금화면의 "내 편지함에 등록해두세요" 링크),
-// 붙여넣기 없이 자동으로 편지함에 등록한다.
-function autoAddFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  if (!params.has('add')) return;
-  const encoded = params.get('add');
-  try {
-    const letter = decodeLetter(encoded);
-    const list = loadInbox();
-    if (!list.some(item => item.d === encoded)) {
-      list.push({ d: encoded, addedAt: Date.now(), notified: Date.now() >= letter.unlock });
-      saveInbox(list);
-      toast('편지함에 등록됐어요.');
-    }
-  } catch (e) { /* 손상된 링크면 조용히 무시 */ }
-  // 예전엔 여기서 URL을 정리했는데, 카카오톡 자체 "Safari로 열기" 같은 기능이
-  // 저희 코드를 거치지 않고 "그 시점의 주소창 값"을 그대로 새 브라우저로
-  // 넘기는 경우, 이미 정리된(파라미터 없는) 주소가 넘어가서 등록이 안 되는
-  // 문제가 있었다(Log에서 확인된 것과 동일한 패턴). 위에 이미 중복 등록 방지
-  // 체크가 있어서, ?add= 링크가 그대로 남아있어도 새로고침 시 안전하다.
-}
-
 /* ===== Storage ===== */
 function loadInbox() {
   try {
@@ -247,7 +225,6 @@ function updateCountdownsOnly() {
   });
 }
 
-autoAddFromUrl();
 trackEvent('post_inbox_viewed', { total_letters: loadInbox().length });
 render();
 checkTimerId = setInterval(checkUnlocks, 15000);

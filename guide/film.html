@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1785102573">
+<link rel="stylesheet" href="../styles.css?v=1785159098">
 <script src="../analytics.js?v=1784950000"></script>
 <style>
 
@@ -56,6 +56,7 @@
     </ol>
       <p class="content-example">활용 예시: 아날로그 감성 콘텐츠, 필카 커뮤니티 취향의 기록</p>
       <div class="content-note">현상 완료 알림은 없어요. 시간이 지난 후 직접 다시 확인해주세요.</div>
+      <a class="guide-cta-btn" onclick="navigate('../film/index.html')">Film 사용하러 가기</a>
     </div>
   </main>
 
@@ -70,6 +71,7 @@
 </div>
 <script>
 function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
 function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 </script>
 </body>

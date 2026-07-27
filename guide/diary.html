@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1785102573">
+<link rel="stylesheet" href="../styles.css?v=1785159098">
 <script src="../analytics.js?v=1784950000"></script>
 <style>
 
@@ -58,6 +58,7 @@
     </ol>
       <p class="content-example">활용 예시: 감정 일기, 멘탈 케어, 자기 이해</p>
       <div class="content-note">감정 기록은 이 브라우저에만 저장되고, 매년 1월 1일에 초기화돼요. 다른 기기에서도 보려면 바로가기를 생성해두세요.</div>
+      <a class="guide-cta-btn" onclick="navigate('../diary/index.html')">Diary 사용하러 가기</a>
     </div>
   </main>
 
@@ -72,6 +73,7 @@
 </div>
 <script>
 function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
 function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 </script>
 </body>

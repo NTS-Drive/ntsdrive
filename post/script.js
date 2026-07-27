@@ -572,31 +572,29 @@ function renderShareResult(url, encoded, unlockMs) {
     shareLink(url);
   }
 }
-function copyShareLink(url, fallback) {
-  // Copies the raw link only (no explanatory text prepended) — combining
-  // text + URL previously caused some paste targets (e.g. an address bar)
-  // to treat the whole thing as a search query instead of a link.
-  navigator.clipboard.writeText(url).then(() => {
-    const inapp = (typeof window !== 'undefined') ? window.NTSInAppBrowser : null;
-    toast(inapp
-      ? `${inapp.name} 안에서는 바로 공유가 안 돼서, 대신 링크를 복사했어요. 카카오톡 등 원하는 곳에 붙여넣어 보내주세요.`
-      : fallback
-        ? '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.'
-        : '링크가 복사됐어요.');
-    trackEvent('post_link_copied', { inapp: !!inapp, fallback: !!fallback });
-  }).catch(() => toast('복사에 실패했어요.'));
+function announceShareFallback(url) {
+  const inapp = (typeof window !== 'undefined') ? window.NTSInAppBrowser : null;
+  toast(inapp
+    ? `${inapp.name} 안에서는 바로 공유가 안 돼서, 대신 링크를 복사했어요. 카카오톡 등 원하는 곳에 붙여넣어 보내주세요.`
+    : '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.');
+  trackEvent('post_link_copied', { inapp: !!inapp, fallback: true });
 }
 function shareLink(url) {
+  // 클립보드 쓰기는 "방금 사용자가 직접 조작한 상황(user gesture)"에서만
+  // 안정적으로 허용된다. navigator.share()가 실패/취소된 "뒤"에 비동기로
+  // 복사를 시도하면 이미 그 제스처 유효시간이 끝나있어 브라우저가 조용히
+  // 막아버릴 수 있다 — 그래서 공유 시트를 열기 "전", 이 클릭 안에서 미리
+  // 복사해둔다. 성공/실패/취소 어떤 결과든 이미 클립보드엔 들어있는 상태.
+  navigator.clipboard.writeText(url).catch(() => {});
+
   if (navigator.share) {
-    // navigator.share()가 실패(reject)하는 이유는 사용자의 명시적 취소(대부분
-    // AbortError)일 수도, 실제 오류일 수도 있다. 기기/브라우저마다 취소를
-    // 100% 안정적으로 구분해주지 않으므로 원인을 나누지 않고, 링크를 놓치는
-    // 사고를 막기 위해 항상 자동 복사 폴백으로 안전하게 처리한다.
+    // 취소(대부분 AbortError)와 실제 실패를 기기/브라우저별로 100% 안정적으로
+    // 구분할 수 없어, 원인을 나누지 않고 항상 안내로 통일한다.
     navigator.share({ url })
       .then(() => trackEvent('post_link_shared'))
-      .catch(() => copyShareLink(url, true));
+      .catch(() => announceShareFallback(url));
   } else {
-    copyShareLink(url, true);
+    announceShareFallback(url);
   }
 }
 
@@ -623,16 +621,17 @@ function renderLocked(letter, encoded) {
   const shareBlock = isMine ? `
     <div class="locked-share-block">
       <p class="irrevocable-warning">⚠️ 링크를 공유하고 나면 되돌리거나 취소할 수 없어요. 신중하게 공유해주세요.</p>
-      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
-      <button class="ghost-btn" style="width:100%;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
+      <button class="seal-btn" style="width:100%;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
     </div>` : '';
 
-  const inboxCaption = (typeof window !== 'undefined' && window.NTSInAppBrowser)
-    ? '' // 카카오톡/네이버/인스타그램은 이미 상단 배너로 안내하고 있어 중복 노출하지 않음
-    : '<span class="locked-inbox-caption">(평소 쓰는 브라우저가 맞는지 확인해주세요)</span>';
+  // 정상 브라우저에서 열렸다면 render() 최상단에서 이미 자동저장이 끝난
+  // 뒤이므로, 이 시점엔 myItem이 항상 존재한다(= 항상 저장 완료 안내만
+  // 보임). 인앱 브라우저 오버레이 뒤처럼 자동저장이 아예 실행되지 않은
+  // 극히 예외적인 경우에만 아무 안내도 노출하지 않는다 — 어차피 그 상태의
+  // 유저는 오버레이 때문에 이 화면과 상호작용할 수 없다.
   const inboxNote = myItem
     ? `<div class="locked-inbox-note">✓ 이미 편지함에 저장해뒀어요</div>`
-    : `<div class="locked-inbox-note">이 편지, 나중에 다시 보고 싶다면?<br><a onclick="handleInboxRegisterClick('${encodeURIComponent(encoded)}')">클릭하면 지금 이 브라우저에 바로 등록돼요 →</a>${inboxCaption}</div>`;
+    : '';
 
   let ddayInviteBlock = '';
   if (letter.ddayTitle && !isMine && typeof NTSDday !== 'undefined') {
@@ -669,14 +668,6 @@ function renderLocked(letter, encoded) {
   lockedTimerId = setInterval(() => updateCountdown(letter), 1000);
 }
 let currentLockedDdayInvite = null;
-function handleInboxRegisterClick(encodedParam) {
-  const url = `inbox.html?add=${encodedParam}`;
-  if (typeof window !== 'undefined' && window.NTSInAppBrowser && typeof window.ntsSmartNavigate === 'function') {
-    window.ntsSmartNavigate(url);
-  } else {
-    navigate(url);
-  }
-}
 function acceptDdayInvite() {
   if (!currentLockedDdayInvite || typeof NTSDday === 'undefined') return;
   const result = NTSDday.registerFromPost(currentLockedDdayInvite);

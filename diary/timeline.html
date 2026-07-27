@@ -66,6 +66,7 @@
 
 <script>
   function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 280); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
   function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
   function toast(msg) {
     const el = document.getElementById('toast');
@@ -366,6 +367,6 @@
     if (action === 'click') navigate('../post/index.html');
   }
 </script>
-<script src="../install-shortcut.js?v=1784885839"></script>
+<script src="../install-shortcut.js?v=1785159081"></script>
 </body>
 </html>

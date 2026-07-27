@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1785102573">
+<link rel="stylesheet" href="../styles.css?v=1785159098">
 <script src="../analytics.js?v=1784950000"></script>
 <style>
 
@@ -56,6 +56,7 @@
     </ol>
       <p class="content-example">활용 예시: 데일리 브이로그 대체, 여행 스냅, 커플·친구 기록</p>
       <div class="content-note">사진은 서버가 아닌 이 기기에만 남아요. 아끼는 사진은 꼭 다운로드해두세요.</div>
+      <a class="guide-cta-btn" onclick="navigate('../snap/index.html')">Snap 사용하러 가기</a>
     </div>
   </main>
 
@@ -70,6 +71,7 @@
 </div>
 <script>
 function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
 function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 </script>
 </body>

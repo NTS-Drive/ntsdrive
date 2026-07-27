@@ -107,6 +107,15 @@
     });
   }
 
-  if (document.body) maybeShowShortcutReminder();
-  else document.addEventListener('DOMContentLoaded', maybeShowShortcutReminder);
+  /* ---------------- 헤더의 "바로가기 생성" 버튼(홈 화면 전용) ----------------
+     이미 설치된 유저에게는 의미 없는 버튼이라 숨긴다. 버튼이 사라지면 옆의
+     "처음이신가요?" 버튼이 flex 레이아웃상 자연스럽게 오른쪽 끝으로 붙는다. */
+  function hideShortcutButtonIfInstalled() {
+    if (!isAlreadyInstalled()) return;
+    const btn = document.getElementById('shortcutBtn');
+    if (btn) btn.style.display = 'none';
+  }
+
+  if (document.body) { maybeShowShortcutReminder(); hideShortcutButtonIfInstalled(); }
+  else document.addEventListener('DOMContentLoaded', () => { maybeShowShortcutReminder(); hideShortcutButtonIfInstalled(); });
 })();

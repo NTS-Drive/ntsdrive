@@ -17,7 +17,7 @@
 <script src="shared.js?v=1784373977"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
 <script src="../inapp-warning.js?v=1785105839"></script>
-<script src="../install-shortcut.js?v=1784885839"></script>
+<script src="../install-shortcut.js?v=1785159081"></script>
 </head>
 <body>
 
@@ -85,6 +85,7 @@
 
 <script>
   function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 280); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
   function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 
   // body의 pageIn 애니메이션이 끝난 뒤 transform 잔재를 제거해

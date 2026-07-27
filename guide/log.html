@@ -10,7 +10,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Serif+KR:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles.css?v=1785102573">
+<link rel="stylesheet" href="../styles.css?v=1785159098">
 <script src="../analytics.js?v=1784950000"></script>
 <style>
 
@@ -57,6 +57,7 @@
     </ol>
       <p class="content-example">활용 예시: 생일 롤링페이퍼, 퇴사·졸업 축하, 팀 프로젝트 마무리</p>
       <div class="content-note">로그인이 없어 방 링크를 잃어버리면 복구할 수 없어요. 링크는 꼭 저장해두거나 바로가기를 만들어두세요.</div>
+      <a class="guide-cta-btn" onclick="navigate('../log/index.html')">Log 사용하러 가기</a>
     </div>
   </main>
 
@@ -71,6 +72,7 @@
 </div>
 <script>
 function navigate(url){ document.body.classList.add('leaving'); setTimeout(()=>{ window.location.href = url; }, 260); }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('leaving'); });
 function trackEvent(name, params) { try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {} }
 </script>
 </body>
