@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="style.css?v=1784885839">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1785103545"></script>
+<script src="../inapp-warning.js?v=1785105839"></script>
 <script src="../backup-reminder.js?v=1784781420"></script>
 </head>
 <body>
@@ -68,77 +68,6 @@ function saveMylogs(list) {
   catch (e) { toast('저장 공간이 부족해서 저장하지 못했어요.'); }
 }
 
-// 친구가 보낸 "편지가 준비됐어요" 링크(?add=...)를 붙여넣으면, 그 안에
-// 담긴 title/dday/goal을 내가 가진 방 목록과 대조해서 어느 방 편지인지
-// 자동으로 찾아 등록한다. 방이 여러 개 동시에 진행 중이어도 마스터가
-// 직접 방을 찾아 들어갈 필요가 없다.
-// 반환값: { type: 'add'|'room'|'invalid', value }
-// - add: 편지 등록용 링크(정상 케이스)
-// - room: 방 초대/공유 링크를 잘못 붙여넣은 케이스(=room 파라미터)
-// - invalid: 위 두 가지 모두 아닌, 알아볼 수 없는 값
-function parseLetterInput(input) {
-  const trimmed = (input || '').trim();
-  if (!trimmed) return { type: 'invalid', value: null };
-  try {
-    const url = new URL(trimmed);
-    const add = url.searchParams.get('add');
-    if (add) return { type: 'add', value: add };
-    const room = url.searchParams.get('room');
-    if (room) return { type: 'room', value: room };
-    return { type: 'invalid', value: null };
-  } catch (e) {
-    const m = trimmed.match(/[?&]add=([^&]+)/);
-    if (m) return { type: 'add', value: m[1] };
-    const rm = trimmed.match(/[?&]room=([^&]+)/);
-    if (rm) return { type: 'room', value: rm[1] };
-    return { type: 'invalid', value: trimmed.length > 20 ? trimmed : null };
-  }
-}
-
-function handleSmartRegister() {
-  const input = document.getElementById('letterInput');
-  const parsed = parseLetterInput(input.value);
-
-  if (parsed.type === 'room') {
-    const rooms = loadMylogs();
-    const already = rooms.some(r => r.roomEncoded === parsed.value);
-    toast(already
-      ? '이 링크는 이미 내 로그함에 등록된 방이에요.'
-      : '이 링크는 친구에게 공유하는 초대 링크예요. 편지가 준비되면 오는 알림 링크를 붙여넣어주세요.');
-    return;
-  }
-  if (parsed.type !== 'add' || !parsed.value) {
-    toast('올바른 편지 링크가 아니에요. 링크를 다시 확인해주세요.');
-    return;
-  }
-  const encoded = parsed.value;
-
-  let letter;
-  try { letter = decodeData(encoded); } catch (e) { toast('편지 링크를 읽을 수 없어요.'); return; }
-
-  const rooms = loadMylogs();
-  const match = rooms.find(r => r.title === letter.title && r.dday === letter.dday && r.goal === letter.goal);
-  if (!match) { toast('일치하는 방을 찾을 수 없어요. 방을 먼저 만들었는지 확인해주세요.'); return; }
-
-  const letters = loadLettersFor(match.roomEncoded);
-  if (letters.some(l => l.text === letter.text && l.createdAt === letter.createdAt)) {
-    toast('이미 등록된 편지예요.');
-    input.value = '';
-    return;
-  }
-
-  const total = letters.reduce((s, l) => s + l.text.length, 0);
-
-  letters.push({ text: letter.text, from: letter.from || '', createdAt: letter.createdAt });
-  try { localStorage.setItem(`log_room:${match.roomEncoded}`, JSON.stringify(letters)); }
-  catch (e) { toast('저장 공간이 부족해서 등록하지 못했어요.'); return; }
-
-  trackEvent('log_letter_registered_smart', { room_title: match.title });
-  input.value = '';
-  toast(`"${match.title}" 방에 등록했어요. 💌`);
-  render();
-}
-
 function removeRoom(encoded) {
   saveMylogs(loadMylogs().filter(r => r.roomEncoded !== encoded));
   render();
@@ -157,13 +86,6 @@ function render() {
       <div class="sub">내가 만든 방들을 모아두고,<br>열리는 순간을 놓치지 마세요</div>
     </div>
     <div id="notifyRow" style="margin-bottom:22px;"></div>
-    <div class="field" style="margin-bottom:20px;">
-      <label>받은 편지 링크를 붙여넣으세요</label>
-      <div class="inbox-add-row">
-        <input type="text" id="letterInput" placeholder="링크만 붙여넣으면 자동으로 등록돼요">
-        <button class="ghost-btn" onclick="handleSmartRegister()">등록</button>
-      </div>
-    </div>
     <div id="backupReminderSlot"></div>
     <div id="roomList"></div>
     <div class="disclaimer">로그는 지금 사용 중인 브라우저에만 저장되니,<br>놓치지 않으려면 <a href="https://ntsdrive.com/settings/index.html" style="color:#C17F2A; text-decoration:underline;">주기적으로 백업</a>을 해주세요.</div>

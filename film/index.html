@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="../camera/style.css?v=1784592703">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1785103545"></script>
+<script src="../inapp-warning.js?v=1785105839"></script>
 <script src="../install-shortcut.js?v=1784885839"></script>
 </head>
 <body class="cam-mode">
@@ -82,6 +82,7 @@ function renderViewfinder() {
   `;
   const video = document.getElementById('video');
   video.classList.toggle('mirror', currentFacing === 'user');
+  if (typeof window !== 'undefined' && window.NTSInAppBrowser) return;
   openCamera(video, currentFacing);
 }
 

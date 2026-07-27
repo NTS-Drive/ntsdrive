@@ -42,48 +42,7 @@ function saveInbox(list) {
   }
 }
 
-/* ===== Adding a link ===== */
-function extractEncoded(input) {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-  try {
-    const url = new URL(trimmed);
-    const d = url.searchParams.get('d');
-    return d || null;
-  } catch (e) {
-    // Not a full URL — maybe they pasted just the "?d=..." part or the raw token.
-    const m = trimmed.match(/[?&]d=([^&]+)/);
-    if (m) return m[1];
-    return trimmed.length > 20 ? trimmed : null; // last-resort: assume it's the raw encoded token itself
-  }
-}
-
-function addLink() {
-  const input = document.getElementById('linkInput');
-  const encoded = extractEncoded(input.value);
-  if (!encoded) { toast('올바른 편지 링크가 아니에요.'); return; }
-
-  let letter;
-  try {
-    letter = decodeLetter(encoded);
-  } catch (e) {
-    toast('편지 링크를 읽을 수 없어요.');
-    return;
-  }
-
-  const list = loadInbox();
-  if (list.some(item => item.d === encoded)) {
-    toast('이미 등록된 편지예요.');
-    input.value = '';
-    return;
-  }
-  list.push({ d: encoded, addedAt: Date.now(), notified: Date.now() >= letter.unlock });
-  saveInbox(list);
-  input.value = '';
-  toast('편지함에 등록됐어요.');
-  renderInboxList();
-}
-
+/* ===== Removing ===== */
 function removeLetter(encoded) {
   const list = loadInbox().filter(item => item.d !== encoded);
   saveInbox(list);
@@ -139,14 +98,9 @@ function render() {
     </div>
 
     <div class="inbox-steps">
-      <div class="step"><div class="num">1</div><p>받은 편지 링크를 아래에 붙여넣어 등록하세요.</p></div>
+      <div class="step"><div class="num">1</div><p>받은 편지 링크를 열면 자동으로 이 편지함에 등록돼요.</p></div>
       <div class="step"><div class="num">2</div><p>봉인된 편지는 카운트다운으로, 열린 편지는 바로 확인할 수 있어요.</p></div>
       <div class="step"><div class="num">3</div><p>이 탭을 열어두면, 편지가 열리는 순간 알림을 보내드려요.</p></div>
-    </div>
-
-    <div class="inbox-add-row">
-      <input type="text" id="linkInput" placeholder="받은 편지 링크를 붙여넣으세요">
-      <button class="ghost-btn" onclick="addLink()">등록</button>
     </div>
 
     <div class="inbox-notify-row" id="notifyRow"></div>
@@ -213,7 +167,7 @@ function renderInboxList() {
   });
 
   if (fullList.length === 0) {
-    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>받은 링크를 위에 붙여넣어보세요.<br><br>혹시 다른 브라우저에서 쓰셨다면, 기록은 브라우저마다 따로 저장돼요.<br>백업 파일이 있다면 <a onclick="navigate('../settings/index.html')" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">설정</a>에서 불러올 수 있어요.</div>`;
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>받은 편지 링크를 열면 여기에 자동으로 모여요.<br><br>혹시 다른 브라우저에서 쓰셨다면, 기록은 브라우저마다 따로 저장돼요.<br>백업 파일이 있다면 <a onclick="navigate('../settings/index.html')" style="color:#C17F2A; text-decoration:underline; cursor:pointer;">설정</a>에서 불러올 수 있어요.</div>`;
     return;
   }
   if (list.length === 0) {

@@ -44,16 +44,14 @@
 
   // Post의 편지 확인 링크(?d=)라면 "내 편지함 등록" 링크(?add=)로 바꿔서
   // 돌려준다. 그 외(Log의 ?add= 링크 등)는 지금 URL을 그대로 돌려준다.
+  // 예전엔 Post 편지 링크(?d=)를 편지함 등록 링크(?add=)로 바꿔서 보냈는데,
+  // 그 이유가 "이동 = 등록"을 한번에 처리하기 위함이었다. 지금은 index.html이
+  // 실제(인앱 아닌) 브라우저에서 열리는 순간 자체적으로 자동 저장을 처리해서
+  // 더 이상 이 우회가 필요 없다. 오히려 원본 링크를 그대로 보내야 유저가
+  // 보려던 편지 내용이 바로 보이고(등록은 그 페이지가 알아서 함), 편지함
+  // 목록으로 엉뚱하게 튕기지 않는다.
   function resolveTargetUrl() {
-    const url = new URL(ORIGINAL_URL);
-    const isPostPage = /\/post\//.test(url.pathname);
-    const dParam = url.searchParams.get('d');
-    if (isPostPage && dParam) {
-      const inboxUrl = new URL(url.pathname.replace(/index\.html$/, 'inbox.html'), url.origin);
-      inboxUrl.searchParams.set('add', dParam);
-      return inboxUrl.toString();
-    }
-    return url.toString();
+    return ORIGINAL_URL;
   }
 
   function showManualCopyPrompt(url) {

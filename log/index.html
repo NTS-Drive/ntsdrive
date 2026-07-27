@@ -24,7 +24,7 @@
 <script src="../analytics.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1785103545"></script>
+<script src="../inapp-warning.js?v=1785105839"></script>
 <script src="../install-shortcut.js?v=1784885839"></script>
 </head>
 <body>
@@ -385,13 +385,11 @@ function renderCreateShareResult(writeUrl) {
     <div class="share-result">
       <div class="env-icon">📖</div>
       <h2>방이 만들어졌어요</h2>
-      <p>아래 링크를 친구들에게 전달해서 편지를 받아보세요.</p>
-      <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${writeUrl}')">지금 바로 공유하기</button>
-      <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyLink('${writeUrl}')">링크만 복사하기</button>
-      <div class="link-box"><input type="text" readonly value="${writeUrl}"></div>
+      <p>아래 버튼으로 친구들에게 링크를 전달해서 편지를 받아보세요.</p>
+      <button class="seal-btn" style="margin-bottom:16px;" onclick="shareLink('${writeUrl}')">친구에게 롤링페이퍼 요청하기</button>
       <div class="mylogs-howto">
         <div class="mylogs-howto-title">💡 친구가 쓴 편지 링크를 받으면?</div>
-        <p>이 방은 이미 <b>내 로그함</b>에 자동으로 등록해뒀어요. 받은 링크를 내 로그함에서 붙여넣기만 하면, 어느 방인지 자동으로 알아서 등록돼요.</p>
+        <p>이 방은 이미 <b>내 로그함</b>에 자동으로 등록해뒀어요. 친구가 보낸 링크를 열기만 하면, 어느 방인지 자동으로 알아서 등록돼요.</p>
       </div>
       <button class="ghost-btn" style="width:100%; margin-top:20px;" onclick="navigate('mylogs.html')">확인했어요, 내 로그함으로 갈게요</button>
     </div>
@@ -402,15 +400,25 @@ function renderCreateShareResult(writeUrl) {
     shareLink(writeUrl);
   }
 }
-function copyLink(url) {
-  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+function copyLink(url, fallback) {
+  navigator.clipboard.writeText(url).then(() => {
+    toast(fallback
+      ? '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.'
+      : '링크가 복사됐어요.');
+    trackEvent('log_link_copied', { fallback: !!fallback });
+  }).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ url }).catch(() => {});
+    // navigator.share()가 실패(reject)하는 이유는 사용자의 명시적 취소(대부분
+    // AbortError)일 수도, 실제 오류일 수도 있다. 기기/브라우저마다 취소를
+    // 100% 안정적으로 구분해주지 않으므로 원인을 나누지 않고, 링크를 놓치는
+    // 사고를 막기 위해 항상 자동 복사 폴백으로 안전하게 처리한다.
+    navigator.share({ url })
+      .then(() => trackEvent('log_link_shared'))
+      .catch(() => copyLink(url, true));
   } else {
-    alert('이 브라우저는 공유하기를 지원하지 않아요. 대신 링크를 복사해드릴게요.');
-    copyLink(url);
+    copyLink(url, true);
   }
 }
 
@@ -436,9 +444,7 @@ function renderDashboard() {
     <div class="room-title">${escapeHtml(currentRoom.title)}</div>
     <div class="room-dday">${formatDday(currentRoom.dday)}에 열리거나, 목표를 채우면 열려요</div>
 
-    <div class="link-box"><input type="text" readonly value="${writeUrl}"></div>
-    <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${writeUrl}')">공유하기</button>
-    <button class="ghost-btn" style="width:100%; margin-bottom:24px;" onclick="copyLink('${writeUrl}')">친구용 링크 복사</button>
+    <button class="seal-btn" style="margin-bottom:24px;" onclick="shareLink('${writeUrl}')">친구에게 롤링페이퍼 요청하기</button>
 
     <div class="gauge-wrap">
       <div class="gauge-count"><b>${total}</b> / ${currentRoom.goal}자</div>
@@ -447,7 +453,7 @@ function renderDashboard() {
       <div class="gauge-participants">지금까지 ${letters.length}명이 마음을 보탰어요</div>
     </div>
 
-    <div class="disclaimer" style="margin-top:0; margin-bottom:24px;">받은 편지 링크는 <a onclick="navigate('mylogs.html')" class="inline-link">내 로그함</a>에서 등록해주세요.</div>
+    <div class="disclaimer" style="margin-top:0; margin-bottom:24px;">친구가 편지를 쓰면 자동으로 이 방에 모여요.</div>
 
     <div id="letterList"></div>
 
@@ -477,7 +483,7 @@ function renderLetterList(letters) {
   const container = document.getElementById('letterList');
   if (!container) return;
   if (letters.length === 0) {
-    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>친구에게 받은 링크를 위에 붙여넣어보세요.</div>`;
+    container.innerHTML = `<div class="inbox-empty">아직 등록된 편지가 없어요.<br>친구가 편지를 쓰면 자동으로 여기에 모여요.</div>`;
     return;
   }
   container.innerHTML = letters.map((l, i) => `
@@ -615,10 +621,21 @@ function shareRevealedRoom() {
   const encoded = encodeData(payload);
   const url = `${window.location.origin}${window.location.pathname}?reveal=${encoded}`;
   if (navigator.share) {
-    navigator.share({ url }).catch(() => {});
+    // 실패/취소 원인을 100% 안정적으로 구분할 수 없어, 편지 공유 플로우와
+    // 동일하게 항상 자동 복사 폴백으로 안전하게 처리한다.
+    navigator.share({ url })
+      .then(() => trackEvent('log_room_revealed_shared_action'))
+      .catch(() => copyRevealedLink(url, true));
   } else {
-    navigator.clipboard.writeText(url).then(() => toast('공개된 방을 볼 수 있는 링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+    copyRevealedLink(url, true);
   }
+}
+function copyRevealedLink(url, fallback) {
+  navigator.clipboard.writeText(url).then(() => {
+    toast(fallback
+      ? '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.'
+      : '공개된 방을 볼 수 있는 링크가 복사됐어요.');
+  }).catch(() => toast('복사에 실패했어요.'));
 }
 
 function renderRevealShared(payload) {

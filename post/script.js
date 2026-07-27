@@ -563,10 +563,6 @@ function renderShareResult(url, encoded, unlockMs) {
       <p>아래 링크를 전달하면, 설정한 시간이 될 때까지<br>편지는 봉투 안에서 기다리고 있을 거예요.</p>
       <p class="irrevocable-warning">⚠️ 링크를 공유하고 나면 되돌리거나 취소할 수 없어요. 신중하게 공유해주세요.</p>
       <button class="seal-btn" style="margin-bottom:10px;" onclick="shareLink('${url}')">지금 바로 공유하기</button>
-      <button class="ghost-btn" style="width:100%; margin-bottom:16px;" onclick="copyShareLink('${url}')">링크만 복사하기</button>
-      <div class="link-box">
-        <input type="text" id="shareUrl" readonly value="${url}">
-      </div>
       <p class="disclaimer" style="margin-top:16px;">내 편지함에도 자동으로 저장해뒀어요.<br class="mob-break"> 언제든 다시 확인할 수 있어요.</p>
     </div>
   `;
@@ -576,7 +572,7 @@ function renderShareResult(url, encoded, unlockMs) {
     shareLink(url);
   }
 }
-function copyShareLink(url) {
+function copyShareLink(url, fallback) {
   // Copies the raw link only (no explanatory text prepended) — combining
   // text + URL previously caused some paste targets (e.g. an address bar)
   // to treat the whole thing as a search query instead of a link.
@@ -584,15 +580,23 @@ function copyShareLink(url) {
     const inapp = (typeof window !== 'undefined') ? window.NTSInAppBrowser : null;
     toast(inapp
       ? `${inapp.name} 안에서는 바로 공유가 안 돼서, 대신 링크를 복사했어요. 카카오톡 등 원하는 곳에 붙여넣어 보내주세요.`
-      : '링크가 복사됐어요.');
-    trackEvent('post_link_copied', { inapp: !!inapp });
+      : fallback
+        ? '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.'
+        : '링크가 복사됐어요.');
+    trackEvent('post_link_copied', { inapp: !!inapp, fallback: !!fallback });
   }).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ url }).then(() => trackEvent('post_link_shared')).catch(() => {});
+    // navigator.share()가 실패(reject)하는 이유는 사용자의 명시적 취소(대부분
+    // AbortError)일 수도, 실제 오류일 수도 있다. 기기/브라우저마다 취소를
+    // 100% 안정적으로 구분해주지 않으므로 원인을 나누지 않고, 링크를 놓치는
+    // 사고를 막기 위해 항상 자동 복사 폴백으로 안전하게 처리한다.
+    navigator.share({ url })
+      .then(() => trackEvent('post_link_shared'))
+      .catch(() => copyShareLink(url, true));
   } else {
-    copyShareLink(url);
+    copyShareLink(url, true);
   }
 }
 

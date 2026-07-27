@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="../fonts.css">
 <script src="../analytics.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1834400320261683" crossorigin="anonymous"></script>
-<script src="../inapp-warning.js?v=1785103545"></script>
+<script src="../inapp-warning.js?v=1785105839"></script>
 <script src="../install-shortcut.js?v=1784885839"></script>
 </head>
 <body>
@@ -213,15 +213,25 @@ function renderShareResult(url) {
     shareLink(url);
   }
 }
-function copyLink(url) {
-  navigator.clipboard.writeText(url).then(() => toast('링크가 복사됐어요.')).catch(() => toast('복사에 실패했어요.'));
+function copyLink(url, fallback) {
+  navigator.clipboard.writeText(url).then(() => {
+    toast(fallback
+      ? '공유가 완료되지 않아 링크를 자동으로 복사해뒀어요. 원하는 곳에 붙여넣어 전달해주세요.'
+      : '링크가 복사됐어요.');
+    trackEvent('log_link_copied', { fallback: !!fallback });
+  }).catch(() => toast('복사에 실패했어요.'));
 }
 function shareLink(url) {
   if (navigator.share) {
-    navigator.share({ url }).catch(() => {});
+    // navigator.share()가 실패(reject)하는 이유는 사용자의 명시적 취소(대부분
+    // AbortError)일 수도, 실제 오류일 수도 있다. 기기/브라우저마다 취소를
+    // 100% 안정적으로 구분해주지 않으므로 원인을 나누지 않고, 링크를 놓치는
+    // 사고를 막기 위해 항상 자동 복사 폴백으로 안전하게 처리한다.
+    navigator.share({ url })
+      .then(() => trackEvent('log_link_shared'))
+      .catch(() => copyLink(url, true));
   } else {
-    alert('이 브라우저는 공유하기를 지원하지 않아요. 대신 링크를 복사해드릴게요.');
-    copyLink(url);
+    copyLink(url, true);
   }
 }
 
