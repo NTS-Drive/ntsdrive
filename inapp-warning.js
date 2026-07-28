@@ -23,7 +23,7 @@
     const ua = navigator.userAgent || '';
     if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', escapeIcon: '↑', escapeMenu: '공유 아이콘', escapeLocation: '화면 하단', escapeAction: '"Safari로 열기"' };
     if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', escapeIcon: '•••', escapeMenu: '메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"외부 브라우저에서 열기"' };
-    if (/LinkedInApp/i.test(ua)) return { id: 'linkedin', name: '링크드인', escapeIcon: '⋯', escapeMenu: '더보기 메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"Safari에서 열기"(또는 "브라우저에서 열기")' };
+    if (/LinkedInApp/i.test(ua)) return { id: 'linkedin', name: '링크드인', escapeIcon: '⋮', escapeMenu: '더보기 메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"브라우저에서 열기"', redirectSupported: false };
     return null;
   }
   function detectOS() {
@@ -152,7 +152,7 @@
   // 위한 보조 안전장치 역할.
   window.ntsSmartNavigate = function (url) {
     const abs = new URL(url, window.location.href).toString();
-    if (os === 'android') {
+    if (os === 'android' && app.redirectSupported !== false) {
       trackEventSafe('inapp_redirect_attempt', { app: app.id, os, source: 'inline_action' });
       const absNoProto = abs.replace(/^https?:\/\//, '');
       const intentUrl = `intent://${absNoProto}#Intent;scheme=https;package=com.android.chrome;end`;
@@ -174,10 +174,11 @@
         }
       }, 4500);
     } else {
+      const browserName = os === 'ios' ? '사파리' : '크롬';
       copyText(abs, (ok) => {
         showToast(ok
-          ? '링크를 복사했어요. ① 사파리 앱 열기 → ② 주소창에 붙여넣기 → ③ 이동해주세요.'
-          : '복사에 실패했어요. 주소를 직접 복사해서 사파리 주소창에 붙여넣어주세요.');
+          ? `링크를 복사했어요. ① ${browserName} 앱 열기 → ② 주소창에 붙여넣기 → ③ 이동해주세요.`
+          : `복사에 실패했어요. 주소를 직접 복사해서 ${browserName} 주소창에 붙여넣어주세요.`);
       });
     }
   };
@@ -212,17 +213,25 @@
     el.className = 'nts-gate-overlay';
     el.id = 'ntsGateOverlay';
 
+    // intent:// 스킴을 안 받아주는 웹뷰(현재 확인된 건 링크드인)는 OS가
+    // 안드로이드여도 자동 리다이렉트를 아예 시도하지 않고, 아이폰과 같은
+    // "앱 자체 메뉴로 탈출" 안내 방식을 쓴다. app.redirectSupported가
+    // 명시적으로 false인 경우에만 여기 해당하고, 나머지(카카오톡/인스타그램)는
+    // 기존처럼 intent:// 자동 시도 방식을 그대로 쓴다.
+    const useEscapeGuide = (os !== 'android') || (app.redirectSupported === false);
+    const browserName = os === 'ios' ? '사파리' : '크롬';
+
     const androidButtons = `
       <button type="button" class="nts-gate-primary" id="ntsGateAndroidGo">주 브라우저로 이동</button>
     `;
-    const iosButtons = `
+    const escapeButtons = `
       <div class="nts-gate-escape">
         <div class="nts-gate-escape-icon">${app.escapeIcon}</div>
-        <p><b>${app.escapeLocation}의 ${app.escapeMenu}</b>(${app.escapeIcon})을 누르고<br>${app.escapeAction}를 선택하면 바로 사파리로 이동해요<br><span style="opacity:0.75;">(제일 쉽고 빠른 방법이에요)</span></p>
+        <p><b>${app.escapeLocation}의 ${app.escapeMenu}</b>(${app.escapeIcon})을 누르고<br>${app.escapeAction}를 선택하면 바로 ${browserName}로 이동해요<br><span style="opacity:0.75;">(제일 쉽고 빠른 방법이에요)</span></p>
       </div>
       <div class="nts-gate-or">또는</div>
       <button type="button" class="nts-gate-secondary" id="ntsGateCopy">링크 복사하기</button>
-      <div class="nts-gate-steps" id="ntsGateSteps">① 복사 완료 ✓<br>② 사파리 앱 열기<br>③ 주소창에 붙여넣기<br>④ 이동</div>
+      <div class="nts-gate-steps" id="ntsGateSteps">① 복사 완료 ✓<br>② ${browserName} 앱 열기<br>③ 주소창에 붙여넣기<br>④ 이동</div>
     `;
 
     el.innerHTML = `
@@ -230,12 +239,12 @@
         <div class="nts-gate-icon">🔒</div>
         <h3>${app.name} 안에서는 이용이 제한돼요</h3>
         <p>저장·공유가 정상적으로 안 돼요. 주 사용 브라우저(사파리 또는 크롬)로 이동해야 온전히 이용할 수 있어요.</p>
-        ${os === 'android' ? androidButtons : iosButtons}
+        ${useEscapeGuide ? escapeButtons : androidButtons}
       </div>`;
     document.body.appendChild(el);
     trackEventSafe('inapp_gate_shown', { app: app.id, os });
 
-    if (os === 'android') {
+    if (!useEscapeGuide) {
       el.querySelector('#ntsGateAndroidGo').addEventListener('click', attemptAndroidRedirect);
     } else {
       el.querySelector('#ntsGateCopy').addEventListener('click', () => {
