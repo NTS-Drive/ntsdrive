@@ -104,6 +104,21 @@
   // 안드로이드: intent:// 로 크롬 이동 시도. 처음 실패하면 "다시 시도" 버튼을
   // 보여주고, 유저가 눌러서 한 번 더 시도했는데도 또 실패하면 그때 복사
   // 폴백으로 넘어간다.
+  // iframe으로 시도하는 이유: 카카오톡/인스타그램 웹뷰는 intent:// 스킴을
+  // 알아서 가로채 크롬을 실행해주지만, 링크드인 웹뷰처럼 이 스킴을 지원하지
+  // 않는 경우 window.location.href로 직접 이동을 시도하면 "웹페이지를 사용할
+  // 수 없음" 에러 화면으로 우리 페이지 자체가 통째로 날아가버려서, 그 뒤에
+  // 이어질 복사 폴백 로직조차 실행되지 못한다. 숨겨진 iframe 안에서 시도하면
+  // 실패해도 iframe만 죽고 우리 페이지(및 폴백 타이머)는 살아있다.
+  function tryIntentViaIframe(intentUrl) {
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = intentUrl;
+      document.body.appendChild(iframe);
+      setTimeout(() => { try { document.body.removeChild(iframe); } catch (e) { /* ignore */ } }, 2000);
+    } catch (e) { /* 이 방식조차 막혀있으면 그냥 폴백 타이머로 넘어감 */ }
+  }
   function attemptAndroidRedirect(isRetry) {
     trackEventSafe('inapp_redirect_attempt', { app: app.id, os, retry: !!isRetry });
     const target = resolveTargetUrl();
@@ -113,7 +128,7 @@
     document.addEventListener('visibilitychange', function onVis() {
       if (document.hidden) left = true;
     }, { once: true });
-    window.location.href = intentUrl;
+    tryIntentViaIframe(intentUrl);
     setTimeout(() => {
       if (left) {
         trackEventSafe('inapp_redirect_success', { app: app.id, retry: !!isRetry });
@@ -145,7 +160,7 @@
       document.addEventListener('visibilitychange', function onVis() {
         if (document.hidden) left = true;
       }, { once: true });
-      window.location.href = intentUrl;
+      tryIntentViaIframe(intentUrl);
       setTimeout(() => {
         if (left) {
           trackEventSafe('inapp_redirect_success', { app: app.id, source: 'inline_action' });
