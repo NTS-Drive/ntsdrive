@@ -1,5 +1,5 @@
 /* ============================================================
-   NTS Drive · 인앱 브라우저(카카오톡/인스타그램) 대응 — 단순화 버전
+   NTS Drive · 인앱 브라우저(카카오톡/인스타그램/링크드인) 대응 — 단순화 버전
    - 어떤 페이지로 들어오든, 인앱 브라우저가 감지되면 진입 즉시 전체화면
      오버레이 하나만 노출한다 (예전의 "상단 배너 + iOS 전용 인터스티셜"
      이중 구조를 오버레이 하나로 통합).
@@ -23,6 +23,7 @@
     const ua = navigator.userAgent || '';
     if (/KAKAOTALK/i.test(ua)) return { id: 'kakao', name: '카카오톡', escapeIcon: '↑', escapeMenu: '공유 아이콘', escapeLocation: '화면 하단', escapeAction: '"Safari로 열기"' };
     if (/Instagram/i.test(ua)) return { id: 'instagram', name: '인스타그램', escapeIcon: '•••', escapeMenu: '메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"외부 브라우저에서 열기"' };
+    if (/LinkedInApp/i.test(ua)) return { id: 'linkedin', name: '링크드인', escapeIcon: '⋯', escapeMenu: '더보기 메뉴', escapeLocation: '화면 우측 상단', escapeAction: '"Safari에서 열기"(또는 "브라우저에서 열기")' };
     return null;
   }
   function detectOS() {
