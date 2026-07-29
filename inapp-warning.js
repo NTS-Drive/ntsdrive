@@ -3,10 +3,16 @@
    - 어떤 페이지로 들어오든, 인앱 브라우저가 감지되면 진입 즉시 전체화면
      오버레이 하나만 노출한다 (예전의 "상단 배너 + iOS 전용 인터스티셜"
      이중 구조를 오버레이 하나로 통합).
-   - 안드로이드: "주 브라우저로 이동" 버튼 1개(핵심 경로). intent://로 크롬
-     이동을 시도하고, 실패하면 토스트 + 복사 폴백(액션플랜 포함)으로 전환.
-   - 아이폰: "링크 복사하기"(복사 직후 단계별 액션플랜 노출) + "이동 없이
-     둘러보기"(세션 동안만 다시 안 뜸) 2개 버튼.
+   - 안드로이드(카카오톡/인스타그램): "주 브라우저로 이동" 버튼 1개(핵심
+     경로). intent://로 크롬 이동을 시도하고, 실패하면 토스트 + 복사
+     폴백(액션플랜 포함)으로 전환.
+   - 아이폰(전체) + 안드로이드 중 intent:// 스킴을 안 받아주는 웹뷰(현재
+     확인된 건 링크드인, app.redirectSupported=false로 표시): "링크
+     복사하기"(복사 직후 단계별 액션플랜 노출) 버튼 1개 + 앱 자체 메뉴로
+     탈출하는 안내(아이콘/메뉴명/위치). intent:// 자동 시도 자체를 하지
+     않는다 — 실기기 테스트 결과 링크드인 웹뷰에서 intent:// 이동을 시도하면
+     "웹페이지를 사용할 수 없음" 에러로 페이지 자체가 죽어버려 폴백조차 못
+     타는 게 확인됐기 때문.
    - Post의 "편지 확인 링크"(?d=)로 들어온 경우, 이동시킬 URL을 "내 편지함
      등록 링크"(?add=)로 바꿔치기해서 크롬/사파리 도착과 동시에 자동 저장까지
      한 번에 끝나게 한다. Log는 애초에 회신 링크 자체가 ?add= 형태라 이
@@ -227,7 +233,7 @@
     const escapeButtons = `
       <div class="nts-gate-escape">
         <div class="nts-gate-escape-icon">${app.escapeIcon}</div>
-        <p><b>${app.escapeLocation}의 ${app.escapeMenu}</b>(${app.escapeIcon})을 누르고<br>${app.escapeAction}를 선택하면 바로 ${browserName}로 이동해요<br><span style="opacity:0.75;">(제일 쉽고 빠른 방법이에요)</span></p>
+        <p><b>${app.escapeLocation}의 ${app.escapeMenu}</b>(${app.escapeIcon})을 누르고<br>${app.escapeAction}가 보이면 선택해서 ${browserName}로 이동해요<br><span style="opacity:0.75;">(메뉴에 안 보이면 아래 링크 복사하기를 이용해주세요)</span></p>
       </div>
       <div class="nts-gate-or">또는</div>
       <button type="button" class="nts-gate-secondary" id="ntsGateCopy">링크 복사하기</button>
