@@ -48,13 +48,10 @@ body.cam-mode { background: var(--cam-bg); color: var(--cam-ink); }
 .cam-kicker { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px; }
 .cam-kicker.snap { color: var(--snap-accent); }
 .cam-kicker.film { color: var(--film-accent); }
-.cam-kicker-toggle { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; }
-.cam-toggle-opt { cursor: pointer; color: var(--cam-muted); opacity: 0.55; transition: opacity .15s, color .15s; }
-.cam-toggle-opt:hover { opacity: 0.85; }
-.cam-toggle-opt.active { opacity: 1; cursor: default; }
-.cam-toggle-opt.snap.active { color: var(--snap-accent); }
-.cam-toggle-opt.film.active { color: var(--film-accent); }
-.cam-toggle-sep { color: var(--cam-muted); opacity: 0.45; }
+.cam-toggle-pill { display: inline-flex; border: 1.5px solid var(--cam-muted); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+.cam-toggle-seg { padding: 6px 18px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cam-muted); cursor: pointer; transition: background .15s, color .15s; }
+.cam-toggle-seg.active { background: var(--cam-ink); color: var(--cam-bg); font-weight: 700; cursor: default; }
+.cam-toggle-seg:not(.active):hover { color: var(--cam-ink); }
 .cam-title { font-family: var(--font-serif); font-weight: 700; font-size: 24px; margin-bottom: 6px; }
 .cam-sub { font-size: 12.5px; color: var(--cam-muted); margin-bottom: 22px; }
 

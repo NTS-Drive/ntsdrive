@@ -123,7 +123,7 @@ const ASK_QUESTION_POOL = [
   { id: 5, cat: '취향', text: '추천하는 유튜브 채널은?' },
   { id: 6, cat: '취향', text: '인생 영화 한 편 꼽는다면?' },
   { id: 7, cat: '성향', text: 'MBTI 알려줄래?' },
-  { id: 8, cat: '성향', text: '아침형 vs 밤형?' },
+  { id: 8, cat: '성향', text: '아침형 vs 저녁형?' },
   { id: 9, cat: '성향', text: '혼자 vs 같이, 뭐가 더 편해?' },
   { id: 10, cat: '성향', text: '스트레스 풀 때 뭐 해?' },
   { id: 11, cat: '성향', text: '결정할 때 직감파 vs 신중파?' },
@@ -245,9 +245,9 @@ function renderAskResultBlock(entry, isRequester) {
   return `
     <div class="masthead" style="margin-bottom:24px;">
       <div class="kicker">💬 Ask</div>
-      <h1 style="font-size:26px;">${title}</h1>
     </div>
     <div id="askResultCapture" class="ask-result-card">
+      <h2 class="ask-card-title">${title}</h2>
       ${qa}
     </div>
     <div class="share-actions" style="margin-top:22px;">
