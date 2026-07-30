@@ -1,7 +1,7 @@
 /* ============================================================
    NTS Drive · Settings — 데이터 백업 / 가져오기(병합) / 자동 리마인드
-   Post(post_inbox_v1), Log(log_mylogs_v1 + log_room:*), Diary
-   (ntsdrive.diary.entries.v1 등)를 하나의 JSON으로 묶는다.
+   Ask(ask_myasks_v1), Post(post_inbox_v1), Log(log_mylogs_v1 + log_room:*),
+   Diary(ntsdrive.diary.entries.v1 등)를 하나의 JSON으로 묶는다.
    사진(Snap/Film)은 용량 문제로 백업 대상에서 제외한다.
    ============================================================ */
 (function (global) {
@@ -37,6 +37,10 @@
     data['ntsdrive.diary.resetYear.v1'] = localStorage.getItem('ntsdrive.diary.resetYear.v1') || null;
     try { data['ntsdrive.diary.tagFreq.v1'] = JSON.parse(localStorage.getItem('ntsdrive.diary.tagFreq.v1') || '{}'); }
     catch (e) { data['ntsdrive.diary.tagFreq.v1'] = {}; }
+
+    // Ask
+    try { data['ask_myasks_v1'] = JSON.parse(localStorage.getItem('ask_myasks_v1') || '[]'); }
+    catch (e) { data['ask_myasks_v1'] = []; }
 
     return data;
   }
@@ -75,7 +79,7 @@
   function importBackup(payload) {
     if (!payload || !payload.data) throw new Error('올바른 백업 파일이 아니에요.');
     const d = payload.data;
-    const summary = { post: 0, log: 0, diary: 0 };
+    const summary = { post: 0, log: 0, diary: 0, ask: 0 };
 
     // Post
     try {
@@ -118,6 +122,14 @@
       });
       localStorage.setItem('ntsdrive.diary.tagFreq.v1', JSON.stringify(existingFreq));
       // resetYear는 로컬 값을 그대로 유지(가져온 값으로 덮어쓰지 않음)
+    } catch (e) { /* skip */ }
+
+    // Ask
+    try {
+      const existing = JSON.parse(localStorage.getItem('ask_myasks_v1') || '[]');
+      const incoming = Array.isArray(d['ask_myasks_v1']) ? d['ask_myasks_v1'] : [];
+      summary.ask = mergeArrayByKey(existing, incoming, item => item.id);
+      localStorage.setItem('ask_myasks_v1', JSON.stringify(existing));
     } catch (e) { /* skip */ }
 
     return summary;
