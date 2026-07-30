@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://ntsdrive.com/ask/index.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://ntsdrive.com/post/index.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -57,6 +62,11 @@
   </url>
   <url>
     <loc>https://ntsdrive.com/guide/index.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ntsdrive.com/guide/ask.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

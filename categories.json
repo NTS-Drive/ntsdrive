@@ -1,5 +1,14 @@
 [
   {
+    "id": "ask",
+    "name": "Ask",
+    "description": "3~10개 질문을 골라 보내고,<br class=\"mob-break\"> 답이 오면 카드로 남겨보세요.",
+    "emoji": "💬",
+    "status": "Live",
+    "path": "ask/index.html",
+    "itemsSource": null
+  },
+  {
     "id": "post",
     "name": "Post",
     "description": "마음을 담아 편지를 쓰고,<br class=\"mob-break\"> 원하는 시간까지 잠가둘 수 있어요.",

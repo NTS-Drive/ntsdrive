@@ -41,11 +41,11 @@
   <a class="mark" onclick="navigate('../index.html')" style="cursor:pointer;">NTS DRIVE</a>
   <div class="nav-links">
     <span onclick="navigate('../index.html')">Home</span>
+    <span onclick="navigate('../ask/index.html')">Ask</span>
     <span onclick="navigate('../post/index.html')">Post</span>
     <span class="active">Log</span>
     <span onclick="navigate('../diary/index.html')">Diary</span>
     <span onclick="navigate('../snap/index.html')">Snap</span>
-    <span onclick="navigate('../film/index.html')">Film</span>
   </div>
 </div>
 
@@ -53,11 +53,11 @@
 
 <nav class="bottom-nav">
   <a onclick="navigate('../index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></span>Home</a>
+  <a onclick="navigate('../ask/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><circle cx="8" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="12" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="16" cy="10.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>Ask</a>
   <a onclick="navigate('../post/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span>Post</a>
   <a class="active"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg></span>Log</a>
   <a onclick="navigate('../diary/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="8" y1="3" x2="8" y2="21"/><circle cx="16" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span>Diary</a>
   <a onclick="navigate('../snap/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="13" rx="2"/><circle cx="12" cy="10.5" r="3.2"/><path d="M9 4l1.2-1.5h3.6L15 4"/></svg></span>Snap</a>
-  <a onclick="navigate('../film/index.html')"><span class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><rect x="4.3" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="4.3" y="16" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="6" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="9.3" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="12.7" width="1.3" height="1.3" rx="0.25"/><rect x="18.4" y="16" width="1.3" height="1.3" rx="0.25"/></svg></span>Film</a>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -454,7 +454,7 @@ function renderDashboard() {
       <div class="gauge-participants">지금까지 ${letters.length}명이 마음을 보탰어요</div>
     </div>
 
-    <div class="disclaimer" style="margin-top:0; margin-bottom:24px;">친구가 편지를 쓰면 자동으로 이 방에 모여요.</div>
+    <div class="disclaimer" style="margin-top:0; margin-bottom:24px;">친구가 편지를 쓰면 자동으로 이 방에 모여요.<br>${capacityNotice(letters, currentRoom.title)}</div>
 
     <div id="letterList"></div>
 
@@ -498,6 +498,19 @@ function renderLetterList(letters) {
   `).join('');
 }
 
+// 편지가 많이 쌓여 "공개된 방 보기" 링크가 너무 길어지는 걸 막기 위한
+// 3,000자 안전선(tryRegister 참고) — 유저에게는 자수 대신 "통수" 기준으로
+// 안내한다. 아직 편지가 없는 방은 평균치를 가늠할 수 없어 대략적인 기본값을
+// 쓴다.
+function capacityNotice(letters, title) {
+  const currentEncoded = encodeData({ title, letters: letters.map(l => ({ text: l.text, from: l.from || '' })) });
+  const remainingBudget = 3000 - currentEncoded.length;
+  if (remainingBudget <= 0) return '지금 이 방은 편지가 많이 모여서 더 이상 새 편지를 받을 수 없어요.';
+  const avgPerLetter = letters.length > 0 ? (currentEncoded.length / letters.length) : 80;
+  const estRemaining = Math.max(1, Math.floor(remainingBudget / Math.max(avgPerLetter, 20)));
+  return `지금까지 온 편지 기준으로, 앞으로 약 ${estRemaining}통 더 받을 수 있어요.`;
+}
+
 function tryRegister(encoded, silent) {
   let letter;
   try {
@@ -516,6 +529,21 @@ function tryRegister(encoded, silent) {
   const letters = loadLetters(roomEncoded);
   if (letters.some(l => l.text === letter.text && l.createdAt === letter.createdAt)) {
     if (!silent) toast('이미 등록된 편지예요.');
+    return;
+  }
+
+  // 완료(목표/D-day) 여부와 무관하게, 편지가 계속 쌓여 "공개된 방 보기" 공유
+  // 링크(shareRevealedRoom과 동일한 페이로드 모양)가 지나치게 길어지는 걸
+  // 막는다. 일부 인앱 브라우저/구형 안드로이드는 너무 긴 링크를 거부하거나
+  // 잘라버릴 수 있어서, 3,000자를 넘기기 전까지만 계속 받는다.
+  const candidateLetters = [...letters, { text: letter.text, from: letter.from || '', createdAt: letter.createdAt }];
+  const estimatedRevealPayload = encodeData({
+    title: currentRoom.title,
+    letters: candidateLetters.map(l => ({ text: l.text, from: l.from || '' }))
+  });
+  if (estimatedRevealPayload.length > 3000) {
+    if (!silent) toast('이 방은 편지가 많이 모여서 더 이상 새 편지를 받을 수 없어요.');
+    trackEvent('log_letter_rejected_capacity', { room_title: currentRoom.title, letter_count: letters.length });
     return;
   }
 
@@ -580,6 +608,7 @@ function renderReveal(letters, total) {
       <button class="ghost-btn" style="flex:1;" onclick="saveRoomImage()">저장하기</button>
       <button class="ghost-btn" style="flex:1;" onclick="shareRevealedRoom()">공유하기</button>
     </div>
+    <div class="disclaimer" style="margin-top:16px;">방이 열린 뒤에도 편지는 계속 받을 수 있어요.<br>${capacityNotice(letters, currentRoom.title)}</div>
   `;
 
   // Each card's front face is absolutely positioned (required for the 3D

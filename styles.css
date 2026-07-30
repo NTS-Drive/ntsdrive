@@ -137,6 +137,7 @@ body.leaving{animation:pageOut .3s ease both;}
 .folder.soon .badge{background:#EDEDF0; color:#9A9DA8;}
 .folder.soon .glyph{opacity:0.6;}
 
+.f-ask{--fcolor:#CBE8DD;}
 .f-post{--fcolor:#F6C9CE;}
 .f-log{--fcolor:#F3DCA8;}
 .f-diary{--fcolor:#C7DCF5;}
