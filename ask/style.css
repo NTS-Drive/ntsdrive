@@ -52,6 +52,14 @@ body.leaving { animation: pageOut .28s ease both; }
 .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
 .disclaimer { font-size: 11px; color: var(--ink-muted); text-align: center; margin-top: 16px; line-height: 1.7; }
 
+.inbox-steps { margin-bottom: 30px; }
+.inbox-steps .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: center; }
+.inbox-steps .num {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1;
+}
+.inbox-steps p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin: 0; }
+
 .share-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .share-result { text-align: center; padding: 30px 0; }
 .share-result .env-icon { font-size: 40px; margin-bottom: 16px; }
@@ -107,7 +115,7 @@ body.leaving { animation: pageOut .28s ease both; }
 .ask-card-title { font-family: var(--font-serif); font-weight: 700; font-size: 22px; margin-bottom: 26px; text-align: center; }
 .ask-qa-block { margin-bottom: 38px; }
 .ask-qa-block:last-child { margin-bottom: 0; }
-.ask-qa-q { font-size: 23px; font-weight: 600; color: #8B8478; margin-bottom: 10px; font-family: var(--font-serif); }
+.ask-qa-q { font-size: 23px; font-weight: 600; color: #8B8478; margin-bottom: 10px; }
 .ask-qa-a { font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.4; }
 .ask-cta { text-align: center; margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line); }
 .ask-cta p { font-size: 14px; color: var(--ink-muted); margin-bottom: 14px; }
@@ -158,5 +166,5 @@ body.leaving { animation: pageOut .28s ease both; }
   .bottom-nav a .bicon svg { width: 20px; height: 20px; }
   .bottom-nav a.active { color: var(--accent); }
   .ask-qa-q { font-size: 19px; }
-  .ask-qa-a { font-size: 24px; }
+  .ask-qa-a { font-size: 25px; }
 }
