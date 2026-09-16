@@ -11,7 +11,7 @@
   --accent: #1F3D3B;
   --chip-bg: #F3F1EA;
 
-  --font-display: "Archivo Black", sans-serif;
+  --font-display: "Anton", sans-serif;
   --font-body: "Inter", -apple-system, sans-serif;
 
   --radius: 12px;
@@ -19,12 +19,17 @@
 
 * { box-sizing: border-box; }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 .wrap {
@@ -36,7 +41,7 @@ body {
 /* ---------- hero ---------- */
 
 .sw-heading {
-  font-family: "Anton", sans-serif;
+  font-family: var(--font-display);
   font-weight: 400;
   font-size: 46px;
   line-height: 0.92;
@@ -201,18 +206,17 @@ body {
 }
 
 .row-title-line {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .row-status {
+  display: block;
+  font-family: var(--font-body);
   font-size: 11px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
 }
 
 .row-title {
@@ -247,6 +251,7 @@ body {
 }
 
 .row-date {
+  font-family: var(--font-body);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -255,6 +260,7 @@ body {
 }
 
 .row-tag {
+  font-family: var(--font-body);
   font-size: 11px;
   color: var(--text-secondary);
   white-space: nowrap;
@@ -513,4 +519,7 @@ body {
   .sw-heading { font-size: 36px; }
   .wrap { padding: 44px 20px 40px; }
   .row-thumb, .row-thumb-placeholder { width: 68px; height: 68px; }
+  .controls-row { flex-wrap: wrap; row-gap: 10px; }
+  .status-btn { padding: 6px 10px; font-size: 11px; }
+  .filter-btn { padding: 6px 10px; font-size: 11px; }
 }

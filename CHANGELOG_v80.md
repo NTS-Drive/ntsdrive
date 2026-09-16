@@ -71,3 +71,14 @@
   - The separate `/album/` route was folded into an inline "My photos" section on the same page (locked cards while developing, lightbox + download once ready)
   - Photos are stored in this browser only (`camera_album_v1` in localStorage), same 2-week / 24-photo / 2MB budget as before
   - Listed on the homepage as a `demo`-status project so it only shows under All / Demo, not Live
+
+---
+
+## v85 — Mobile overflow fix + typography/detail polish
+
+- Fixed a horizontal overflow bug on mobile (controls row could push past the viewport); added a global overflow-x safety net plus tighter mobile padding for the status toggle and sort button
+- Unified all bold display type (heading + row titles + modal name) on Anton, dropped Archivo Black
+- Moved the Live/Demo label above each title, left-aligned, same font as the release date
+- Made date/tag/status font-family explicit (Inter) for consistency
+- Added cache-busting (`?v=`) to every project image (thumbnails, logos, history gallery) so future asset swaps show up immediately instead of hitting stale browser caches
+- Modal's visit link and store buttons now open in a new tab

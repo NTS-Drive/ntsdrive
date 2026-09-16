@@ -1,5 +1,11 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
+const ASSET_VERSION = 'v3';
+function withV(path) {
+  if (!path) return path;
+  return `${path}?v=${ASSET_VERSION}`;
+}
+
 function track(eventName, params) {
   if (typeof window.ntsTrack === 'function') {
     window.ntsTrack(eventName, params);
@@ -27,15 +33,15 @@ function filterProjects(projects, status) {
 
 function rowTemplate(p) {
   const thumbInner = p.thumbnail
-    ? `<img class="row-thumb" src="${p.thumbnail}" alt="${p.name} screenshot" loading="lazy">`
+    ? `<img class="row-thumb" src="${withV(p.thumbnail)}" alt="${p.name} screenshot" loading="lazy">`
     : `<div class="row-thumb-placeholder">${p.name}</div>`;
 
   return `
     <div class="row" data-project="${p.id}" role="button" tabindex="0">
       <div class="row-main">
         <div class="row-title-line">
-          <p class="row-title">${p.name}</p>
           <span class="row-status">${p.statusLabel}</span>
+          <p class="row-title">${p.name}</p>
         </div>
         <p class="row-desc">${p.description}</p>
         <div class="row-meta">
@@ -141,14 +147,14 @@ function openDetail(projectId) {
   const hasStore = p.appStore || p.playStore;
   const storesHTML = `
     <div class="detail-stores ${hasStore ? '' : 'is-empty'}">
-      ${p.appStore ? `<a class="store-link" href="${p.appStore}" aria-label="App Store"><i class="ti ti-brand-apple" aria-hidden="true"></i>App Store</a>` : ''}
-      ${p.playStore ? `<a class="store-link" href="${p.playStore}" aria-label="Google Play"><i class="ti ti-brand-google-play" aria-hidden="true"></i>Google Play</a>` : ''}
+      ${p.appStore ? `<a class="store-link" href="${p.appStore}" target="_blank" rel="noopener noreferrer" aria-label="App Store"><i class="ti ti-brand-apple" aria-hidden="true"></i>App Store</a>` : ''}
+      ${p.playStore ? `<a class="store-link" href="${p.playStore}" target="_blank" rel="noopener noreferrer" aria-label="Google Play"><i class="ti ti-brand-google-play" aria-hidden="true"></i>Google Play</a>` : ''}
     </div>`;
 
   const historyHTML = p.history ? `
     <div class="detail-history">
       <div class="detail-history-header">
-        <img class="detail-history-icon" src="${p.history.icon}" alt="">
+        <img class="detail-history-icon" src="${withV(p.history.icon)}" alt="">
         <p class="detail-history-note">${p.history.note}</p>
       </div>
       <div class="history-gallery-image-wrap">
@@ -164,16 +170,16 @@ function openDetail(projectId) {
   ` : '';
 
   document.getElementById('detail-panel').innerHTML = `
-    ${p.logo ? `<img class="detail-logo" src="${p.logo}" alt="${p.name} logo">` : ''}
+    ${p.logo ? `<img class="detail-logo" src="${withV(p.logo)}" alt="${p.name} logo">` : ''}
     <div class="detail-name-line">
       <p class="detail-name">${p.name}</p>
       <span class="row-badge">${p.statusLabel}</span>
     </div>
     <p class="detail-category">${p.category} &middot; Released ${p.releaseDateLabel}</p>
     ${storesHTML}
-    ${p.url ? `<a class="detail-visit" href="${p.url}" data-project="${p.id}">${p.urlLabel}</a>` : ''}
+    ${p.url ? `<a class="detail-visit" href="${p.url}" target="_blank" rel="noopener noreferrer" data-project="${p.id}">${p.urlLabel}</a>` : ''}
     <p class="detail-desc">${p.detail || p.description}</p>
-    ${p.thumbnail ? `<img class="detail-screenshot" src="${p.thumbnail}" alt="${p.name} screenshot">` : ''}
+    ${p.thumbnail ? `<img class="detail-screenshot" src="${withV(p.thumbnail)}" alt="${p.name} screenshot">` : ''}
     ${historyHTML}
   `;
 
@@ -201,7 +207,7 @@ function showGallerySlide(index) {
   if (index < 0 || index >= currentGallery.length) return;
   currentGalleryIndex = index;
   const item = currentGallery[currentGalleryIndex];
-  document.getElementById('gallery-img').src = item.src;
+  document.getElementById('gallery-img').src = withV(item.src);
   document.getElementById('gallery-img').alt = item.caption;
   document.getElementById('gallery-caption').textContent = item.caption;
   document.getElementById('gallery-count').textContent = `${currentGalleryIndex + 1} / ${currentGallery.length}`;
