@@ -1,0 +1,60 @@
+[
+  {
+    "id": "waaait",
+    "name": "waaait",
+    "category": "소셜",
+    "status": "live",
+    "statusLabel": "live",
+    "hosting": "external",
+    "description": "친구를 위해 지도에 편지를 묻고, 찾아가게 하는 타임캡슐 SNS.",
+    "url": "https://www.waaait.com",
+    "urlLabel": "waaait.com 방문하기",
+    "thumbnail": "assets/projects/waaait-thumb.png",
+    "appStore": null,
+    "playStore": null,
+    "history": {
+      "note": "NTS Drive — 이전에 만든 로컬 저장 기반 기록 서비스",
+      "icon": "assets/history/nts-icon.jpg",
+      "gallery": [
+        {
+          "src": "assets/history/01-home.jpg",
+          "caption": "홈 — 시계 위젯"
+        },
+        {
+          "src": "assets/history/02-ask.jpg",
+          "caption": "Ask — 친구에게 질문 보내고 답 받기"
+        },
+        {
+          "src": "assets/history/03-post.jpg",
+          "caption": "Post — 시간 잠금 편지"
+        },
+        {
+          "src": "assets/history/04-log.jpg",
+          "caption": "Log — 함께 채우는 롤링페이퍼"
+        },
+        {
+          "src": "assets/history/05-diary.jpg",
+          "caption": "Diary — 감정 기록"
+        },
+        {
+          "src": "assets/history/06-snap.jpg",
+          "caption": "Snap — 즉석사진"
+        }
+      ]
+    }
+  },
+  {
+    "id": "comecame",
+    "name": "comecame",
+    "category": "여행 및 지역정보",
+    "status": "live",
+    "statusLabel": "live",
+    "hosting": "external",
+    "description": "다른 나라 실시간 view 멍때리기와 여행 기록.",
+    "url": "https://www.comecame.com",
+    "urlLabel": "comecame.com 방문하기",
+    "thumbnail": "assets/projects/comecame-thumb.png",
+    "appStore": null,
+    "playStore": null
+  }
+]
