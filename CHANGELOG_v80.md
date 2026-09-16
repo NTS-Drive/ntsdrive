@@ -42,3 +42,32 @@
 
 - GitHub Pages에 이 트리로 **통째로 교체** 배포하면 됨 (`.git` 폴더는 원래 repo 쪽에 이미 있으니 이 zip엔 안 넣었어요)
 - 로컬에서 `index.html` 직접 열면 `fetch`가 막혀서 카드가 안 보여요 — 로컬 서버나 실제 배포 환경에서 확인해주세요
+
+---
+
+## v81 — Editorial list redesign
+
+- Replaced the card-grid layout with an editorial list (bold Archivo Black headings, thin dividers between rows), closer to project7.app's reference style
+- Whole site copy switched to English (hero, descriptions, categories, dates, buttons)
+- Added a black intro box (name + tagline) right under the "Selected work" heading
+- Added a Newest / A–Z sort control above the project list
+- Each row now shows: title, live badge, one-line description, release date, and a bordered category tag on the same line
+- Clicking a row opens a single detail modal (logo, name, category/date, store buttons if any, visit link, longer description, screenshot, and — for waaait — the NTS Drive history gallery)
+- Removed the separate "read more" toggle and the standalone history modal; both are folded into this one detail modal
+- Added `releaseDate` / `releaseDateLabel` and `logo` fields to `data/projects.json`
+- New square logo assets: `assets/projects/waaait-logo.png`, `assets/projects/comecame-logo.png`
+- Fonts switched to Archivo Black (headings) + Inter (body); dropped Space Grotesk and Newsreader
+
+---
+
+## v83 — Status filter + real Film demo
+
+- Sort control moved into a rectangular dropdown, pinned to the right
+- Added a rectangular All / Live / Demo status toggle on the left
+- Added a `status` field to each project (`live` or `demo`) for filtering
+- Revived the old NTS Drive Film feature as a real standalone page at `/film/`:
+  - Actual camera capture (getUserMedia), the same 1-12 hour randomized "developing" delay and warm film filter as before
+  - Old GNB/bottom-nav removed (those pages no longer exist) in favor of a single back-to-portfolio link
+  - The separate `/album/` route was folded into an inline "My photos" section on the same page (locked cards while developing, lightbox + download once ready)
+  - Photos are stored in this browser only (`camera_album_v1` in localStorage), same 2-week / 24-photo / 2MB budget as before
+  - Listed on the homepage as a `demo`-status project so it only shows under All / Demo, not Live

@@ -2,43 +2,47 @@
   {
     "id": "waaait",
     "name": "waaait",
-    "category": "소셜",
+    "category": "#social",
     "status": "live",
-    "statusLabel": "live",
+    "statusLabel": "Live",
     "hosting": "external",
-    "description": "친구를 위해 지도에 편지를 묻고, 찾아가게 하는 타임캡슐 SNS.",
+    "description": "A time-capsule social app: bury a letter on a map for a friend to dig up.",
+    "detail": "Bury a letter at a spot on the map, and a friend follows warmer-colder hints to dig it up. Waaait also has time-locked letters that stay sealed until a chosen date, and Ask, where one honest answer gets opened on your own time.",
     "url": "https://www.waaait.com",
-    "urlLabel": "waaait.com 방문하기",
+    "urlLabel": "Visit waaait.com",
     "thumbnail": "assets/projects/waaait-thumb.png",
+    "logo": "assets/projects/waaait-logo.png",
+    "releaseDate": "2026-09",
+    "releaseDateLabel": "Sep 2026",
     "appStore": null,
     "playStore": null,
     "history": {
-      "note": "NTS Drive — 이전에 만든 로컬 저장 기반 기록 서비스",
+      "note": "NTS Drive — an earlier journaling app, storage local to the browser",
       "icon": "assets/history/nts-icon.jpg",
       "gallery": [
         {
           "src": "assets/history/01-home.jpg",
-          "caption": "홈 — 시계 위젯"
+          "caption": "Home — clock widget"
         },
         {
           "src": "assets/history/02-ask.jpg",
-          "caption": "Ask — 친구에게 질문 보내고 답 받기"
+          "caption": "Ask — send a question, get an answer"
         },
         {
           "src": "assets/history/03-post.jpg",
-          "caption": "Post — 시간 잠금 편지"
+          "caption": "Post — time-locked letters"
         },
         {
           "src": "assets/history/04-log.jpg",
-          "caption": "Log — 함께 채우는 롤링페이퍼"
+          "caption": "Log — a rolling paper you fill together"
         },
         {
           "src": "assets/history/05-diary.jpg",
-          "caption": "Diary — 감정 기록"
+          "caption": "Diary — mood journal"
         },
         {
           "src": "assets/history/06-snap.jpg",
-          "caption": "Snap — 즉석사진"
+          "caption": "Snap — instant photos"
         }
       ]
     }
@@ -46,14 +50,36 @@
   {
     "id": "comecame",
     "name": "comecame",
-    "category": "여행 및 지역정보",
+    "category": "#virtualtravel",
     "status": "live",
-    "statusLabel": "live",
+    "statusLabel": "Live",
     "hosting": "external",
-    "description": "다른 나라 실시간 view 멍때리기와 여행 기록.",
+    "description": "Watch other countries live and keep a record of the trips you take.",
+    "detail": "Browse other countries' live webcam views on a map, sorted by category like city, nature, or beach, and log the scenes you watch as part of your own travel record.",
     "url": "https://www.comecame.com",
-    "urlLabel": "comecame.com 방문하기",
+    "urlLabel": "Visit comecame.com",
     "thumbnail": "assets/projects/comecame-thumb.png",
+    "logo": "assets/projects/comecame-logo.png",
+    "releaseDate": "2026-08",
+    "releaseDateLabel": "Aug 2026",
+    "appStore": null,
+    "playStore": null
+  },
+  {
+    "id": "film",
+    "name": "film cam",
+    "category": "#filmcamera",
+    "status": "demo",
+    "statusLabel": "Demo",
+    "hosting": "internal",
+    "description": "A film-camera feel with random 1-12 hour development times.",
+    "detail": "Shots develop after a random wait of 1 to 12 hours, weighted toward the shorter end, recreating the anticipation of waiting on real film.",
+    "url": "/film/",
+    "urlLabel": "Try the demo",
+    "thumbnail": "assets/projects/filmcam-thumb.png",
+    "logo": "assets/projects/filmcam-logo.png",
+    "releaseDate": "2026-07",
+    "releaseDateLabel": "Jul 2026",
     "appStore": null,
     "playStore": null
   }

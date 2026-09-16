@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Min — product builder</title>
-<meta name="description" content="AI를 활용해 서비스를 기획하고 만드는 빌더 Min의 포트폴리오.">
+<meta name="description" content="Min — a product builder who plans and builds services with AI.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Newsreader:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="styles.css?v=2">
 <script src="analytics.js"></script>
 </head>
 <body>
@@ -18,25 +18,46 @@
 <div class="wrap">
 
   <header class="hero">
-    <p class="hero-role">product builder</p>
-    <h1 class="hero-name">Min<span class="hero-name-accent">.</span></h1>
-    <p class="hero-intro">AI를 활용해 서비스를 기획하고 만듭니다. 아이디어가 생기면 먼저 만들어서 반응을 봅니다.</p>
+    <h1 class="sw-heading">Selected<br>work</h1>
+
+    <div class="intro-box">
+      <p class="intro-name">Min</p>
+      <p class="intro-tagline">Product builder crafting services with AI</p>
+    </div>
+
+    <div class="controls-row">
+      <div class="status-toggle" role="group" aria-label="Filter by status">
+        <button type="button" class="status-btn is-active" data-status="all">All</button>
+        <button type="button" class="status-btn" data-status="live">Live</button>
+        <button type="button" class="status-btn" data-status="demo">Demo</button>
+      </div>
+      <div class="filter-dropdown">
+        <button type="button" class="filter-btn" id="filter-btn" aria-haspopup="true" aria-expanded="false">
+          Sort: <span id="filter-btn-label">Newest</span>
+          <i class="ti ti-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="filter-menu" id="filter-menu">
+          <button type="button" class="filter-option is-active" data-sort="newest">Newest</button>
+          <button type="button" class="filter-option" data-sort="az">A&ndash;Z</button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="projects" id="projects" aria-label="프로젝트 목록">
-      <!-- 카드는 script.js가 data/projects.json을 읽어 여기 렌더링합니다 -->
+    <section class="projects" id="projects" aria-label="Project list">
+      <!-- Rows are rendered by script.js from data/projects.json -->
     </section>
 
-    <p class="next-slot">다음 프로젝트가 계속 쌓입니다.</p>
+    <p class="next-slot">More projects coming.</p>
   </main>
 
   <footer class="footer">
-    <p>&copy; <span id="year"></span> Min · <a href="mailto:myer@kakao.com" class="footer-email">myer@kakao.com</a></p>
+    <p>&copy; <span id="year"></span> Min &middot; <a href="mailto:myer@kakao.com" class="footer-email">myer@kakao.com</a></p>
   </footer>
 
 </div>
 
-<script src="script.js?v=1"></script>
+<script src="script.js?v=2"></script>
 </body>
 </html>

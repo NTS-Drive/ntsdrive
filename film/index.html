@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0E0D0C">
+<title>Film cam — a demo by Min</title>
+<meta name="description" content="Film cam: a demo where shots develop after a random 1-12 hour wait, just like real film.">
+<link rel="canonical" href="https://ntsdrive.com/film/">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<script src="../analytics.js"></script>
+</head>
+<body class="cam-mode">
+
+<div class="film-topbar">
+  <a class="film-back" href="../">&larr; Min</a>
+  <span class="film-pill">FILM CAM</span>
+</div>
+
+<div class="cam-stage" id="stage"></div>
+
+<div class="film-album-section" id="album-section" style="display:none;">
+  <div class="album-head">
+    <h1>My photos</h1>
+    <p>Locked shots reveal themselves once they're done developing.</p>
+  </div>
+  <div class="album-grid" id="album-grid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="lightbox-root"></div>
+
+<script src="shared.js"></script>
+<script>
+const stage = document.getElementById('stage');
+const albumSection = document.getElementById('album-section');
+let currentFacing = 'environment';
+let albumTickTimer = null;
+
+function renderViewfinder() {
+  albumSection.style.display = 'none';
+  stage.innerHTML = `
+    <div class="cam-title">Shoot on film</div>
+    <div class="cam-sub">Each photo takes 1-12 random hours to develop<br>The viewfinder is small, but the photo itself is 600&times;400</div>
+    <div class="viewfinder ratio-32 peek"><video id="video" autoplay playsinline muted></video></div>
+    <div class="shutter-row">
+      <span style="width:44px;"></span>
+      <button class="shutter-btn" onclick="handleShutter()"></button>
+      <button class="cam-flip-btn" onclick="toggleFacing()" title="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l3 3-3 3"/><path d="M20 6H9a5 5 0 0 0-5 5"/><path d="M7 21l-3-3 3-3"/><path d="M4 18h11a5 5 0 0 0 5-5"/></svg></button>
+    </div>
+    <div class="cam-result-actions">
+      <button class="cam-btn" onclick="openAlbum()">View my photos</button>
+    </div>
+    <div class="cam-notice">
+      Photos are stored only in this browser. Depending on space, they may be deleted before 2 weeks or 24 shots &mdash; download the ones you want to keep.
+    </div>
+  `;
+  const video = document.getElementById('video');
+  video.classList.toggle('mirror', currentFacing === 'user');
+  openCamera(video, currentFacing);
+}
+
+function toggleFacing() {
+  currentFacing = currentFacing === 'environment' ? 'user' : 'environment';
+  const video = document.getElementById('video');
+  if (video && video.srcObject) stopCamera(video);
+  video.classList.toggle('mirror', currentFacing === 'user');
+  openCamera(video, currentFacing);
+}
+
+function handleShutter() {
+  const video = document.getElementById('video');
+  if (!video.videoWidth) { toast('Camera is still starting up, one sec.'); return; }
+  const raw = captureFrame(video, 1.5, currentFacing === 'user');
+  stopCamera(video);
+  const filtered = applyFilmFilter(raw);
+  saveFilmPhoto(filtered);
+}
+
+function saveFilmPhoto(canvas) {
+  const dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+  const hours = pickFilmDelayHours();
+  const photo = {
+    id: makeId(), type: 'film', dataUrl,
+    createdAt: Date.now(), unlockAt: Date.now() + hours * 60 * 60 * 1000,
+    delayHours: hours, revealed: false
+  };
+  const ok = addPhoto(photo);
+  if (ok) {
+    trackEvent('film_photo_captured', { delay_hours: hours, facing: currentFacing });
+    renderDeveloping(hours);
+  }
+}
+
+function renderDeveloping(hours) {
+  stage.innerHTML = `
+    <div class="cam-title">Your film is developing</div>
+    <div class="cam-sub">This shot will be ready in about ${hours} hours<br>(the exact time is always random)</div>
+    <div class="cam-result-actions">
+      <button class="cam-btn" onclick="renderViewfinder()">Take another</button>
+      <button class="cam-btn primary" onclick="openAlbum()">View my photos</button>
+    </div>
+  `;
+}
+
+/* ---------- inline album ---------- */
+
+function openAlbum() {
+  const video = document.getElementById('video');
+  if (video && video.srcObject) stopCamera(video);
+  stage.innerHTML = `
+    <div class="cam-result-actions">
+      <button class="cam-btn primary" onclick="renderViewfinder()">Back to camera</button>
+    </div>
+  `;
+  albumSection.style.display = 'block';
+  renderAlbumGrid();
+  clearInterval(albumTickTimer);
+  albumTickTimer = setInterval(renderAlbumGrid, 60000);
+}
+
+function timeRemainingLabel(unlockAt) {
+  const ms = unlockAt - Date.now();
+  if (ms <= 0) return null;
+  const totalMin = Math.ceil(ms / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h > 0) return `${h}h ${m}m left`;
+  return `${m}m left`;
+}
+
+function renderAlbumGrid() {
+  const grid = document.getElementById('album-grid');
+  const list = loadAlbum().filter((p) => p.type === 'film');
+  if (!list.length) {
+    grid.innerHTML = '<div class="album-empty">No photos yet &mdash; go take one.</div>';
+    return;
+  }
+  grid.innerHTML = list.map((p) => {
+    const remaining = timeRemainingLabel(p.unlockAt);
+    if (remaining) {
+      return `
+        <div>
+          <div class="locked-face"><span class="lock-icon">&#128274;</span><span>${remaining}</span></div>
+          <div class="album-caption">Developing&hellip;</div>
+        </div>
+      `;
+    }
+    return `
+      <div class="album-card film-card" onclick="openLightbox('${p.id}')">
+        <img src="${p.dataUrl}" alt="Developed film photo">
+      </div>
+    `;
+  }).join('');
+}
+
+function openLightbox(id) {
+  const list = loadAlbum();
+  const photo = list.find((p) => p.id === id);
+  if (!photo) return;
+  document.getElementById('lightbox-root').innerHTML = `
+    <div class="lightbox-overlay">
+      <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+      <div class="lightbox-box">
+        <img src="${photo.dataUrl}" alt="Developed film photo">
+        <p class="lightbox-caption">${formatDateTime(photo.createdAt)}</p>
+        <div class="lightbox-actions">
+          <button class="cam-btn" onclick="downloadDataUrl('${photo.dataUrl}', 'film-${photo.id}.jpg')">Download</button>
+          <button class="cam-btn" onclick="closeLightbox()">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox-root').innerHTML = '';
+}
+
+function releaseCameraIfOpen() {
+  const video = document.getElementById('video');
+  if (video && video.srcObject) stopCamera(video);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') releaseCameraIfOpen();
+});
+window.addEventListener('pagehide', releaseCameraIfOpen);
+
+renderViewfinder();
+</script>
+</body>
+</html>
