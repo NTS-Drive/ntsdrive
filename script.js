@@ -215,7 +215,7 @@ function showGallerySlide(index) {
   document.getElementById('gallery-next').disabled = currentGalleryIndex === currentGallery.length - 1;
 }
 
-fetch('data/projects.json?v=2')
+fetch('data/projects.json?v=1789563595')
   .then((res) => res.json())
   .then((projects) => {
     allProjects = projects;

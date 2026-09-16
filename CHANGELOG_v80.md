@@ -82,3 +82,20 @@
 - Made date/tag/status font-family explicit (Inter) for consistency
 - Added cache-busting (`?v=`) to every project image (thumbnails, logos, history gallery) so future asset swaps show up immediately instead of hitting stale browser caches
 - Modal's visit link and store buttons now open in a new tab
+
+---
+
+## v86 — Cache-busting fix (the actual reason v85's style changes weren't visible)
+
+- Found the real cause behind "the tag font didn't change": `styles.css` and `script.js` were pinned to `?v=2` since the very first build and never bumped on later edits, so browsers kept serving the old cached CSS/JS through every round of changes after that. Same class of bug the old NTS Drive knowledge base already flagged (4.1 cache-busting).
+- Bumped `styles.css`, `script.js`, `data/projects.json`, and `film/style.css` all to `?v=1789563485` (current unix timestamp)
+- Going forward, every round that touches CSS/JS gets a fresh timestamp on these query params — noting this so it isn't missed again
+
+---
+
+## v87 — Final polish
+
+- Restored the original Newsreader italic serif for "Min" in the intro box (Anton stayed on headings/titles only)
+- Cache-busting bumped to `?v=1789563595` for this round's CSS/JS changes
+
+Wrapped up here. Live at ntsdrive.com: waaait, comecame (both Live), film cam (Demo, real working page at /film/).
