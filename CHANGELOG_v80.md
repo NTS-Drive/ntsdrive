@@ -99,3 +99,35 @@
 - Cache-busting bumped to `?v=1789563595` for this round's CSS/JS changes
 
 Wrapped up here. Live at ntsdrive.com: waaait, comecame (both Live), film cam (Demo, real working page at /film/).
+
+---
+
+## v88 — Modal cleanup
+
+- Removed the duplicate logo image at the top of the detail modal (the screenshot below already showed the same mark)
+- Cache-busting bumped to `?v=1789563713`
+
+---
+
+## v89 — Real screenshots instead of logo-as-screenshot
+
+- Restored the top logo in the modal; the bottom image is now a dedicated `screenshot` field, separate from `logo`/`thumbnail`
+- film cam's screenshot is a real capture of the actual `/film/` page (shutter, flip button, notice text) — not the logo blown up
+- waaait and comecame still need real screenshots: I don't have live network/browser access to waaait.com or comecame.com from here (sandboxed, and Claude-in-Chrome isn't connected this session), so their `screenshot` field is `null` for now — the modal just omits that image until one is added
+- Cache-busting bumped to `?v=1789620522`
+
+---
+
+## v90 — Real waaait/comecame screenshots + Archive label
+
+- Added the real screenshots Min sent (waaait home screen, comecame map view) — cropped to remove phone status/nav bars, resized to 700px wide, saved as `waaait-screenshot.jpg` / `comecame-screenshot.jpg`
+- Added a small "Archive" label under the divider at the top of the history section in the waaait modal
+- Cache-busting bumped to `?v=1789620938`
+
+---
+
+## v91 — comecame logo swap (green globe)
+
+- Replaced comecame's logo with the new green globe icon Min provided (of the two sizes given, picked the bolder/less-padded one for clarity at small sizes)
+- Regenerated `comecame-logo.png` and `comecame-thumb.png` against the icon's own green (#16A34A)
+- Cache-busting bumped to `?v=1789623132`

@@ -153,6 +153,7 @@ function openDetail(projectId) {
 
   const historyHTML = p.history ? `
     <div class="detail-history">
+      <p class="detail-history-label">Archive</p>
       <div class="detail-history-header">
         <img class="detail-history-icon" src="${withV(p.history.icon)}" alt="">
         <p class="detail-history-note">${p.history.note}</p>
@@ -179,7 +180,7 @@ function openDetail(projectId) {
     ${storesHTML}
     ${p.url ? `<a class="detail-visit" href="${p.url}" target="_blank" rel="noopener noreferrer" data-project="${p.id}">${p.urlLabel}</a>` : ''}
     <p class="detail-desc">${p.detail || p.description}</p>
-    ${p.thumbnail ? `<img class="detail-screenshot" src="${withV(p.thumbnail)}" alt="${p.name} screenshot">` : ''}
+    ${p.screenshot ? `<img class="detail-screenshot" src="${withV(p.screenshot)}" alt="${p.name} screenshot">` : ''}
     ${historyHTML}
   `;
 
@@ -215,7 +216,7 @@ function showGallerySlide(index) {
   document.getElementById('gallery-next').disabled = currentGalleryIndex === currentGallery.length - 1;
 }
 
-fetch('data/projects.json?v=1789563595')
+fetch('data/projects.json?v=1789623132')
   .then((res) => res.json())
   .then((projects) => {
     allProjects = projects;

@@ -444,6 +444,15 @@ body {
   padding-top: 18px;
 }
 
+.detail-history-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 0 0 14px;
+}
+
 .detail-history-header {
   display: flex;
   align-items: center;

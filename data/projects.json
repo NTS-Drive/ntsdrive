@@ -45,7 +45,8 @@
           "caption": "Snap — instant photos"
         }
       ]
-    }
+    },
+    "screenshot": "assets/projects/waaait-screenshot.jpg"
   },
   {
     "id": "comecame",
@@ -63,7 +64,8 @@
     "releaseDate": "2026-08",
     "releaseDateLabel": "Aug 2026",
     "appStore": null,
-    "playStore": null
+    "playStore": null,
+    "screenshot": "assets/projects/comecame-screenshot.jpg"
   },
   {
     "id": "film",
@@ -81,6 +83,7 @@
     "releaseDate": "2026-07",
     "releaseDateLabel": "Jul 2026",
     "appStore": null,
-    "playStore": null
+    "playStore": null,
+    "screenshot": "assets/projects/filmcam-screenshot.png"
   }
 ]
