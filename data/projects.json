@@ -85,5 +85,24 @@
     "appStore": null,
     "playStore": null,
     "screenshot": "assets/projects/filmcam-screenshot.png"
+  },
+  {
+    "id": "daydaylaw",
+    "name": "daydaylaw",
+    "category": "#realestatelaw",
+    "status": "demo",
+    "statusLabel": "Demo",
+    "hosting": "internal",
+    "description": "Paste your lease's special clauses and get legal checkpoints and case law before you sign.",
+    "detail": "A Korean real-estate legal guide: browse recent policy trends, paste a lease or sale contract's special clauses to see related checkpoints and case law, and look up common disputes and the statutes behind them. Not legal advice.",
+    "url": "/daydaylaw/",
+    "urlLabel": "Try the demo",
+    "thumbnail": "assets/projects/daydaylaw-thumb.png",
+    "logo": "assets/projects/daydaylaw-logo.png",
+    "screenshot": "assets/projects/daydaylaw-screenshot.jpg",
+    "releaseDate": "2026-09",
+    "releaseDateLabel": "Sep 2026",
+    "appStore": null,
+    "playStore": null
   }
 ]

@@ -131,3 +131,15 @@ Wrapped up here. Live at ntsdrive.com: waaait, comecame (both Live), film cam (D
 - Replaced comecame's logo with the new green globe icon Min provided (of the two sizes given, picked the bolder/less-padded one for clarity at small sizes)
 - Regenerated `comecame-logo.png` and `comecame-thumb.png` against the icon's own green (#16A34A)
 - Cache-busting bumped to `?v=1789623132`
+
+---
+
+## v92 — Added daydaylaw
+
+- New project: daydaylaw (부동산 법률 가이드) — status `demo`, category `#realestatelaw`
+- Description/detail written from the actual live app content at daydaylaw.vercel.app (recent trends, paste-your-clause checkpoints, case law and statute browsing; "not legal advice" disclaimer)
+- **Architecture note**: daydaylaw is a separate Next.js app already deployed on Vercel (not something I can statically clone — it looks like it does real analysis, not just static content). `/daydaylaw/index.html` is a lightweight redirect wrapper (meta refresh + JS) that briefly shows `ntsdrive.com/daydaylaw`, then forwards to `https://daydaylaw.vercel.app/`. This is different from film cam, which is fully hosted here because I had its actual source.
+- Logo built from the `daydaylaw-mark.svg` Min provided (courthouse icon) on the app's own cream background (#F4F2ED), matching its real brand look
+- Screenshot is the real capture Min sent, resized to 700px wide
+- Added `/daydaylaw/` to sitemap.xml
+- Cache-busting bumped to `?v=1789726804`
