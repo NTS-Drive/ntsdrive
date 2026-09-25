@@ -143,3 +143,33 @@ Wrapped up here. Live at ntsdrive.com: waaait, comecame (both Live), film cam (D
 - Screenshot is the real capture Min sent, resized to 700px wide
 - Added `/daydaylaw/` to sitemap.xml
 - Cache-busting bumped to `?v=1789726804`
+
+---
+
+## v93 — Added The Face Log
+
+- New project: The Face Log (split-face-log.base44.app) — status `demo`, category `#photosocial`
+- Description/detail from the app's own meta description: "one half of a photo every day with your closest friends. Two halves become one."
+- Same pattern as daydaylaw: `/thefacelog/index.html` is a redirect wrapper (meta refresh + JS) pointing to `https://split-face-log.base44.app`, since it's a separate Base44-hosted app, not something to statically clone
+- **Logo note**: Min didn't have a logo file for this one and the live site has no favicon/og:image to pull from, so I built a placeholder mark (a circle split by a vertical line — "two halves become one") on the app's own cream background (#FFFBF2). This should be swapped for a real logo whenever Min has one — flagging it here so it isn't mistaken for a final asset.
+- No real screenshot yet either (`screenshot: null`) — the modal just omits that image until one is added
+- Added `/thefacelog/` to sitemap.xml
+- Cache-busting bumped to `?v=1790299315`
+
+## v94 — The Face Log screenshot + "Built with" tool tags
+
+- Added real screenshot for The Face Log (`thefacelog-screenshot.jpg`, from Min's own capture) — modal now shows it, `screenshot` field no longer `null`
+- Logo stays the placeholder split-circle mark for now, per Min's confirmation ("로고는 네가 만들걸로 하자")
+- New optional `tools` field on each project (array of strings, e.g. `["Base44"]`) — renders as small pill chips in the detail modal under the category/date line, styled to match the existing chip design
+- Populated only `thefacelog: ["Base44"]` so far (domain-confirmed). The other four projects' stacks were NOT auto-filled — see note to Min about why
+- Cache-busting bumped to `?v=1790301701`
+
+## v95 — Tool-stack tags filled in for all projects
+
+- Min supplied the actual stack per project; `tools` field populated:
+  - waaait: Claude Code, Next.js, Supabase, Vercel, Google OAuth
+  - comecame: Claude Code, Next.js, Supabase, Vercel, Leaflet
+  - film cam: Claude Code, JavaScript, CSS, HTML
+  - daydaylaw: Claude Code, Next.js, Supabase, Vercel, Open Law API
+  - the face log: Base44 (unchanged, domain-confirmed)
+- Cache-busting bumped to `?v=1790301917`

@@ -16,6 +16,7 @@
     "releaseDateLabel": "Sep 2026",
     "appStore": null,
     "playStore": null,
+    "tools": ["Claude Code", "Next.js", "Supabase", "Vercel", "Google OAuth"],
     "history": {
       "note": "NTS Drive — an earlier journaling app, storage local to the browser",
       "icon": "assets/history/nts-icon.jpg",
@@ -65,6 +66,7 @@
     "releaseDateLabel": "Aug 2026",
     "appStore": null,
     "playStore": null,
+    "tools": ["Claude Code", "Next.js", "Supabase", "Vercel", "Leaflet"],
     "screenshot": "assets/projects/comecame-screenshot.jpg"
   },
   {
@@ -84,6 +86,7 @@
     "releaseDateLabel": "Jul 2026",
     "appStore": null,
     "playStore": null,
+    "tools": ["Claude Code", "JavaScript", "CSS", "HTML"],
     "screenshot": "assets/projects/filmcam-screenshot.png"
   },
   {
@@ -100,6 +103,27 @@
     "thumbnail": "assets/projects/daydaylaw-thumb.png",
     "logo": "assets/projects/daydaylaw-logo.png",
     "screenshot": "assets/projects/daydaylaw-screenshot.jpg",
+    "releaseDate": "2026-09",
+    "releaseDateLabel": "Sep 2026",
+    "appStore": null,
+    "playStore": null,
+    "tools": ["Claude Code", "Next.js", "Supabase", "Vercel", "Open Law API"]
+  },
+  {
+    "id": "thefacelog",
+    "name": "the face log",
+    "category": "#photosocial",
+    "status": "demo",
+    "statusLabel": "Demo",
+    "hosting": "internal",
+    "description": "One half of a photo every day with your closest friends. Two halves become one.",
+    "detail": "Each day you and a close friend each capture one half of a photo separately. Once both halves are in, they combine into a single shared image — a small daily ritual built entirely around a friendship of two.",
+    "url": "/thefacelog/",
+    "urlLabel": "Try the demo",
+    "thumbnail": "assets/projects/thefacelog-thumb.png",
+    "logo": "assets/projects/thefacelog-logo.png",
+    "screenshot": "assets/projects/thefacelog-screenshot.jpg",
+    "tools": ["Base44"],
     "releaseDate": "2026-09",
     "releaseDateLabel": "Sep 2026",
     "appStore": null,

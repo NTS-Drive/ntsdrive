@@ -144,6 +144,10 @@ function openDetail(projectId) {
   const p = allProjects.find((item) => item.id === projectId);
   if (!p) return;
 
+  const toolsHTML = (p.tools && p.tools.length)
+    ? `<div class="detail-tools">${p.tools.map((t) => `<span class="tool-chip">${t}</span>`).join('')}</div>`
+    : '';
+
   const hasStore = p.appStore || p.playStore;
   const storesHTML = `
     <div class="detail-stores ${hasStore ? '' : 'is-empty'}">
@@ -177,6 +181,7 @@ function openDetail(projectId) {
       <span class="row-badge">${p.statusLabel}</span>
     </div>
     <p class="detail-category">${p.category} &middot; Released ${p.releaseDateLabel}</p>
+    ${toolsHTML}
     ${storesHTML}
     ${p.url ? `<a class="detail-visit" href="${p.url}" target="_blank" rel="noopener noreferrer" data-project="${p.id}">${p.urlLabel}</a>` : ''}
     <p class="detail-desc">${p.detail || p.description}</p>
@@ -216,7 +221,7 @@ function showGallerySlide(index) {
   document.getElementById('gallery-next').disabled = currentGalleryIndex === currentGallery.length - 1;
 }
 
-fetch('data/projects.json?v=1789726804')
+fetch('data/projects.json?v=1790301917')
   .then((res) => res.json())
   .then((projects) => {
     allProjects = projects;
